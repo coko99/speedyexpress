@@ -1,3 +1,4 @@
+//ADMIN STATISTIKA
 var ctx = document.getElementById("myChart").getContext("2d");
 var myChart = new Chart(ctx, {
   type: "line",
@@ -68,3 +69,19 @@ var myChart = new Chart(ctx, {
     },
   },
 });
+
+/*DATUM I VREME */
+function prikaziDatumVreme() {
+  var datum = new Date();
+  var dan = datum.getDate();
+  var mesec = datum.getMonth() + 1;
+  var godina = datum.getFullYear();
+  var sati = datum.getHours();
+  var minuti = datum.getMinutes();
+  var sekunde = datum.getSeconds();
+  var formatiranDatum = dan + 1 + "." + mesec + "." + godina + ".";
+  document.getElementById("prikazDatumaVremena").innerHTML = formatiranDatum;
+  setTimeout(prikaziDatumVreme, 1000); // ažuriraj vreme svake sekunde
+}
+
+//korisnik STATISTIKA

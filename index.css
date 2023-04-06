@@ -2,13 +2,13 @@
   padding: 0;
   margin: 0;
   box-sizing: border-box;
+  font-family: "Montserrat";
 }
 
 .navbar-nav {
   font-family: "Montserrat", sans-serif;
   font-style: normal;
   font-weight: 500;
-  font-size: 20px;
 }
 .active {
   border-bottom: 1px solid #1a76f0;
@@ -17,7 +17,6 @@
   font-family: "Montserrat";
   font-style: normal;
   font-weight: 500;
-  font-size: 26px;
   border-bottom: 1px solid #1a76f0;
 }
 
@@ -25,7 +24,6 @@
   font-family: "Montserrat";
   font-style: normal;
   font-weight: 500;
-  font-size: 22px;
 }
 .spanh4 {
   background-color: #1a76f0;
@@ -34,6 +32,55 @@
 }
 .statistika1 {
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+/*LOGIN*/
+.gradient-custom-2 {
+  /* fallback for old browsers */
+  background: #fccb90;
+
+  /* Chrome 10-25, Safari 5.1-6 */
+  background: -webkit-linear-gradient(
+    to right,
+    #096ef1,
+    #2a80f1,
+    #3a8af3,
+    #5b9bf0
+  );
+
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background: linear-gradient(to right, #096ef1, #2a80f1, #3a8af3, #5b9bf0);
+}
+
+/*KORISNIK*/
+.qr-slika {
+  width: 100px;
+}
+
+.my-custom-scrollbar {
+  position: relative;
+  height: 600px;
+  overflow: auto;
+}
+.table-wrapper-scroll-y {
+  display: block;
+}
+
+@media {
+  .gradient-form {
+    height: 100vh !important;
+  }
+}
+@media (min-width: 769px) {
+  .gradient-custom-2 {
+    border-top-right-radius: 0.3rem;
+    border-bottom-right-radius: 0.3rem;
+  }
+}
+@media (max-width: 450px) {
+  .h-custom {
+    height: 100%;
+  }
 }
 
 @media (min-width: 576px) {
@@ -54,3 +101,5 @@
 @media (min-width: 1400px) {
   ...;
 }
+
+/*KORISNIK CSS*/
