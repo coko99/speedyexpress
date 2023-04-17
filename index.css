@@ -83,23 +83,15 @@
   }
 }
 
-@media (min-width: 576px) {
+/*ADMIN CSS*/
+.adminPaketi {
+  height: 300px;
 }
 
-@media (min-width: 768px) {
-  ...;
+.isporuceni {
+  background-color: rgb(216, 255, 156);
 }
 
-@media (min-width: 992px) {
-  ...;
+.neisporučeni {
+  background-color: rgb(255, 104, 104);
 }
-
-@media (min-width: 1200px) {
-  ...;
-}
-
-@media (min-width: 1400px) {
-  ...;
-}
-
-/*KORISNIK CSS*/
