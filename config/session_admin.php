@@ -13,11 +13,19 @@
    }
 
    if(!isset($_SESSION['login_admin'])){
-      header("location:../index.php");
+      header("location: login.php");
       die();
    }
-   $user_check = $_SESSION['login_admin'];
+   $user_check = mysqli_real_escape_string($db, $_SESSION['login_admin']);
    $ses_sql = mysqli_query($db,"select username from admin where username = '$user_check' ");
    $row = mysqli_fetch_array($ses_sql,MYSQLI_ASSOC);
-   $login_session = $row['username'];
+   $count = mysqli_num_rows($ses_sql);
+   if($count == 1){
+      $login_session = $row['username'];
+   }else{
+      if(session_destroy()) {
+         header("Location: login.php");
+      }
+      die();
+   }
 ?>

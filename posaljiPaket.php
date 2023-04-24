@@ -1,72 +1,20 @@
-<!DOCTYPE html>
-<html lang="sr">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Speedy Express</title>
-    <link rel="stylesheet" href="index.css" />
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD"
-      crossorigin="anonymous"
-    />
-    <link
-      rel="stylesheet"
-      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-    />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body onload="prikaziDatumVreme()">
-    <div class="container-fluid pt-3">
-      <div class="container border-bottom">
-        <div class="row">
-          <nav class="navbar navbar-expand-lg navbar-light">
-            <a href="#" class="navbar-brand"
-              ><img src="logo.png" style="width: 120px" alt=""
-            /></a>
-            <button
-              type="button"
-              class="navbar-toggler"
-              data-bs-toggle="collapse"
-              data-bs-target="#navbarCollapse"
-            >
-              <span class="navbar-toggler-icon"></span>
-            </button>
+<?php
+  include('config/session_user.php');
 
-            <div class="collapse navbar-collapse" id="navbarCollapse">
-              <div class="navbar-nav mx-auto">
-                <a href="profil.html" class="nav-item text-uppercase nav-link"
-                  >Profil</a
-                >
-                <a
-                  href="poslatiPaketi.html"
-                  class="nav-item text-uppercase nav-link"
-                  >Poslati paketi</a
-                >
-                <a
-                  href="posaljiPaket.html"
-                  class="nav-item text-uppercase nav-link active"
-                  >Pošalji paket</a
-                >
-              </div>
-              <div class="navbar-nav">
-                <a href="#" class="nav-item nav-link" style="width: 120px"
-                  >Odjavi se</a
-                >
-              </div>
-            </div>
-          </nav>
-        </div>
-      </div>
-    </div>
+?><!DOCTYPE html>
+<html lang="sr">
+  <?php
+    include('config/head.php');
+
+  ?>
+  
+  <body onload="prikaziDatumVreme()">
+    
+    <?php
+      $active = 3;
+      include('config/navbar.php');
+    ?>
+
 
     <div class="container mt-4">
       <div class="row mb-4">

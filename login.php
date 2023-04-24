@@ -1,3 +1,56 @@
+<?php
+  include("config/config.php");
+  session_start();
+
+  if(isset($_SESSION['login_admin'])){
+    header("location: index.php");
+    die();
+  }else if(isset($_SESSION['login_user'])){
+    header("location: profil.php");
+    die();
+  }
+   
+  if($_SERVER["REQUEST_METHOD"] == "POST") {
+    // username and password sent from form 
+      
+    $myusername = mysqli_real_escape_string($db, $_POST['username']);
+    $mypassword = $_POST['password']; 
+      
+    $sql = "SELECT * FROM admin WHERE username = '$myusername'";
+
+    $result = mysqli_query($db,$sql);
+    $row = mysqli_fetch_array($result,MYSQLI_ASSOC);
+      
+    $count = mysqli_num_rows($result);
+    // If result matched $myusername and $mypassword, table row must be 1 row
+    if($count == 1 && password_verify($mypassword, $row['password']) && $row['status'] == 1) {
+        if(isset($_SESSION['login_user'])){
+            unset($_SESSION['login_user']);
+          }
+      $_SESSION['login_admin'] = $myusername;
+         
+      header("location: index.php");
+    }else {
+      // $error = "Neispravno korisničko ime ili lozinka!";
+      $sql = "SELECT * FROM user WHERE email = '$myusername'";
+
+      $result = mysqli_query($db,$sql);
+      $row = mysqli_fetch_array($result,MYSQLI_ASSOC);
+        
+      $count = mysqli_num_rows($result);
+      if($count == 1 && password_verify($mypassword, $row['password']) && $row['status'] == 1) {
+        if(isset($_SESSION['login_user'])){
+            unset($_SESSION['login_user']);
+          }
+        $_SESSION['login_user'] = $myusername;
+          
+        header("location: profil.php");
+      }else{
+        $error = "Neispravno korisničko ime ili lozinka!";
+      }
+    }
+   }
+?>
 <!DOCTYPE html>
 <html lang="sr">
   <head>
@@ -37,7 +90,15 @@
                       <img src="logo.png" style="width: 140px" alt="logo" />
                     </div>
 
-                    <form>
+                    <?php
+                      if(isset($error) && !empty($error)){
+                        echo '<div class="alert alert-danger" role="alert">
+                        '.$error.'
+                      </div>';
+                      }
+                    ?>
+
+                    <form method="POST">
                       <p class="text-center">Prijava korisnika</p>
 
                       <div class="form-outline mb-4">
@@ -46,6 +107,7 @@
                           id="form2Example11"
                           class="form-control"
                           placeholder="Korisničko ime"
+                          name="username"
                         />
                       </div>
 
@@ -55,13 +117,14 @@
                           id="form2Example22"
                           class="form-control"
                           placeholder="Šifra"
+                          name="password"
                         />
                       </div>
 
                       <div class="text-center pt-1 mb-5 pb-1">
                         <button
                           class="btn btn-primary btn-block fa-lg gradient-custom-2 mb-3"
-                          type="button"
+                          type="submit"
                         >
                           Prijavi se
                         </button>
