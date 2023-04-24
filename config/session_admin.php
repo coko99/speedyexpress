@@ -1,12 +1,14 @@
 <?php
    include('config.php');
+   require_once 'vendor/autoload.php';
+
    session_start();
 
    function logEvent($message) {
       if ($message != '') {
           // Add a timestamp to the start of the $message
           $message = date("Y/m/d H:i:s").': '.$message;
-          $fp = fopen('../log/log.txt', 'a');
+          $fp = fopen('log.txt', 'a');
           fwrite($fp, $message."\n");
           fclose($fp);
       }

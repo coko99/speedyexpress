@@ -1,0 +1,8 @@
+{
+    "require": {
+        "mpdf/mpdf": "^8.1",
+        "harvesthq/chosen": "^1.8",
+        "phpoffice/phpspreadsheet": "^1.28",
+        "chillerlan/php-qrcode": "dev-main#^4.3"
+    }
+}
