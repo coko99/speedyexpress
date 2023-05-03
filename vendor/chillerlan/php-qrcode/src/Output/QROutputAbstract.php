@@ -2,7 +2,9 @@
 /**
  * Class QROutputAbstract
  *
+ * @filesource   QROutputAbstract.php
  * @created      09.12.2015
+ * @package      chillerlan\QRCode\Output
  * @author       Smiley <smiley@chillerlan.net>
  * @copyright    2015 Smiley
  * @license      MIT
@@ -10,10 +12,10 @@
 
 namespace chillerlan\QRCode\Output;
 
-use chillerlan\QRCode\Data\QRMatrix;
+use chillerlan\QRCode\{Data\QRMatrix, QRCode};
 use chillerlan\Settings\SettingsContainerInterface;
-use Closure;
-use function base64_encode, dirname, file_put_contents, is_writable, ksort, sprintf;
+
+use function call_user_func_array, dirname, file_put_contents, get_called_class, in_array, is_writable, sprintf;
 
 /**
  * common output abstract
@@ -23,9 +25,21 @@ abstract class QROutputAbstract implements QROutputInterface{
 	/**
 	 * the current size of the QR matrix
 	 *
-	 * @see \chillerlan\QRCode\Data\QRMatrix::getSize()
+	 * @see \chillerlan\QRCode\Data\QRMatrix::size()
 	 */
 	protected int $moduleCount;
+
+	/**
+	 * the current output mode
+	 *
+	 * @see \chillerlan\QRCode\QROptions::$outputType
+	 */
+	protected string $outputMode;
+
+	/**
+	 * the default output mode of the current output module
+	 */
+	protected string $defaultMode;
 
 	/**
 	 * the current scaling for a QR pixel
@@ -58,145 +72,58 @@ abstract class QROutputAbstract implements QROutputInterface{
 	 * QROutputAbstract constructor.
 	 */
 	public function __construct(SettingsContainerInterface $options, QRMatrix $matrix){
-		$this->options = $options;
-		$this->matrix  = $matrix;
+		$this->options     = $options;
+		$this->matrix      = $matrix;
+		$this->moduleCount = $this->matrix->size();
+		$this->scale       = $this->options->scale;
+		$this->length      = $this->moduleCount * $this->scale;
 
-		$this->setMatrixDimensions();
+		$class = get_called_class();
+
+		if(isset(QRCode::OUTPUT_MODES[$class]) && in_array($this->options->outputType, QRCode::OUTPUT_MODES[$class])){
+			$this->outputMode = $this->options->outputType;
+		}
+
 		$this->setModuleValues();
 	}
 
 	/**
-	 * Sets/updates the matrix dimensions
-	 *
-	 * Call this method if you modify the matrix from within your custom module in case the dimensions have been changed
+	 * Sets the initial module values (clean-up & defaults)
 	 */
-	protected function setMatrixDimensions():void{
-		$this->moduleCount = $this->matrix->getSize();
-		$this->scale       = $this->options->scale;
-		$this->length      = ($this->moduleCount * $this->scale);
-	}
+	abstract protected function setModuleValues():void;
 
 	/**
-	 * Sets the initial module values
-	 */
-	protected function setModuleValues():void{
-
-		foreach($this::DEFAULT_MODULE_VALUES as $M_TYPE => $defaultValue){
-			$value = ($this->options->moduleValues[$M_TYPE] ?? null);
-
-			$this->moduleValues[$M_TYPE] = $this::moduleValueIsValid($value)
-				? $this->prepareModuleValue($value)
-				: $this->getDefaultModuleValue($defaultValue);
-		}
-
-	}
-
-	/**
-	 * Returns the prepared value for the given $M_TYPE
-	 *
-	 * @return mixed|null return value depends on the output class
-	 */
-	protected function getModuleValue(int $M_TYPE){
-		return ($this->moduleValues[$M_TYPE] ?? null);
-	}
-
-	/**
-	 * Returns the prepared module value at the given coordinate [$x, $y] (convenience)
-	 *
-	 * @return mixed|null
-	 */
-	protected function getModuleValueAt(int $x, int $y){
-		return $this->getModuleValue($this->matrix->get($x, $y));
-	}
-
-	/**
-	 * Prepares the value for the given input ()
-	 *
-	 * @param mixed $value
-	 *
-	 * @return mixed|null return value depends on the output class
-	 */
-	abstract protected function prepareModuleValue($value);
-
-	/**
-	 * Returns a default value for either dark or light modules
-	 *
-	 * @return mixed|null return value depends on the output class
-	 */
-	abstract protected function getDefaultModuleValue(bool $isDark);
-
-	/**
-	 * Returns a base64 data URI for the given string and mime type
-	 */
-	protected function toBase64DataURI(string $data, string $mime):string{
-		return sprintf('data:%s;base64,%s', $mime, base64_encode($data));
-	}
-
-	/**
-	 * Saves the qr $data to a $file. If $file is null, nothing happens.
+	 * saves the qr data to a file
 	 *
 	 * @see file_put_contents()
-	 * @see \chillerlan\QRCode\QROptions::$cachefile
+	 * @see \chillerlan\QRCode\QROptions::cachefile
 	 *
 	 * @throws \chillerlan\QRCode\Output\QRCodeOutputException
 	 */
-	protected function saveToFile(string $data, string $file = null):void{
-
-		if($file === null){
-			return;
-		}
+	protected function saveToFile(string $data, string $file):bool{
 
 		if(!is_writable(dirname($file))){
-			throw new QRCodeOutputException(sprintf('Cannot write data to cache file: %s', $file));
+			throw new QRCodeOutputException(sprintf('Could not write data to cache file: %s', $file));
 		}
 
-		if(file_put_contents($file, $data) === false){
-			throw new QRCodeOutputException(sprintf('Cannot write data to cache file: %s (file_put_contents error)', $file));
-		}
+		return (bool)file_put_contents($file, $data);
 	}
 
 	/**
-	 * collects the modules per QRMatrix::M_* type and runs a $transform function on each module and
-	 * returns an array with the transformed modules
-	 *
-	 * The transform callback is called with the following parameters:
-	 *
-	 *   $x            - current column
-	 *   $y            - current row
-	 *   $M_TYPE       - field value
-	 *   $M_TYPE_LAYER - (possibly modified) field value that acts as layer id
+	 * @inheritDoc
 	 */
-	protected function collectModules(Closure $transform):array{
-		$paths = [];
+	public function dump(string $file = null){
+		$file ??= $this->options->cachefile;
 
-		// collect the modules for each type
-		for($y = 0; $y < $this->moduleCount; $y++){
-			for($x = 0; $x < $this->moduleCount; $x++){
-				$M_TYPE       = $this->matrix->get($x, $y);
-				$M_TYPE_LAYER = $M_TYPE;
+		// call the built-in output method with the optional file path as parameter
+		// to make the called method aware if a cache file was given
+		$data = call_user_func_array([$this, $this->outputMode ?? $this->defaultMode], [$file]);
 
-				if($this->options->connectPaths && !$this->matrix->checkTypeIn($x, $y, $this->options->excludeFromConnect)){
-					// to connect paths we'll redeclare the $M_TYPE_LAYER to data only
-					$M_TYPE_LAYER = QRMatrix::M_DATA;
-
-					if($this->matrix->check($x, $y)){
-						$M_TYPE_LAYER |= QRMatrix::IS_DARK;
-					}
-				}
-
-				// collect the modules per $M_TYPE
-				$module = $transform($x, $y, $M_TYPE, $M_TYPE_LAYER);
-
-				if(!empty($module)){
-					$paths[$M_TYPE_LAYER][] = $module;
-				}
-			}
+		if($file !== null){
+			$this->saveToFile($data, $file);
 		}
 
-		// beautify output
-		ksort($paths);
-
-		return $paths;
+		return $data;
 	}
 
 }

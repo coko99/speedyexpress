@@ -1,53 +1,20 @@
 <?php
 /**
+ *
+ * @filesource   html.php
  * @created      21.12.2017
  * @author       Smiley <smiley@chillerlan.net>
  * @copyright    2017 Smiley
  * @license      MIT
  */
 
+namespace chillerlan\QRCodeExamples;
+
 use chillerlan\QRCode\{QRCode, QROptions};
-use chillerlan\QRCode\Common\EccLevel;
-use chillerlan\QRCode\Data\QRMatrix;
-use chillerlan\QRCode\Output\QROutputInterface;
 
 require_once '../vendor/autoload.php';
 
 header('Content-Type: text/html; charset=utf-8');
-
-	$options = new QROptions([
-		'version'      => 5,
-		'outputType'   => QROutputInterface::MARKUP_HTML,
-		'eccLevel'     => EccLevel::L,
-		'cssClass'     => 'qrcode',
-		'moduleValues' => [
-			// finder
-			QRMatrix::M_FINDER_DARK    => '#A71111', // dark (true)
-			QRMatrix::M_FINDER_DOT     => '#A71111', // finder dot, dark (true)
-			QRMatrix::M_FINDER         => '#FFBFBF', // light (false)
-			// alignment
-			QRMatrix::M_ALIGNMENT_DARK => '#A70364',
-			QRMatrix::M_ALIGNMENT      => '#FFC9C9',
-			// timing
-			QRMatrix::M_TIMING_DARK    => '#98005D',
-			QRMatrix::M_TIMING         => '#FFB8E9',
-			// format
-			QRMatrix::M_FORMAT_DARK    => '#003804',
-			QRMatrix::M_FORMAT         => '#00FB12',
-			// version
-			QRMatrix::M_VERSION_DARK   => '#650098',
-			QRMatrix::M_VERSION        => '#E0B8FF',
-			// data
-			QRMatrix::M_DATA_DARK      => '#4A6000',
-			QRMatrix::M_DATA           => '#ECF9BE',
-			// darkmodule
-			QRMatrix::M_DARKMODULE     => '#080063',
-			// separator
-			QRMatrix::M_SEPARATOR      => '#AFBFBF',
-			// quietzone
-			QRMatrix::M_QUIETZONE      => '#DDDDDD',
-		],
-	]);
 
 ?>
 <!DOCTYPE html>
@@ -57,12 +24,20 @@ header('Content-Type: text/html; charset=utf-8');
 	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 	<title>QRCode test</title>
 	<style>
+		body{
+			margin: 5em;
+			padding: 0;
+		}
+
 		div.qrcode{
-			margin: 1em;
+			margin: 0;
+			padding: 0;
 		}
 
 		/* rows */
 		div.qrcode > div {
+			margin: 0;
+			padding: 0;
 			height: 10px;
 		}
 
@@ -72,13 +47,56 @@ header('Content-Type: text/html; charset=utf-8');
 			width: 10px;
 			height: 10px;
 		}
+
+		div.qrcode > div > span {
+			background-color: #ccc;
+		}
 	</style>
 </head>
 <body>
+	<div class="qrcode">
 <?php
 
-echo (new QRCode($options))->render('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
+	$data = 'https://www.youtube.com/watch?v=DLzxrzFCyOs&t=43s';
+
+	$options = new QROptions([
+		'version' => 5,
+		'outputType' => QRCode::OUTPUT_MARKUP_HTML,
+		'eccLevel' => QRCode::ECC_L,
+		'moduleValues' => [
+			// finder
+			1536 => '#A71111', // dark (true)
+			6    => '#FFBFBF', // light (false)
+			// alignment
+			2560 => '#A70364',
+			10   => '#FFC9C9',
+			// timing
+			3072 => '#98005D',
+			12   => '#FFB8E9',
+			// format
+			3584 => '#003804',
+			14   => '#00FB12',
+			// version
+			4096 => '#650098',
+			16   => '#E0B8FF',
+			// data
+			1024 => '#4A6000',
+			4    => '#ECF9BE',
+			// darkmodule
+			512  => '#080063',
+			// separator
+			8    => '#AFBFBF',
+			// quietzone
+			18   => '#FFFFFF',
+		],
+	]);
+
+	echo (new QRCode($options))->render($data);
 
 ?>
+	</div>
 </body>
 </html>
+
+
+

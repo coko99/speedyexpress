@@ -1,11 +1,84 @@
 <?php
+
+use chillerlan\QRCode\QRCode;
+
   include('config/session_user.php');
+  require 'vendor/autoload.php';
+
+  function insertPackage($street_id, $street_number, $phone, $ransom_type_id, $shipping_fee, $recipient, $content, $comment, $firm_id, $login_session, $db) {
+    $token = time();
+    $sql = "INSERT INTO `package`(`street_id`, 
+  `firm_id`, `street_number`, `token`, `curier_id`, 
+  `phone`, `ransom_type_id`, `shipping_fee`, 
+  `recipient`, `content`, `comment`, `status_id`) 
+  VALUES ('$street_id','$firm_id','$street_number',
+  '$token', NULL, '$phone','$ransom_type_id','$shipping_fee'
+  ,'$recipient','$content', '$comment', '1')";
+    $result = mysqli_query($db, $sql);
+    logEvent('User '.$login_session.': '.$sql);
+  }
+
+  function getStreetId($street_name, $municipality_id, $db){
+    $sql = "SELECT * FROM street WHERE municipality_id = $municipality_id AND name LIKE '$street_name'";
+    $result = mysqli_query($db, $sql);
+    if (mysqli_num_rows($result) == 1) {
+      return mysqli_fetch_array($result)['id'];
+    }else{
+      return "GREŠKA! ULICA NIJE PRONAĐENA ILI JE PRONAĐENO VIŠE ULICA SA TIM NAZIVOM IZ TE OPŠTINE!";
+    }
+  }
+
+  if(isset($_GET['send_packages'])){
+    $sql = "UPDATE `package` SET `status_id`='2'
+      WHERE firm_id = $firm_id AND status_id = 1";
+    $result = mysqli_query($db, $sql);
+  }
+
+  if(isset($_POST['add_single_package'])){
+
+    $street_name = mysqli_real_escape_string($db, $_POST['street']);
+    $municipality_id = mysqli_real_escape_string($db, $_POST['municipality']);
+
+    $street_id = getStreetId($street_name, $municipality_id, $db);
+
+    $street_number = mysqli_real_escape_string($db, $_POST['street_number']);
+    $phone = mysqli_real_escape_string($db, $_POST['phone']);
+    $ransom_type_id = mysqli_real_escape_string($db, $_POST['paid_by']);
+    $shipping_fee = mysqli_real_escape_string($db, $_POST['ransome']);
+    $recipient = mysqli_real_escape_string($db, $_POST['name']);
+    $content = mysqli_real_escape_string($db, $_POST['description']);
+    $comment = mysqli_real_escape_string($db, $_POST['comment']);
+
+    insertPackage($street_id, $street_number, $phone, $ransom_type_id, $shipping_fee, $recipient, $content, $comment, $firm_id, $login_session, $db);
+    
+  }
+
+  if(isset($_GET['delete_id'])){
+    $delete_id = mysqli_real_escape_string($db, $_GET['delete_id']);
+    $sql = "DELETE FROM `package` WHERE id = $delete_id AND status_id = 1 AND firm_id = $firm_id";
+    $result = mysqli_query($db, $sql);
+    logEvent('User '.$login_session.': '.$sql);
+  }
+
+  $sql = "SELECT package.*, 
+  municipality.name AS municipality_name, 
+  municipality.zip AS zip,
+  street.name AS street_name 
+  FROM `package`
+  LEFT JOIN street ON package.street_id = street.id
+  LEFT JOIN municipality ON street.municipality_id = municipality.id
+  WHERE firm_id = $firm_id AND status_id = 1";
+  $result = mysqli_query($db, $sql);
+  $packages = [];
+  while($row = mysqli_fetch_array($result)) {
+    array_push($packages, $row);
+  }
+  
 
 ?><!DOCTYPE html>
 <html lang="sr">
   <?php
     include('config/head.php');
-
   ?>
   
   <body>
@@ -23,6 +96,7 @@
       <div class="row">
         <div class="col-md-4 col-sm-12">
           <h3><strong>Popuni ručno</strong></h3>
+
           <!-- POSALJI PAKET RUCNO -->
           <form method='POST'>
             <div class="form-group">
@@ -31,6 +105,9 @@
                 class="form-control"
                 id="inputAddress"
                 placeholder="Ime i Prezime"
+                name="name"
+                required
+                autocomplete="off"
               />
             </div>
             <div class="form-group">
@@ -39,25 +116,45 @@
                 class="form-control"
                 placeholder="Ulica"
                 name="street" 
+                required
                 id="term" 
                 class="form-control"
+                autocomplete="off"
               />
-            </div>
-            <div class="form-group">
-              <select
-                class="form-control"
-                id="municipality"
-                name="municipality"
-                placeholder="Opština"
-              >
-            </select>
+              <input name='street_id' type="hidden" id="street-id">
             </div>
             <div class="form-group">
               <input
                 type="text"
                 class="form-control"
+                id="street_number"
+                placeholder="Broj"
+                name="street_number"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <div class="input-group">
+                <select
+                  class="form-control"
+                  id="municipality"
+                  name="municipality"
+                  required
+                  placeholder="Opština"
+                >
+                  <option disabled value="" selected>Opština</option>
+                </select>
+                <span class="input-group-text" id="basic-addon2">ZIP</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <input
+                type="tel"
+                class="form-control"
                 id="inputAddress"
                 placeholder="Broj telefona"
+                name='phone'
+                required
               />
             </div>
             <div class="form-group">
@@ -66,14 +163,15 @@
                 class="form-control"
                 id="inputAddress"
                 placeholder="Opis pošiljke"
+                required
+                name='description'
               />
             </div>
-
-            <div class="form-group">
+            <div class="form-group" required>
               <label for="inputState">Dostavu plaća</label>
-              <select id="inputState" class="form-control">
-                <option selected>Primalac</option>
-                <option>Pošiljalac</option>
+              <select name="paid_by" id="inputState" class="form-control">
+                <option value="1" selected>Primalac</option>
+                <option value="2">Pošiljalac</option>
               </select>
             </div>
             <div class="form-group">
@@ -81,25 +179,31 @@
             </div>
             <div class="form-group">
               <input
+              required
                 type="number"
                 class="form-control"
                 id="inputAddress"
                 placeholder="Otkupnina"
+                name="ransome"
               />
             </div>
             <div class="form-group">
               <input
+              required
                 type="text"
                 class="form-control"
                 id="inputAddress"
                 placeholder="Napomena"
+                name="comment"
               />
             </div>
-            <button type="submit" class="btn btn-primary mt-3 mb-3">
+            <button name="add_single_package" type="submit" class="btn btn-primary mt-3 mb-3">
               Ubaci
             </button>
           </form>
         </div>
+
+        <!-- Komande za pošiljke -->
         <div class="col-md-8 col-sm-12 border mb-5">
           <div class="row d-flex justify-content-between">
             <div class="col-6 align-self-center p-3">
@@ -111,19 +215,19 @@
             <div class="col-6 align-self-center">
               <div class="row">
                 <div class="col-4 text-center">
-                  <button class="btn btn-primary">Excel</button>
+                  <button data-bs-toggle="modal" data-bs-target="#exampleModal" class="btn btn-primary">Excel</button>
                 </div>
                 <div class="col-4 text-center">
-                  <button class="btn btn-primary">Štampaj</button>
+                  <a href="printPackages.php" class="btn btn-primary">Štampaj</a>
                 </div>
                 <div class="col-4 text-center">
-                  <a href="poslatiPaketi.html"
-                    ><button class="btn btn-success">POŠALJI</button></a
-                  >
+                  <a href='posaljiPaket.php?send_packages' class="btn btn-success">POŠALJI</a>
                 </div>
               </div>
             </div>
           </div>
+
+          <!-- SPISAK -->
           <div class="row">
             <div class="col-12 table-wrapper-scroll-y my-custom-scrollbar">
               <table class="table table-bordered table-striped mb-0">
@@ -137,124 +241,43 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <th scope="row">1</th>
-                    <td><img class="qr-slika" src="qr kod.png" alt="" /></td>
-                    <td>
-                      <h6>Milos Mijajlovic</h6>
-                      <h6>Krusevac 37000</h6>
-                      <h6>Kruševačka 17</h6>
-                      <h6>+381621872069</h6>
-                    </td>
-                    <td>
-                      <h6><strong>Otkup: </strong>20.000 rsd</h6>
-                      <h6><strong>Vrednost: </strong>20.000 rsd</h6>
-                      <h6><strong>Plaća: </strong>Primalac</h6>
-                      <h6><strong>napomena: </strong>tekst</h6>
-                    </td>
-                    <td><button class="btn btn-danger">Obrisi</button></td>
-                  </tr>
-                  <tr>
-                    <th scope="row">2</th>
-                    <td><img class="qr-slika" src="qr kod.png" alt="" /></td>
-                    <td>
-                      <h6>Milos Mijajlovic</h6>
-                      <h6>Krusevac 37000</h6>
-                      <h6>Kruševačka 17</h6>
-                      <h6>+381621872069</h6>
-                    </td>
-                    <td>
-                      <h6><strong>Otkup: </strong>20.000 rsd</h6>
-                      <h6><strong>Vrednost: </strong>20.000 rsd</h6>
-                      <h6><strong>Plaća: </strong>Primalac</h6>
-                      <h6><strong>napomena: </strong>tekst</h6>
-                    </td>
-                    <td><button class="btn btn-danger">Obrisi</button></td>
-                  </tr>
-                  <tr>
-                    <th scope="row">3</th>
-                    <td><img class="qr-slika" src="qr kod.png" alt="" /></td>
-                    <td>
-                      <h6>Milos Mijajlovic</h6>
-                      <h6>Krusevac 37000</h6>
-                      <h6>Kruševačka 17</h6>
-                      <h6>+381621872069</h6>
-                    </td>
-                    <td>
-                      <h6><strong>Otkup: </strong>20.000 rsd</h6>
-                      <h6><strong>Vrednost: </strong>20.000 rsd</h6>
-                      <h6><strong>Plaća: </strong>Primalac</h6>
-                      <h6><strong>napomena: </strong>tekst</h6>
-                    </td>
-                    <td>
-                      <button class="btn btn-danger align-self-center">
-                        Obrisi
-                      </button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">4</th>
-                    <td><img class="qr-slika" src="qr kod.png" alt="" /></td>
-                    <td>
-                      <h6>Milos Mijajlovic</h6>
-                      <h6>Krusevac 37000</h6>
-                      <h6>Kruševačka 17</h6>
-                      <h6>+381621872069</h6>
-                    </td>
-                    <td>
-                      <h6><strong>Otkup: </strong>20.000 rsd</h6>
-                      <h6><strong>Vrednost: </strong>20.000 rsd</h6>
-                      <h6><strong>Plaća: </strong>Primalac</h6>
-                      <h6><strong>napomena: </strong>tekst</h6>
-                    </td>
-                    <td>
-                      <button class="btn btn-danger align-self-center">
-                        Obrisi
-                      </button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">5</th>
-                    <td><img class="qr-slika" src="qr kod.png" alt="" /></td>
-                    <td>
-                      <h6>Milos Mijajlovic</h6>
-                      <h6>Krusevac 37000</h6>
-                      <h6>Kruševačka 17</h6>
-                      <h6>+381621872069</h6>
-                    </td>
-                    <td>
-                      <h6><strong>Otkup: </strong>20.000 rsd</h6>
-                      <h6><strong>Vrednost: </strong>20.000 rsd</h6>
-                      <h6><strong>Plaća: </strong>Primalac</h6>
-                      <h6><strong>napomena: </strong>tekst</h6>
-                    </td>
-                    <td>
-                      <button class="btn btn-danger align-self-center">
-                        Obrisi
-                      </button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">6</th>
-                    <td><img class="qr-slika" src="qr kod.png" alt="" /></td>
-                    <td>
-                      <h6>Milos Mijajlovic</h6>
-                      <h6>Krusevac 37000</h6>
-                      <h6>Kruševačka 17</h6>
-                      <h6>+381621872069</h6>
-                    </td>
-                    <td>
-                      <h6><strong>Otkup: </strong>20.000 rsd</h6>
-                      <h6><strong>Vrednost: </strong>20.000 rsd</h6>
-                      <h6><strong>Plaća: </strong>Primalac</h6>
-                      <h6><strong>napomena: </strong>tekst</h6>
-                    </td>
-                    <td>
-                      <button class="btn btn-danger align-self-center">
-                        Obrisi
-                      </button>
-                    </td>
-                  </tr>
+                  <?php
+                  $counter = 0;
+                  foreach($packages as $package){
+                    $counter += 1;
+                    $recipient = $package['recipient'];
+                    $phone = $package['phone'];
+                    $ransome = $package['shipping_fee'];
+                    $paid_by = ($package['ransom_type_id'] == 1) ? 'Primalac' : 'Pošiljalac';
+                    $comment = $package['comment'];
+                    $package_id = $package['id'];
+                    $street_number = $package['street_number'];
+                    $street_name = $package['street_name'];
+                    $zip = $package['zip'];
+                    $municipality_name = $package['municipality_name'];
+                    $token = $package['token'];
+
+                    echo "<tr>
+                            <th scope='row'>$counter</th>
+                            <td>
+                              <img class='qr-slika' src='".(new QRCode())->render($token)."' alt='QR Code' />
+                            </td>
+                            <td>
+                              <h6>$recipient</h6>
+                              <h6>$municipality_name $zip</h6>
+                              <h6>$street_name $street_number</h6>
+                              <h6>$phone</h6>
+                            </td>
+                            <td>
+                              <h6><strong>Otkup: </strong>$ransome rsd</h6>
+                              <h6><strong>Vrednost: </strong>$ransome rsd</h6>
+                              <h6><strong>Plaća: </strong>$paid_by</h6>
+                              <h6><strong>napomena: </strong>$comment</h6>
+                            </td>
+                            <td><a href='?delete_id=$package_id' class='confirmation btn btn-danger'>Obrisi</a></td>
+                          </tr>";
+                  }
+                  ?>
                 </tbody>
               </table>
             </div>
@@ -262,6 +285,28 @@
         </div>
       </div>
     </div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form action="mass_import.php" method="post" enctype="multipart/form-data">
+        <div class="modal-body">
+          <input class="form-control" type="file" name='file' id="formFile">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" name='submit' class="btn btn-primary">Save changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 
     <!-- <script src="index.js"></script> -->
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
@@ -273,18 +318,34 @@
       var availableTags = [];
       $( function() {
         $( "#term" ).autocomplete({
-          source: 'ajax-street-db-search.php',
+          source: 'ajax-scripts/ajax-street-db-search.php',
         });
-
-      } );
+        } 
+      );
       $( "#term" ).on( "autocompleteselect", function( event, ui ) {
-          $.get( "ajax-municipality-db-search.php?street=" + ui['item']['value'], function( data ) {
+          $.get( "ajax-scripts/ajax-municipality-db-search.php?street=" + ui.item.value, function( data ) {
+            $('#municipality').empty();
             JSON.parse(data).forEach(element => {
-              $('#municipality').append('<option value="' + element + '">' + element + '</option>');
+              $('#municipality').append('<option zip="'+element["zip"]+'" value="'+ element["id"] + '">' + element["name"] + '</option>');
               }
             );
+            set_zip();
           });
       } );
+
+      $('#municipality').on( "change", function(e) {
+        set_zip();
+      } );
+
+      function set_zip(v){
+        $('#basic-addon2').html(
+          $('#municipality').children("option:selected").attr('zip')
+          );
+      }
+
+      $('.confirmation').on('click', function () {
+        return confirm('Da li ste sigurni da želite da obrišete paket.');
+      });
 
       
     </script>

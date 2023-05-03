@@ -2,17 +2,17 @@
     "packages": [
         {
             "name": "chillerlan/php-qrcode",
-            "version": "dev-main",
-            "version_normalized": "dev-main",
+            "version": "4.3.4",
+            "version_normalized": "4.3.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/chillerlan/php-qrcode.git",
-                "reference": "c8c37a4e36300f1fc4a7fb44ee22186eac1e60a4"
+                "reference": "2ca4bf5ae048af1981d1023ee42a0a2a9d51e51d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/chillerlan/php-qrcode/zipball/c8c37a4e36300f1fc4a7fb44ee22186eac1e60a4",
-                "reference": "c8c37a4e36300f1fc4a7fb44ee22186eac1e60a4",
+                "url": "https://api.github.com/repos/chillerlan/php-qrcode/zipball/2ca4bf5ae048af1981d1023ee42a0a2a9d51e51d",
+                "reference": "2ca4bf5ae048af1981d1023ee42a0a2a9d51e51d",
                 "shasum": ""
             },
             "require": {
@@ -21,19 +21,15 @@
                 "php": "^7.4 || ^8.0"
             },
             "require-dev": {
-                "phan/phan": "^5.4",
-                "phpmd/phpmd": "^2.13",
-                "phpunit/phpunit": "^9.6",
-                "setasign/fpdf": "^1.8.2",
-                "squizlabs/php_codesniffer": "^3.7"
+                "phan/phan": "^5.3",
+                "phpunit/phpunit": "^9.5",
+                "setasign/fpdf": "^1.8.2"
             },
             "suggest": {
                 "chillerlan/php-authenticator": "Yet another Google authenticator! Also creates URIs for mobile apps.",
-                "setasign/fpdf": "Required to use the QR FPDF output.",
-                "simple-icons/simple-icons": "SVG icons that you can use to embed as logos in the QR Code"
+                "setasign/fpdf": "Required to use the QR FPDF output."
             },
-            "time": "2023-04-21T21:22:27+00:00",
-            "default-branch": true,
+            "time": "2022-07-25T09:12:45+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -43,21 +39,12 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "MIT",
-                "Apache-2.0"
+                "MIT"
             ],
             "authors": [
                 {
                     "name": "Kazuhiko Arase",
-                    "homepage": "https://github.com/kazuhikoarase/qrcode-generator"
-                },
-                {
-                    "name": "ZXing Authors",
-                    "homepage": "https://github.com/zxing/zxing"
-                },
-                {
-                    "name": "Ashot Khanamiryan",
-                    "homepage": "https://github.com/khanamiryan/php-qrcode-detector-decoder"
+                    "homepage": "https://github.com/kazuhikoarase"
                 },
                 {
                     "name": "Smiley",
@@ -69,20 +56,18 @@
                     "homepage": "https://github.com/chillerlan/php-qrcode/graphs/contributors"
                 }
             ],
-            "description": "A QR code generator and reader with a user friendly API. PHP 7.4+",
+            "description": "A QR code generator. PHP 7.4+",
             "homepage": "https://github.com/chillerlan/php-qrcode",
             "keywords": [
                 "phpqrcode",
                 "qr",
                 "qr code",
-                "qr-reader",
                 "qrcode",
-                "qrcode-generator",
-                "qrcode-reader"
+                "qrcode-generator"
             ],
             "support": {
                 "issues": "https://github.com/chillerlan/php-qrcode/issues",
-                "source": "https://github.com/chillerlan/php-qrcode/tree/main"
+                "source": "https://github.com/chillerlan/php-qrcode/tree/4.3.4"
             },
             "funding": [
                 {

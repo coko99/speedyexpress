@@ -2,7 +2,9 @@
 /**
  * Class QRString
  *
+ * @filesource   QRString.php
  * @created      05.12.2015
+ * @package      chillerlan\QRCode\Output
  * @author       Smiley <smiley@chillerlan.net>
  * @copyright    2015 Smiley
  * @license      MIT
@@ -13,6 +15,8 @@
 
 namespace chillerlan\QRCode\Output;
 
+use chillerlan\QRCode\QRCode;
+
 use function implode, is_string, json_encode;
 
 /**
@@ -20,57 +24,40 @@ use function implode, is_string, json_encode;
  */
 class QRString extends QROutputAbstract{
 
-	/**
-	 * @inheritDoc
-	 */
-	public static function moduleValueIsValid($value):bool{
-		return is_string($value);
-	}
+	protected string $defaultMode = QRCode::OUTPUT_STRING_TEXT;
 
 	/**
 	 * @inheritDoc
 	 */
-	protected function prepareModuleValue($value):string{
-		return $value;
-	}
+	protected function setModuleValues():void{
 
-	/**
-	 * @inheritDoc
-	 */
-	protected function getDefaultModuleValue(bool $isDark):string{
-		return ($isDark) ? $this->options->textDark : $this->options->textLight;
-	}
+		foreach($this::DEFAULT_MODULE_VALUES as $M_TYPE => $defaultValue){
+			$v = $this->options->moduleValues[$M_TYPE] ?? null;
 
-	/**
-	 * @inheritDoc
-	 */
-	public function dump(string $file = null):string{
+			if(!is_string($v)){
+				$this->moduleValues[$M_TYPE] = $defaultValue
+					? $this->options->textDark
+					: $this->options->textLight;
+			}
+			else{
+				$this->moduleValues[$M_TYPE] = $v;
+			}
 
-		switch($this->options->outputType){
-			case QROutputInterface::STRING_TEXT:
-				$data = $this->text();
-				break;
-			case QROutputInterface::STRING_JSON:
-			default:
-				$data = $this->json();
 		}
 
-		$this->saveToFile($data, $file);
-
-		return $data;
 	}
 
 	/**
 	 * string output
 	 */
-	protected function text():string{
+	protected function text(string $file = null):string{
 		$str = [];
 
-		for($y = 0; $y < $this->moduleCount; $y++){
+		foreach($this->matrix->matrix() as $row){
 			$r = [];
 
-			for($x = 0; $x < $this->moduleCount; $x++){
-				$r[] = $this->getModuleValueAt($x, $y);
+			foreach($row as $M_TYPE){
+				$r[] = $this->moduleValues[$M_TYPE];
 			}
 
 			$str[] = implode('', $r);
@@ -82,8 +69,8 @@ class QRString extends QROutputAbstract{
 	/**
 	 * JSON output
 	 */
-	protected function json():string{
-		return json_encode($this->matrix->getMatrix());
+	protected function json(string $file = null):string{
+		return json_encode($this->matrix->matrix());
 	}
 
 }

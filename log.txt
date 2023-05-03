@@ -1,0 +1,106 @@
+2023/05/03 07:23:57: User miljkomocnik@gmail.com: INSERT INTO `package`(`street_id`, 
+  `firm_id`, `street_number`, `token`, `curier_id`, 
+  `phone`, `ransom_type_id`, `shipping_fee`, 
+  `recipient`, `content`, `comment`) 
+  VALUES ('5890','1','9',
+  '1683098637', NULL, '652-22-796','1','4000'
+  ,'Aleksandar Miljkovic','Patike', 'Napomena za patike')
+2023/05/03 07:35:28: User miljkomocnik@gmail.com: INSERT INTO `package`(`street_id`, 
+  `firm_id`, `street_number`, `token`, `curier_id`, 
+  `phone`, `ransom_type_id`, `shipping_fee`, 
+  `recipient`, `content`, `comment`) 
+  VALUES ('1678','1','10, stan 25',
+  '1683099328', NULL, '0652222796','1','3000'
+  ,'Aleksandar Miljkovic','Trenerka', 'Popodne dostava')
+2023/05/03 07:40:39: User miljkomocnik@gmail.com: INSERT INTO `package`(`street_id`, 
+  `firm_id`, `street_number`, `token`, `curier_id`, 
+  `phone`, `ransom_type_id`, `shipping_fee`, 
+  `recipient`, `content`, `comment`, `status_id`) 
+  VALUES ('2406','1','25',
+  '1683099638', NULL, '0652222796','2','3500'
+  ,'Aleksandar Miljkovic','Opisno polje', 'Nema napomene', '1')
+2023/05/03 08:11:02: User miljkomocnik@gmail.com: DELETE FROM `package` WHERE id = 2 AND status_id = 1
+2023/05/03 08:12:25: User miljkomocnik@gmail.com: DELETE FROM `package` WHERE id = 2 AND status_id = 1
+2023/05/03 08:15:37: User miljkomocnik@gmail.com: DELETE FROM `package` WHERE id = 2 AND status_id = 1
+2023/05/03 08:16:18: User miljkomocnik@gmail.com: DELETE FROM `package` WHERE id = 2 AND status_id = 1
+2023/05/03 08:17:45: User miljkomocnik@gmail.com: DELETE FROM `package` WHERE id = 2 AND status_id = 1
+2023/05/03 08:18:36: User miljkomocnik@gmail.com: DELETE FROM `package` WHERE id = 2 AND status_id = 1
+2023/05/03 08:18:37: User miljkomocnik@gmail.com: DELETE FROM `package` WHERE id = 2 AND status_id = 1
+2023/05/03 08:18:52: User miljkomocnik@gmail.com: DELETE FROM `package` WHERE id = 2 AND status_id = 1
+2023/05/03 08:19:29: User miljkomocnik@gmail.com: DELETE FROM `package` WHERE id = 2 AND status_id = 1
+2023/05/03 08:20:11: User miljkomocnik@gmail.com: DELETE FROM `package` WHERE id = 2 AND status_id = 1
+2023/05/03 08:20:13: User miljkomocnik@gmail.com: DELETE FROM `package` WHERE id = 2 AND status_id = 1
+2023/05/03 08:20:30: User miljkomocnik@gmail.com: DELETE FROM `package` WHERE id = 2 AND status_id = 1
+2023/05/03 08:20:41: User miljkomocnik@gmail.com: DELETE FROM `package` WHERE id = 2 AND status_id = 1
+2023/05/03 08:45:31: User miljkomocnik@gmail.com: DELETE FROM `package` WHERE id = 2 AND status_id = 1
+2023/05/03 08:48:07: User miljkomocnik@gmail.com: DELETE FROM `package` WHERE id = 2 AND status_id = 1
+2023/05/03 08:49:29: User miljkomocnik@gmail.com: DELETE FROM `package` WHERE id = 2 AND status_id = 1 AND firm_id = 1
+2023/05/03 08:49:31: User miljkomocnik@gmail.com: DELETE FROM `package` WHERE id = 3 AND status_id = 1 AND firm_id = 1
+2023/05/03 08:50:31: User miljkomocnik@gmail.com: DELETE FROM `package` WHERE id = 3 AND status_id = 1 AND firm_id = 1
+2023/05/03 08:51:00: User miljkomocnik@gmail.com: INSERT INTO `package`(`street_id`, 
+  `firm_id`, `street_number`, `token`, `curier_id`, 
+  `phone`, `ransom_type_id`, `shipping_fee`, 
+  `recipient`, `content`, `comment`, `status_id`) 
+  VALUES ('5890','1','9',
+  '1683103860', NULL, '652222796','2','0'
+  ,'Aleksandar Miljkovic','Opis', '/', '1')
+2023/05/03 08:51:00: User miljkomocnik@gmail.com: DELETE FROM `package` WHERE id = 3 AND status_id = 1 AND firm_id = 1
+2023/05/03 09:52:17: User miljkomocnik@gmail.com: INSERT INTO `package`(`street_id`, 
+  `firm_id`, `street_number`, `token`, `curier_id`, 
+  `phone`, `ransom_type_id`, `shipping_fee`, 
+  `recipient`, `content`, `comment`, `status_id`) 
+  VALUES ('1678','1','10, stan 25',
+  '1683107537', NULL, '652222796','1','4000'
+  ,'Aleksandar Miljkovic','Patike', '/', '1')
+2023/05/03 09:52:17: User miljkomocnik@gmail.com: INSERT INTO `package`(`street_id`, 
+  `firm_id`, `street_number`, `token`, `curier_id`, 
+  `phone`, `ransom_type_id`, `shipping_fee`, 
+  `recipient`, `content`, `comment`, `status_id`) 
+  VALUES ('5890','1','9',
+  '1683107537', NULL, '652222796','1','3000'
+  ,'Aleksandar Miljkovic','Trenerka', 'Posle 12h', '1')
+2023/05/03 09:52:17: User miljkomocnik@gmail.com: INSERT INTO `package`(`street_id`, 
+  `firm_id`, `street_number`, `token`, `curier_id`, 
+  `phone`, `ransom_type_id`, `shipping_fee`, 
+  `recipient`, `content`, `comment`, `status_id`) 
+  VALUES ('5697','1','10, stan 25',
+  '1683107537', NULL, '652222796','1','4000'
+  ,'Miloš Mandić','Patike', '/', '1')
+2023/05/03 09:52:17: User miljkomocnik@gmail.com: INSERT INTO `package`(`street_id`, 
+  `firm_id`, `street_number`, `token`, `curier_id`, 
+  `phone`, `ransom_type_id`, `shipping_fee`, 
+  `recipient`, `content`, `comment`, `status_id`) 
+  VALUES ('1678','1','10, stan 25',
+  '1683107537', NULL, '652222796','1','4000'
+  ,'Aleksandar Miljkovic','Patike', '/', '1')
+2023/05/03 09:53:23: User miljkomocnik@gmail.com: INSERT INTO `package`(`street_id`, 
+  `firm_id`, `street_number`, `token`, `curier_id`, 
+  `phone`, `ransom_type_id`, `shipping_fee`, 
+  `recipient`, `content`, `comment`, `status_id`) 
+  VALUES ('1678','1','10, stan 25',
+  '1683107603', NULL, '652222796','1','4000'
+  ,'Aleksandar Miljkovic','Patike', '/', '1')
+2023/05/03 09:53:23: User miljkomocnik@gmail.com: INSERT INTO `package`(`street_id`, 
+  `firm_id`, `street_number`, `token`, `curier_id`, 
+  `phone`, `ransom_type_id`, `shipping_fee`, 
+  `recipient`, `content`, `comment`, `status_id`) 
+  VALUES ('5890','1','9',
+  '1683107603', NULL, '652222796','1','3000'
+  ,'Aleksandar Miljkovic','Trenerka', 'Posle 12h', '1')
+2023/05/03 09:53:23: User miljkomocnik@gmail.com: INSERT INTO `package`(`street_id`, 
+  `firm_id`, `street_number`, `token`, `curier_id`, 
+  `phone`, `ransom_type_id`, `shipping_fee`, 
+  `recipient`, `content`, `comment`, `status_id`) 
+  VALUES ('5697','1','10, stan 25',
+  '1683107603', NULL, '652222796','1','4000'
+  ,'Miloš Mandić','Patike', '/', '1')
+2023/05/03 09:53:23: User miljkomocnik@gmail.com: INSERT INTO `package`(`street_id`, 
+  `firm_id`, `street_number`, `token`, `curier_id`, 
+  `phone`, `ransom_type_id`, `shipping_fee`, 
+  `recipient`, `content`, `comment`, `status_id`) 
+  VALUES ('1678','1','10, stan 25',
+  '1683107603', NULL, '652222796','1','4000'
+  ,'Aleksandar Miljkovic','Patike', '/', '1')
+2023/05/03 09:53:35: User miljkomocnik@gmail.com: DELETE FROM `package` WHERE id = 13 AND status_id = 1 AND firm_id = 1
+2023/05/03 09:53:45: User miljkomocnik@gmail.com: DELETE FROM `package` WHERE id = 13 AND status_id = 1 AND firm_id = 1
+2023/05/03 09:58:09: User miljkomocnik@gmail.com: DELETE FROM `package` WHERE id = 13 AND status_id = 1 AND firm_id = 1

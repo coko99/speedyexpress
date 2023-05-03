@@ -24,6 +24,7 @@
    $count = mysqli_num_rows($ses_sql);
    if($count == 1){
       $login_session = $row['email'];
+      $firm_id = $row['firm_id'];
    }else{
       if(session_destroy()) {
          header("Location: login.php");
