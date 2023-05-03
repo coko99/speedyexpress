@@ -12,7 +12,6 @@ function insertPackage($street_id, $street_number, $phone, $ransom_type_id, $shi
   VALUES ('$street_id','$firm_id','$street_number',
   '$token', NULL, '$phone','$ransom_type_id','$shipping_fee'
   ,'$recipient','$content', '$comment', '1')";
-                  print_r($sql);
     $result = mysqli_query($db, $sql);
     logEvent('User '.$login_session.': '.$sql);
   }
@@ -115,5 +114,5 @@ function insertPackage($street_id, $street_number, $phone, $ransom_type_id, $shi
       }
   }
 
-  header("location: posaljiPaket.php");
+  header("Location: posaljiPaket.php");
 ?>
