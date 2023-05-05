@@ -260,7 +260,7 @@ use chillerlan\QRCode\QRCode;
                     echo "<tr>
                             <th scope='row'>$counter</th>
                             <td>
-                              <img class='qr-slika' src='".(new QRCode())->render($token)."' alt='QR Code' />
+                              <img class='qr-slika' src='".(new QRCode())->render($package_id.'-'.$token)."' alt='QR Code' />
                             </td>
                             <td>
                               <h6>$recipient</h6>
