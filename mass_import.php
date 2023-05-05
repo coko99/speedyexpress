@@ -8,10 +8,10 @@ function insertPackage($street_id, $street_number, $phone, $ransom_type_id, $shi
     $sql = "INSERT INTO `package`(`street_id`, 
   `firm_id`, `street_number`, `token`, `curier_id`, 
   `phone`, `ransom_type_id`, `shipping_fee`, 
-  `recipient`, `content`, `comment`, `status_id`) 
+  `recipient`, `content`, `comment`, `status_id`, `created_by`) 
   VALUES ('$street_id','$firm_id','$street_number',
   '$token', NULL, '$phone','$ransom_type_id','$shipping_fee'
-  ,'$recipient','$content', '$comment', '1')";
+  ,'$recipient','$content', '$comment', '1', '$login_session')";
     $result = mysqli_query($db, $sql);
     logEvent('User '.$login_session.': '.$sql);
   }
