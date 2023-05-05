@@ -67,6 +67,6 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($courier) && isset($token)) {
     header('Content-Type: application/json; charset=utf-8');
     echo json_encode($data_response);
 }else{
-    // http_response_code(404); exit;
+    http_response_code(404); exit;
 }
 
