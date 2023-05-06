@@ -49,10 +49,14 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($courier) && isset($token)) {
     $sql = "SELECT package.*, 
     municipality.name AS municipality_name, 
     municipality.zip AS zip,
-    street.name AS street_name 
+    street.name AS street_name, 
+    firm.name AS firm,
+    city.name AS city_name
     FROM `package`
     LEFT JOIN street ON package.street_id = street.id
     LEFT JOIN municipality ON street.municipality_id = municipality.id
+    LEFT JOIN city ON municiplaity.city_id = city.id,
+    LEFT JOIN firm ON package.firm_id = firm.id
     WHERE token = $package_token 
     AND package.id = $package_id 
     AND package.status_id != 0";
