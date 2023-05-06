@@ -49,6 +49,7 @@
               <th scope="col">ID paketa</th>
               <th scope="col">Paket</th>
               <th scope="col">Cena</th>
+              <th scope="col">Status</th>
             </tr>
           </thead>
           <tbody>
@@ -68,6 +69,27 @@
                 $municipality_name = $package['municipality_name'];
                 $token = $package['token'];
                 $send_time = date("d/m/Y - H:i:s", $package['send_time']);
+                $package_status = $package['status_id'];
+                switch ($package_status) {
+                  case 0:
+                    $package_status = "GREŠKA SA PAKETOM";
+                    break;
+                  case 1:
+                    $package_status = "NIJE POSLAT";
+                    break;
+                  case 2:
+                    $package_status = "POSLAT";
+                    break;
+                  case 3:
+                    $package_status = "PREUZEO KURIR";
+                    break;
+                  case 4:
+                    $package_status = "KURIR PREDAO";
+                    break;
+                  case 5:
+                    $package_status = "NEUSPEŠNA DOSTAVA";
+                    break;
+              }
                 
 
                 echo "<tr>
@@ -88,6 +110,7 @@
                           <h6><strong>Plaća: </strong>$paid_by</h6>
                           <h6><strong>napomena: </strong>$comment</h6>
                         </td>
+                        <td>$package_status</td>
                       </tr>";
               }
 
