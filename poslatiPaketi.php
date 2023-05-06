@@ -1,5 +1,8 @@
 <?php
+  use chillerlan\QRCode\QRCode;
+
   include('config/session_user.php');
+  require 'vendor/autoload.php';
 
 
   $sql = "SELECT package.*, 
@@ -9,7 +12,7 @@
   FROM `package`
   LEFT JOIN street ON package.street_id = street.id
   LEFT JOIN municipality ON street.municipality_id = municipality.id
-  WHERE firm_id = $firm_id AND status_id = 1";
+  WHERE firm_id = $firm_id AND status_id != 1";
   $result = mysqli_query($db, $sql);
   $packages = [];
   while($row = mysqli_fetch_array($result)) {
@@ -41,62 +44,52 @@
         <table  id="example" class="display" style="width:100%" >
           <thead>
             <tr>
-            <th style="display: none;" scope="col">Vreme</th>
-              <th style="display: none;" scope="col">ID porudzbine</th>
-              <th scope="col">Jelo</th>
+            <th style="display: none;" scope="col">Send time</th>
+              <th scope="col">#</th>
+              <th scope="col">ID paketa</th>
+              <th scope="col">Paket</th>
               <th scope="col">Cena</th>
-              <th scope="col">Količina</th>
-              <th scope="col">Ukupna cena</th>
             </tr>
           </thead>
           <tbody>
             <?php
-            if(count($purchase_orders) > 0){
-              $i = 0;
-              while($i < count($purchase_orders))
-              {
-                $purchase_order = $purchase_orders[$i];
-
-                $dish_name = $purchase_order['dish_name'];
-                $dish_description = $purchase_order['dish_description'];
-                $dish_image_name = $purchase_order['dish_image_name'];
-                $dish_weight = $purchase_order['dish_weight'];
-
-                $created_at = $purchase_order['created_at'];
-                $note = $purchase_order['note'];
-                $quantity = $purchase_order['quantity'];
-                $user_email = $purchase_order['user_name']." ".$purchase_order['user_last_name'];
-                $price = $purchase_order['price'];
-                $purchase_order_id = $purchase_order['purchase_order_id'];
-                $sum = $purchase_order['sum'];
-
+              $counter = 0;
+              foreach($packages as $package){
+                $counter += 1;
+                $recipient = $package['recipient'];
+                $phone = $package['phone'];
+                $ransome = $package['shipping_fee'];
+                $paid_by = ($package['ransom_type_id'] == 1) ? 'Primalac' : 'Pošiljalac';
+                $comment = $package['comment'];
+                $package_id = $package['id'];
+                $street_number = $package['street_number'];
+                $street_name = $package['street_name'];
+                $zip = $package['zip'];
+                $municipality_name = $package['municipality_name'];
+                $token = $package['token'];
+                $send_time = date("d/m/Y - H:i:s", $package['send_time']);
                 
-                $day = $purchase_order['day'];
-                $month = $purchase_order['month'];
-                $year = $purchase_order['year'];
-
-                $quantity_price = $quantity * $price;
 
                 echo "<tr>
-                        <td style='display: none;'>
-                        $year-$month-$day;
-                      </td>
-                        <td style='display: none;'>ID: <strong>$purchase_order_id</strong> <br />
-                        Vreme poručivanja: <strong>$created_at </strong><br />
-                        Korisnik: <strong>$user_email </strong><br />
-                        Ukupna cena: <strong>$sum RSD </strong><br />
-                        Datum isporuke: <strong>$day/$month/$year</strong><br />
-                        Napomena: <strong>$note</strong>
+                        <td style='display: none;' >$send_time</td>
+                        <th scope='row'>$counter</th>
+                        <td>
+                          <img class='qr-slika' src='".(new QRCode())->render($package_id.'-'.$token)."' alt='QR Code' />
                         </td>
-                        <td>$dish_name</td>
-                        <td>$price rsd</td>
-                        <td>$quantity</td>
-                        <td>$quantity_price rsd</td>
-
+                        <td>
+                          <h6>$recipient</h6>
+                          <h6>$municipality_name $zip</h6>
+                          <h6>$street_name $street_number</h6>
+                          <h6>$phone</h6>
+                        </td>
+                        <td>
+                          <h6><strong>Otkup: </strong>$ransome rsd</h6>
+                          <h6><strong>Vrednost: </strong>$ransome rsd</h6>
+                          <h6><strong>Plaća: </strong>$paid_by</h6>
+                          <h6><strong>napomena: </strong>$comment</h6>
+                        </td>
                       </tr>";
-                    $i++;
               }
-            }
 
             ?>
           </tbody>
@@ -113,51 +106,60 @@
       integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
       crossorigin="anonymous"
     ></script>
+    <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/rowgroup/1.0.2/js/dataTables.rowGroup.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.3.5/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.3.5/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.3.5/js/buttons.print.min.js"></script>
+
 
     <script>
 
-$(document).ready(function () {
+    $(document).ready(function () {
 
-    var collapsedGroups = {};
+        var collapsedGroups = {};
 
-  var oTable = $('#example').DataTable({
-    paging: false,
-    language: {
-                "url": "//cdn.datatables.net/plug-ins/1.10.18/i18n/Serbian.json"
-            },
-    order: [
-      [0, 'desc']
-    ],
-    rowGroup: {
-      // Uses the 'row group' plugin
-      dataSrc: 1,
-      startRender: function(rows, group) {
-        var collapsed = !!collapsedGroups[group];
+      var oTable = $('#example').DataTable({
+        paging: false,
+        language: {
+                    "url": "//cdn.datatables.net/plug-ins/1.10.18/i18n/Serbian.json"
+                },
+        order: [
+          [0, 'desc']
+        ],
+        rowGroup: {
+          // Uses the 'row group' plugin
+          dataSrc: 0,
+          startRender: function(rows, group) {
+            var collapsed = !!collapsedGroups[group];
 
-        rows.nodes().each(function(r) {
-          r.style.display = 'none';
-          if (collapsed) {
-            r.style.display = '';
+            rows.nodes().each(function(r) {
+              r.style.display = 'none';
+              if (collapsed) {
+                r.style.display = '';
+              }
+            });
+
+            // Add category name to the <tr>. NOTE: Hardcoded colspan
+            return $('<tr/>')
+              .append('<td colspan="7">' + group + ' <br /> Broj elemenata: <strong>' + rows.count() + '</strong></td>')
+              .attr('data-name', group)
+              .toggleClass('collapsed', collapsed);
           }
-        });
+        }
+      });
+    
+      $('#example tbody').on('click', 'tr.group-start', function() {
+        var name = $(this).data('name');
+        collapsedGroups[name] = !collapsedGroups[name];
+        oTable.draw(false);
+      });
 
-        // Add category name to the <tr>. NOTE: Hardcoded colspan
-        return $('<tr/>')
-          .append('<td colspan="7">' + group + ' <br /> Broj elemenata: <strong>' + rows.count() + '</strong></td>')
-          .attr('data-name', group)
-          .toggleClass('collapsed', collapsed);
-      }
-    }
-  });
- 
-  $('#example tbody').on('click', 'tr.group-start', function() {
-    var name = $(this).data('name');
-    collapsedGroups[name] = !collapsedGroups[name];
-    oTable.draw(false);
-  });
-
-   
-});
+      
+    });
   </script>
   </body>
 </html>
