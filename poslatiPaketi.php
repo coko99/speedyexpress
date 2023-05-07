@@ -8,10 +8,12 @@
   $sql = "SELECT package.*, 
   municipality.name AS municipality_name, 
   municipality.zip AS zip,
-  street.name AS street_name 
+  street.name AS street_name,
+  status.name AS status_name
   FROM `package`
   LEFT JOIN street ON package.street_id = street.id
   LEFT JOIN municipality ON street.municipality_id = municipality.id
+  LEFT JOIN status ON package.status_id = status.id
   WHERE firm_id = $firm_id AND status_id != 1";
   $result = mysqli_query($db, $sql);
   $packages = [];
@@ -69,27 +71,8 @@
                 $municipality_name = $package['municipality_name'];
                 $token = $package['token'];
                 $send_time = date("d/m/Y - H:i:s", $package['send_time']);
-                $package_status = $package['status_id'];
-                switch ($package_status) {
-                  case 0:
-                    $package_status = "GREŠKA SA PAKETOM";
-                    break;
-                  case 1:
-                    $package_status = "NIJE POSLAT";
-                    break;
-                  case 2:
-                    $package_status = "POSLAT";
-                    break;
-                  case 3:
-                    $package_status = "PREUZEO KURIR";
-                    break;
-                  case 4:
-                    $package_status = "KURIR PREDAO";
-                    break;
-                  case 5:
-                    $package_status = "NEUSPEŠNA DOSTAVA";
-                    break;
-              }
+                $package_status = $package['status_name'];
+                
                 
 
                 echo "<tr>
