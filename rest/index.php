@@ -36,12 +36,26 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($courier) && isset($token)) {
     $courier_id = $courier['id'];
 
     if(isset($status_id)){
+      if($status_id == 11){
+        $sql = "UPDATE `package` 
+        SET `status_id`='$status_id',
+        `curier_id`=NULL
+        WHERE id = $package_id 
+        AND token = $package_token 
+        AND status_id != 0";
+      }else{
         $sql = "UPDATE `package` 
         SET `status_id`='$status_id',
         `curier_id`='$courier_id'
         WHERE id = $package_id 
         AND token = $package_token 
         AND status_id != 0";
+      }
+        $result = mysqli_query($db, $sql);
+
+        $sql = "UPDATE `package_status_tracking` 
+        SET `status`='0'
+        WHERE package_id = $package_id";
         $result = mysqli_query($db, $sql);
 
         $sql = "INSERT INTO `package_status_tracking`

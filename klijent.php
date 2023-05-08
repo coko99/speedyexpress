@@ -6,6 +6,9 @@
   }
   $id = mysqli_real_escape_string($db, $_GET['id']);
 
+  //SELECT pst.* FROM package_status_tracking pst LEFT JOIN package_status_tracking pst2 ON (pst.package_id = pst2.package_id AND pst.datetime < pst2.datetime) WHERE pst2.id IS NULL;
+
+
   $sql = "SELECT firm.*,
     street.name AS street_name,
     municipality.name AS municipality_name,
@@ -20,6 +23,31 @@
   $result = mysqli_query($db, $sql);
   $firm = mysqli_fetch_array($result);
 
+  $sql = "SELECT package.*, 
+  municipality.name AS municipality_name, 
+  municipality.zip AS zip,
+  street.name AS street_name,
+  status.name AS status_name,
+  firm_street.name AS firm_street_name,
+  firm_municipality.name AS firm_municipality_name, 
+  firm_municipality.zip AS firm_zip,
+  firm.name AS firm_name,
+  firm.street_number AS firm_street_number,
+  firm.phone AS firm_phone
+  FROM `package`
+  LEFT JOIN street ON package.street_id = street.id
+  LEFT JOIN municipality ON street.municipality_id = municipality.id
+  LEFT JOIN status ON package.status_id = status.id
+  LEFT JOIN firm ON package.firm_id = firm.id
+  LEFT JOIN street AS firm_street ON firm.street_id = firm_street.id
+  LEFT JOIN municipality AS firm_municipality ON firm_street.municipality_id = firm_municipality.id
+  LEFT JOIN package_status_tracking ON package.id = package_status_tracking.package_id 
+  WHERE firm.id = $id AND package_status_tracking.status = 1";
+  $result = mysqli_query($db, $sql);
+  $packages = [];
+  while($row = mysqli_fetch_array($result)) {
+    array_push($packages, $row);
+  }
 ?><!DOCTYPE html>
 <html lang="sr">
 <?php
