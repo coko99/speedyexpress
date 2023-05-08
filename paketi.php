@@ -77,14 +77,14 @@
                   $firm_zip = $package['firm_zip'];
                   $firm_municipality_name = $package['firm_municipality_name'];
                   $firm_phone = $package['firm_phone'];
-
+                  $id_package = $package['id'];
                   $package_status = $package['status_name'];
 
                   $token = $package['token'];
 
                   echo "
                   <tr>
-                  <th scope='row'>$counter</th>
+                  <th scope='row'>$id_package</th>
                   <td><img class='qr-slika' src='".(new QRCode())->render($package_id.'-'.$token)."' alt='' /></td>
                   <td>
                     <h6>$recipient</h6>

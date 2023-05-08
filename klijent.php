@@ -2,12 +2,24 @@
   include('config/session_admin.php');
 
   if(!isset($_GET['id'])){
-    header('Location: kuriri.php');
+    header('Location: klijenti.php');
   }
   $id = mysqli_real_escape_string($db, $_GET['id']);
+  if(isset($_GET['date'])){
+    $datetime = mysqli_real_escape_string($db, $_GET['date']);
+  }
 
-  //SELECT pst.* FROM package_status_tracking pst LEFT JOIN package_status_tracking pst2 ON (pst.package_id = pst2.package_id AND pst.datetime < pst2.datetime) WHERE pst2.id IS NULL;
-
+  if(isset($_POST['pay'])){
+    $package_for_pay_array = [];
+    foreach($_POST as $key => $value){
+      if(str_starts_with($key, "paycheck#")){
+        array_push($package_for_pay_array, explode("#", $key)[1]);
+      }
+    }
+    $ids = join(",",$package_for_pay_array);
+    $sql = "UPDATE `package` SET `pay` = 1 WHERE package.id in ($ids);";
+    $result = mysqli_query($db, $sql);
+  }
 
   $sql = "SELECT firm.*,
     street.name AS street_name,
@@ -24,6 +36,7 @@
   $firm = mysqli_fetch_array($result);
 
   $sql = "SELECT package.*, 
+  city.name AS city_name, 
   municipality.name AS municipality_name, 
   municipality.zip AS zip,
   street.name AS street_name,
@@ -33,16 +46,25 @@
   firm_municipality.zip AS firm_zip,
   firm.name AS firm_name,
   firm.street_number AS firm_street_number,
-  firm.phone AS firm_phone
+  firm.phone AS firm_phone,
+  courier.name as courier_name,
+  courier.last_name as courier_last_name
   FROM `package`
   LEFT JOIN street ON package.street_id = street.id
   LEFT JOIN municipality ON street.municipality_id = municipality.id
+  LEFT JOIN city ON municipality.city_id = city.id
   LEFT JOIN status ON package.status_id = status.id
   LEFT JOIN firm ON package.firm_id = firm.id
   LEFT JOIN street AS firm_street ON firm.street_id = firm_street.id
   LEFT JOIN municipality AS firm_municipality ON firm_street.municipality_id = firm_municipality.id
   LEFT JOIN package_status_tracking ON package.id = package_status_tracking.package_id 
-  WHERE firm.id = $id AND package_status_tracking.status = 1";
+  LEFT JOIN courier ON package.curier_id = courier.id 
+  WHERE firm.id = $id 
+  AND package_status_tracking.status = 1";
+  if(isset($datetime)){
+    $sql.=" AND package_status_tracking.datetime BETWEEN STR_TO_DATE('$datetime', '%d/%m/%Y') AND DATE_ADD(STR_TO_DATE('$datetime', '%d/%m/%Y'), INTERVAL 1 DAY);";
+  }
+  
   $result = mysqli_query($db, $sql);
   $packages = [];
   while($row = mysqli_fetch_array($result)) {
@@ -159,12 +181,14 @@
               role="tabpanel"
               aria-labelledby="isporuceni"
             >
+            <form action='' method='post'>
               <div
                 class="col-12 table-wrapper-scroll-y my-custom-scrollbar adminPaketi"
               >
                 <table class="table mb-0">
                   <thead>
                     <tr>
+                      <th scope="col ">#</th>
                       <th scope="col ">ID paketa</th>
 
                       <th scope="col">Kurir</th>
@@ -173,65 +197,52 @@
                     </tr>
                   </thead>
                   <tbody class="isporuceni">
-                    <tr>
-                      <th scope="row">1</th>
+                    <?php
+                    $counter = 0;
+                    foreach($packages as $package){
+                      $checked = $package['pay'];
+                      if($checked == 1){
+                        $print = true;
+                      }
+                      if($package['status_id'] == 4 && $package['pay'] == 0){
+                        $counter += 1;
+                        $courier_name = $package['courier_name'];
+                        $courier_last_name = $package['courier_last_name'];
+                        $city_name = $package['city_name'];
+                        $municipality_name = $package['municipality_name'];
+                        $package_id = $package['id'];
 
-                      <td>
-                        <h6>Ime kurira</h6>
-                      </td>
-                      <td>
-                        <h6>Beograd-Vracar</h6>
-                      </td>
-                    </tr>
-                    <tr>
-                      <th scope="row">1</th>
-
-                      <td>
-                        <h6>Ime kurira</h6>
-                      </td>
-                      <td>
-                        <h6>Beograd-Vracar</h6>
-                      </td>
-                    </tr>
-                    <tr>
-                      <th scope="row">1</th>
-
-                      <td>
-                        <h6>Ime kurira</h6>
-                      </td>
-                      <td>
-                        <h6>Beograd-Vracar</h6>
-                      </td>
-                    </tr>
-                    <tr>
-                      <th scope="row">1</th>
-
-                      <td>
-                        <h6>Ime kurira</h6>
-                      </td>
-                      <td>
-                        <h6>Beograd-Vracar</h6>
-                      </td>
-                    </tr>
-                    <tr>
-                      <th scope="row">1</th>
-
-                      <td>
-                        <h6>Ime kurira</h6>
-                      </td>
-                      <td>
-                        <h6>Beograd-Vracar</h6>
-                      </td>
-                    </tr>
+                        echo "<tr>
+                        <td>
+                            <input
+                              type='checkbox'
+                              id='subscribeNews'
+                              name='paycheck#$package_id' 
+                              ";
+                          
+                              echo "/>
+                          <th scope='row'>$package_id</th>
+                          <td>
+                            <h6>$courier_name $courier_last_name</h6>
+                          </td>
+                          <td>
+                            <h6>$city_name-$municipality_name</h6>
+                          </td>
+                        </tr>";
+                      }
+                    }
+                      
+                    ?>                    
                   </tbody>
                 </table>
               </div>
               <div class="row">
                 <div class="col d-flex justify-content-end mt-3">
-                  <button class="btn btn-success">ISPLATI</button>
-                  <button class="btn disabled btn-success ml-3">ŠTAMPAJ</button>
+                  <button name="pay" class="btn btn-success">ISPLATI</button>
+                  <a href="printPackagesKlient.php?id=<?php echo $id; ?>&date=<?php echo $datetime; ?>" type="submit" class="btn <?php if (!isset($print)) echo "disabled"; ?> btn-success ml-3">ŠTAMPAJ</a>
                 </div>
               </div>
+              </form>
             </div>
             <div
               class="tab-pane fade border-0"
@@ -253,56 +264,29 @@
                     </tr>
                   </thead>
                   <tbody class="neisporučeni">
-                    <tr>
-                      <th scope="row">1</th>
+                  <?php
+                    $counter = 0;
+                    foreach($packages as $package){
+                      if($package['status_id'] != 4 && $package['status_id'] != 2){
+                        $counter += 1;
+                        $courier_name = $package['courier_name'];
+                        $courier_last_name = $package['courier_last_name'];
+                        $city_name = $package['city_name'];
+                        $municipality_name = $package['municipality_name'];
+                        $package_id = $package['id'];
 
-                      <td>
-                        <h6>Ime kurira</h6>
-                      </td>
-                      <td>
-                        <h6>Beograd-Vracar</h6>
-                      </td>
-                    </tr>
-                    <tr>
-                      <th scope="row">1</th>
-
-                      <td>
-                        <h6>Ime kurira</h6>
-                      </td>
-                      <td>
-                        <h6>Beograd-Vracar</h6>
-                      </td>
-                    </tr>
-                    <tr>
-                      <th scope="row">1</th>
-
-                      <td>
-                        <h6>Ime kurira</h6>
-                      </td>
-                      <td>
-                        <h6>Beograd-Vracar</h6>
-                      </td>
-                    </tr>
-                    <tr>
-                      <th scope="row">1</th>
-
-                      <td>
-                        <h6>Ime kurira</h6>
-                      </td>
-                      <td>
-                        <h6>Beograd-Vracar</h6>
-                      </td>
-                    </tr>
-                    <tr>
-                      <th scope="row">1</th>
-
-                      <td>
-                        <h6>Ime kurira</h6>
-                      </td>
-                      <td>
-                        <h6>Beograd-Vracar</h6>
-                      </td>
-                    </tr>
+                        echo "<tr>
+                          <th scope='row'>$package_id</th>
+                          <td>
+                            <h6>$courier_name $courier_last_name</h6>
+                          </td>
+                          <td>
+                            <h6>$city_name-$municipality_name</h6>
+                          </td>
+                        </tr>";
+                      }
+                    }
+                    ?>   
                   </tbody>
                 </table>
               </div>
@@ -324,7 +308,6 @@
         $('#datepicker').datepicker({
           format: 'dd/mm/yyyy',
           language: 'rs-latin',
-          startDate: '+1d',
           
         });
     });
