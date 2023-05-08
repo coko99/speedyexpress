@@ -1,5 +1,18 @@
 <?php
   include('config/session_admin.php');
+  $sql = "SELECT firm.*,
+  street.name AS street_name,
+  municipality.name AS municipality_name,
+  municipality.zip AS zip
+  FROM `firm`
+  LEFT JOIN street ON firm.street_id = street.id
+  LEFT JOIN municipality ON street.municipality_id = municipality.id
+  ";
+  $result = mysqli_query($db, $sql);
+  $firms = [];
+  while($row = mysqli_fetch_array($result)) {
+    array_push($firms, $row);
+  }
 
 ?><!DOCTYPE html>
 <html lang="sr">
@@ -31,246 +44,44 @@
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <th scope="row">1</th>
-                  <td>
-                    <h4 class="m-0 p-0">Milos Mijajlovic</h4>
-                  </td>
-                  <td>
-                    <h4 class="m-0 p-0">101101101</h4>
-                  </td>
-                  <td>
-                    <h4 class="m-0 p-0">Krusevacka 18</h4>
-                  </td>
-                  <td>
-                    <h4 class="m-0 p-0">0621213122</h4>
-                  </td>
-                  <td>
-                    <a href="klijent.php"
-                      ><button class="btn btn-info">Pregledaj</button></a
-                    >
-                  </td>
-                </tr>
-                <tr>
-                  <th scope="row">1</th>
-                  <td>
-                    <h4 class="m-0 p-0">Milos Mijajlovic</h4>
-                  </td>
-                  <td>
-                    <h4 class="m-0 p-0">101101101</h4>
-                  </td>
-                  <td>
-                    <h4 class="m-0 p-0">Krusevacka 18</h4>
-                  </td>
-                  <td>
-                    <h4 class="m-0 p-0">0621213122</h4>
-                  </td>
-                  <td>
-                    <button class="btn btn-info align-self-center">
-                      Pregledaj
-                    </button>
-                  </td>
-                </tr>
-                <tr>
-                  <th scope="row">1</th>
-                  <td>
-                    <h4 class="m-0 p-0">Milos Mijajlovic</h4>
-                  </td>
-                  <td>
-                    <h4 class="m-0 p-0">101101101</h4>
-                  </td>
-                  <td>
-                    <h4 class="m-0 p-0">Krusevacka 18</h4>
-                  </td>
-                  <td>
-                    <h4 class="m-0 p-0">0621213122</h4>
-                  </td>
-                  <td>
-                    <button class="btn btn-info align-self-center">
-                      Pregledaj
-                    </button>
-                  </td>
-                </tr>
-                <tr>
-                  <th scope="row">1</th>
-                  <td>
-                    <h4 class="m-0 p-0">Milos Mijajlovic</h4>
-                  </td>
-                  <td>
-                    <h4 class="m-0 p-0">101101101</h4>
-                  </td>
-                  <td>
-                    <h4 class="m-0 p-0">Krusevacka 18</h4>
-                  </td>
-                  <td>
-                    <h4 class="m-0 p-0">0621213122</h4>
-                  </td>
-                  <td>
-                    <button class="btn btn-info align-self-center">
-                      Pregledaj
-                    </button>
-                  </td>
-                </tr>
-                <tr>
-                  <th scope="row">1</th>
-                  <td>
-                    <h4 class="m-0 p-0">Milos Mijajlovic</h4>
-                  </td>
-                  <td>
-                    <h4 class="m-0 p-0">101101101</h4>
-                  </td>
-                  <td>
-                    <h4 class="m-0 p-0">Krusevacka 18</h4>
-                  </td>
-                  <td>
-                    <h4 class="m-0 p-0">0621213122</h4>
-                  </td>
-                  <td>
-                    <button class="btn btn-info align-self-center">
-                      Pregledaj
-                    </button>
-                  </td>
-                </tr>
-                <tr>
-                  <th scope="row">1</th>
-                  <td>
-                    <h4 class="m-0 p-0">Milos Mijajlovic</h4>
-                  </td>
-                  <td>
-                    <h4 class="m-0 p-0">101101101</h4>
-                  </td>
-                  <td>
-                    <h4 class="m-0 p-0">Krusevacka 18</h4>
-                  </td>
-                  <td>
-                    <h4 class="m-0 p-0">0621213122</h4>
-                  </td>
-                  <td>
-                    <button class="btn btn-info align-self-center">
-                      Pregledaj
-                    </button>
-                  </td>
-                </tr>
-                <tr>
-                  <th scope="row">1</th>
-                  <td>
-                    <h4 class="m-0 p-0">Milos Mijajlovic</h4>
-                  </td>
-                  <td>
-                    <h4 class="m-0 p-0">101101101</h4>
-                  </td>
-                  <td>
-                    <h4 class="m-0 p-0">Krusevacka 18</h4>
-                  </td>
-                  <td>
-                    <h4 class="m-0 p-0">0621213122</h4>
-                  </td>
-                  <td>
-                    <button class="btn btn-info align-self-center">
-                      Pregledaj
-                    </button>
-                  </td>
-                </tr>
-                <tr>
-                  <th scope="row">1</th>
-                  <td>
-                    <h4 class="m-0 p-0">Milos Mijajlovic</h4>
-                  </td>
-                  <td>
-                    <h4 class="m-0 p-0">101101101</h4>
-                  </td>
-                  <td>
-                    <h4 class="m-0 p-0">Krusevacka 18</h4>
-                  </td>
-                  <td>
-                    <h4 class="m-0 p-0">0621213122</h4>
-                  </td>
-                  <td>
-                    <button class="btn btn-info align-self-center">
-                      Pregledaj
-                    </button>
-                  </td>
-                </tr>
-                <tr>
-                  <th scope="row">1</th>
-                  <td>
-                    <h4 class="m-0 p-0">Milos Mijajlovic</h4>
-                  </td>
-                  <td>
-                    <h4 class="m-0 p-0">101101101</h4>
-                  </td>
-                  <td>
-                    <h4 class="m-0 p-0">Krusevacka 18</h4>
-                  </td>
-                  <td>
-                    <h4 class="m-0 p-0">0621213122</h4>
-                  </td>
-                  <td>
-                    <button class="btn btn-info align-self-center">
-                      Pregledaj
-                    </button>
-                  </td>
-                </tr>
-                <tr>
-                  <th scope="row">1</th>
-                  <td>
-                    <h4 class="m-0 p-0">Milos Mijajlovic</h4>
-                  </td>
-                  <td>
-                    <h4 class="m-0 p-0">101101101</h4>
-                  </td>
-                  <td>
-                    <h4 class="m-0 p-0">Krusevacka 18</h4>
-                  </td>
-                  <td>
-                    <h4 class="m-0 p-0">0621213122</h4>
-                  </td>
-                  <td>
-                    <button class="btn btn-info align-self-center">
-                      Pregledaj
-                    </button>
-                  </td>
-                </tr>
-                <tr>
-                  <th scope="row">1</th>
-                  <td>
-                    <h4 class="m-0 p-0">Milos Mijajlovic</h4>
-                  </td>
-                  <td>
-                    <h4 class="m-0 p-0">101101101</h4>
-                  </td>
-                  <td>
-                    <h4 class="m-0 p-0">Krusevacka 18</h4>
-                  </td>
-                  <td>
-                    <h4 class="m-0 p-0">0621213122</h4>
-                  </td>
-                  <td>
-                    <button class="btn btn-info align-self-center">
-                      Pregledaj
-                    </button>
-                  </td>
-                </tr>
-                <tr>
-                  <th scope="row">1</th>
-                  <td>
-                    <h4 class="m-0 p-0">Milos Mijajlovic</h4>
-                  </td>
-                  <td>
-                    <h4 class="m-0 p-0">101101101</h4>
-                  </td>
-                  <td>
-                    <h4 class="m-0 p-0">Krusevacka 18</h4>
-                  </td>
-                  <td>
-                    <h4 class="m-0 p-0">0621213122</h4>
-                  </td>
-                  <td>
-                    <button class="btn btn-info align-self-center">
-                      Pregledaj
-                    </button>
-                  </td>
-                </tr>
+              <?php 
+                $counter = 0;
+                foreach($firms as $firm){
+                  $counter += 1;
+                  $firm_id = $firm['id'];
+                  $firm_name = $firm['name'];
+                  $firm_phone = $firm['phone'];
+                  $firm_pib = $firm['pib'];
+                  $street = $firm['street_name'];
+                  $street_num = $firm['street_number'];
+                  $municipality_name = $firm['municipality_name'];
+                  $municipality_zip = $firm['zip'];
+
+                  echo "
+                  <tr>
+                    <th scope='row'>$counter</th>
+                    <td>
+                      <h4 class='m-0 p-0'>$firm_name</h4>
+                    </td>
+                    <td>
+                      <h4 class='m-0 p-0'>$firm_pib</h4>
+                    </td>
+                    <td>
+                      <h4 class='m-0 p-0'>$street $street_num</h4>
+                    </td>
+                    <td>
+                      <h4 class='m-0 p-0'>$firm_phone</h4>
+                    </td>
+                    <td>
+                      <a href='klijent.php?id=$firm_id'
+                        ><button class='btn btn-info'>Pregledaj</button></a
+                      >
+                    </td>
+                  </tr>";
+
+                }
+
+                ?>
               </tbody>
             </table>
           </div>

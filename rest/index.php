@@ -43,6 +43,11 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($courier) && isset($token)) {
         AND token = $package_token 
         AND status_id != 0";
         $result = mysqli_query($db, $sql);
+
+        $sql = "INSERT INTO `package_status_tracking`
+        (`package_id`, `status_id`, `courier_id`) 
+        VALUES ('$package_id','$status_id','$courier_id')";
+        $result = mysqli_query($db, $sql);
         logEvent('User '.$courier_id.': '.$sql);
     }
 

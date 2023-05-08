@@ -1,5 +1,12 @@
 <?php
   include('config/session_admin.php');
+  $sql = "SELECT *
+  FROM `courier`";
+  $result = mysqli_query($db, $sql);
+  $courieres = [];
+  while($row = mysqli_fetch_array($result)) {
+    array_push($courieres, $row);
+  }
 
 ?><!DOCTYPE html>
 <html lang="sr">
@@ -27,43 +34,28 @@
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <th scope="row">1</th>
-                  <td class="align-items-center">
-                    <h4 class="m-0 p-0">Milos Mijajlovic</h4>
-                  </td>
-                  <td>
-                    <a href="kurir.php">
-                      <button class="btn btn-info align-self-center">
-                        Pregledaj
-                      </button></a
-                    >
-                  </td>
-                </tr>
-                <tr>
-                  <th scope="row">2</th>
-                  <td class="align-items-center">
-                    <h4 class="m-0 p-0">Milos Mijajlovic</h4>
-                  </td>
-                  <td>
-                    <a href="kurir.php">
-                      <button class="btn btn-info align-self-center">
-                        Pregledaj
-                      </button></a
-                    >
-                  </td>
-                </tr>
-                <tr>
-                  <th scope="row">3</th>
-                  <td class="align-items-center">
-                    <h4 class="m-0 p-0">Milos Mijajlovic</h4>
-                  </td>
-                  <td>
-                    <button class="btn btn-info align-self-center">
-                      Pregledaj
-                    </button>
-                  </td>
-                </tr>
+                <?php 
+                $counter = 0;
+                foreach($courieres as $courier){
+                  $counter += 1;
+                  $courier_id = $courier['id'];
+                  $courier_name = $courier['name'];
+                  $courier_last_name = $courier['last_name'];
+                  echo "<tr>
+                        <th scope='row'>$counter</th>
+                        <td class='align-items-center'>
+                          <h4 class='m-0 p-0'>$courier_name $courier_last_name</h4>
+                        </td>
+                        <td>
+                          <a href='kurir.php?id=$courier_id'>
+                            <button class='btn btn-info align-self-center'>
+                              Pregledaj
+                            </button></a
+                          >
+                        </td>
+                      </tr>";
+                }
+                ?>
               </tbody>
             </table>
           </div>
