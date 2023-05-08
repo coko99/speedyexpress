@@ -54,7 +54,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($courier) && isset($token)) {
         $result = mysqli_query($db, $sql);
 
         $sql = "UPDATE `package_status_tracking` 
-        SET `status`='0'
+        SET `status`=0
         WHERE package_id = $package_id";
         $result = mysqli_query($db, $sql);
 
@@ -85,7 +85,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($courier) && isset($token)) {
     while($row = mysqli_fetch_array($result)) {
       array_push($data_response, $row);
     }
-    logEvent('User '.$courier_id.': '.$sql);
+    // logEvent('User '.$courier_id.': '.$sql);
 
     header('Content-Type: application/json; charset=utf-8');
     echo json_encode($data_response);
