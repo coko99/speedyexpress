@@ -7,6 +7,8 @@
   $id = mysqli_real_escape_string($db, $_GET['id']);
   if(isset($_GET['date'])){
     $datetime = mysqli_real_escape_string($db, $_GET['date']);
+  }else{
+    $datetime = date('d/m/Y');
   }
 
   if(isset($_POST['pay'])){
