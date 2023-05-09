@@ -173,6 +173,9 @@
                 Neisporučeni paketi
               </button>
             </li>
+            <li class="nav-item mt-2" role="presentation">
+              <span id='otkup'>0</span> RSD
+            </li>
           </ul>
           <div class="tab-content" id="myTabContent">
             <div
@@ -189,11 +192,13 @@
                   <thead>
                     <tr>
                       <th scope="col ">#</th>
-                      <th scope="col ">ID paketa</th>
+                      <th scope="col ">ID</th>
 
                       <th scope="col">Kurir</th>
 
                       <th scope="col">Lokacija</th>
+                      <th scope="col">Preuzeto</th>
+                      <th scope="col">Dostavljeno</th>
                     </tr>
                   </thead>
                   <tbody class="isporuceni">
@@ -211,12 +216,30 @@
                         $city_name = $package['city_name'];
                         $municipality_name = $package['municipality_name'];
                         $package_id = $package['id'];
+                        $package_ransome = $package['shipping_fee'];
 
+                        $sql = "SELECT * FROM package_status_tracking where package_id = $package_id AND status_id = 3 ORDER BY datetime asc";
+                        $result = mysqli_query($db, $sql);
+                        $row = mysqli_fetch_array($result);
+                        $date_time = "";
+                        if(isset($row)){
+                          $date_time = $row['datetime'];
+                        }
+
+                        $sql = "SELECT * FROM package_status_tracking where package_id = $package_id AND status_id = 4 ORDER BY datetime desc";
+                        $result = mysqli_query($db, $sql);
+                        $row = mysqli_fetch_array($result);
+                        $date_time_1 = "";
+                        if(isset($row)){
+                          $date_time_1 = $row['datetime'];
+                        }
                         echo "<tr>
                         <td>
                             <input
+                              class='checkbox_pay'
                               type='checkbox'
                               id='subscribeNews'
+                              data-ransom='$package_ransome'
                               name='paycheck#$package_id' 
                               ";
                           
@@ -227,6 +250,12 @@
                           </td>
                           <td>
                             <h6>$city_name-$municipality_name</h6>
+                          </td>
+                          <td>
+                            <h6>$date_time</h6>
+                          </td>
+                          <td>
+                            <h6>$date_time_1</h6>
                           </td>
                         </tr>";
                       }
@@ -274,6 +303,7 @@
                         $city_name = $package['city_name'];
                         $municipality_name = $package['municipality_name'];
                         $package_id = $package['id'];
+
 
                         echo "<tr>
                           <th scope='row'>$package_id</th>
@@ -327,6 +357,16 @@
         //$('#weekpicker').datepicker("setDate", startDate);
         $('#weekpicker').datepicker('update', startDate);
         $('#weekpicker').val(startDate.getFullYear() + '-' + (startDate.getMonth() + 1) + '-' + startDate.getDate()  + ' / ' + endDate.getFullYear() + '-' + (endDate.getMonth() + 1) + '-' + endDate.getDate());
+    });
+
+    $suma = 0.00;
+    $('.checkbox_pay').change(function() {
+        let otkup = parseFloat($(this).data("ransom") );
+        if(this.checked) {
+            $('#otkup').html($suma += otkup);
+        }else{
+          $('#otkup').html($suma -= otkup);
+        }
     });
         
     </script>

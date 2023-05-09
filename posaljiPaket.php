@@ -5,15 +5,15 @@ use chillerlan\QRCode\QRCode;
   include('config/session_user.php');
   require 'vendor/autoload.php';
 
-  function insertPackage($street_id, $street_number, $phone, $ransom_type_id, $shipping_fee, $recipient, $content, $comment, $firm_id, $login_session, $db) {
+  function insertPackage($street_id, $street_number, $phone, $ransom_type_id, $shipping_fee, $recipient, $content, $comment, $ptt, $firm_id, $login_session, $db) {
     $token = time();
     $sql = "INSERT INTO `package`(`street_id`, 
   `firm_id`, `street_number`, `token`, `curier_id`, 
   `phone`, `ransom_type_id`, `shipping_fee`, 
-  `recipient`, `content`, `comment`, `status_id`, `created_by`) 
+  `recipient`, `content`, `comment`, `ptt`, `status_id`, `created_by`) 
   VALUES ('$street_id','$firm_id','$street_number',
   '$token', NULL, '$phone','$ransom_type_id','$shipping_fee'
-  ,'$recipient','$content', '$comment', '1', '$login_session')";
+  ,'$recipient','$content', '$comment', '$ptt', '1', '$login_session')";
     $result = mysqli_query($db, $sql);
     logEvent('User '.$login_session.': '.$sql);
   }
@@ -49,8 +49,10 @@ use chillerlan\QRCode\QRCode;
     $recipient = mysqli_real_escape_string($db, $_POST['name']);
     $content = mysqli_real_escape_string($db, $_POST['description']);
     $comment = mysqli_real_escape_string($db, $_POST['comment']);
+    $ptt = mysqli_real_escape_string($db, $_POST['ptt']);
 
-    insertPackage($street_id, $street_number, $phone, $ransom_type_id, $shipping_fee, $recipient, $content, $comment, $firm_id, $login_session, $db);
+
+    insertPackage($street_id, $street_number, $phone, $ransom_type_id, $shipping_fee, $recipient, $content, $comment,$ptt, $firm_id, $login_session, $db);
     
   }
 
@@ -176,7 +178,8 @@ use chillerlan\QRCode\QRCode;
               </select>
             </div>
             <div class="form-group">
-              <label for="inputState">PTT : 300rsd</label>
+              <label for="inputState">PTT : </label>
+              <input class="form-control" require type="number" value="0" step="0.1" name="ptt" />
             </div>
             <div class="form-group">
               <input

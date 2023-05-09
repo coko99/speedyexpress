@@ -62,17 +62,21 @@ $str = "
         <th scope='col'>Primalac</th>
         <th scope='col'>Pošiljalac</th>
         <th scope='col'>Opis</th>
-        <th scope='col'>Status</th>
+        <th scope='col'>Preuzeto</th>
+        <th scope='col'>Dostavljeno</th>
+        <th scope='col'>Poštarina</th>
+
       </tr>
     </thead>
     <tbody>";
-
+  $sum = 0.00;
     $counter = 0;
                 foreach($packages as $package){
                   $counter += 1;
                   $recipient = $package['recipient'];
                   $phone = $package['phone'];
                   $ransome = $package['shipping_fee'];
+                  $sum += $ransome;
                   $paid_by = ($package['ransom_type_id'] == 1) ? 'Primalac' : 'Pošiljalac';
                   $comment = $package['comment'];
                   $package_id = $package['id'];
@@ -80,6 +84,7 @@ $str = "
                   $street_name = $package['street_name'];
                   $zip = $package['zip'];
                   $municipality_name = $package['municipality_name'];
+                  $ptt = $package['ptt'];
 
                   $firm_name = $package['firm_name'];
                   $firm_street_number = $package['firm_street_number'];
@@ -87,14 +92,31 @@ $str = "
                   $firm_zip = $package['firm_zip'];
                   $firm_municipality_name = $package['firm_municipality_name'];
                   $firm_phone = $package['firm_phone'];
+                  
 
                   $package_status = $package['status_name'];
 
                   $token = $package['token'];
 
+                  $sql = "SELECT * FROM package_status_tracking where package_id = $package_id AND status_id = 3 ORDER BY datetime asc";
+                  $result = mysqli_query($db, $sql);
+                  $row = mysqli_fetch_array($result);
+                  $date_time = "";
+                  if(isset($row)){
+                    $date_time = $row['datetime'];
+                  }
+
+                  $sql = "SELECT * FROM package_status_tracking where package_id = $package_id AND status_id = 4 ORDER BY datetime desc";
+                  $result = mysqli_query($db, $sql);
+                  $row = mysqli_fetch_array($result);
+                  $date_time_1 = "";
+                  if(isset($row)){
+                    $date_time_1 = $row['datetime'];
+                  }
+
 
         $str.="<tr>
-        <th scope='row'>$counter</th>
+        <th scope='row'>$package_id</th>
         <td><img class='qr-slika' src='".(new QRCode())->render($package_id.'-'.$token)."' alt='' /></td>
         <td>
           <h6>$recipient</h6>
@@ -114,20 +136,24 @@ $str = "
           <h6><strong>Plaća: </strong>$paid_by</h6>
           <h6><strong>napomena: </strong>$comment</h6>
         </td>
-        <td>$package_status</td>
+        <td><h6>$date_time</h6>
+        <td> <h6>$date_time_1</h6></td>
+        <td><h6>$ptt RSD</h6></td>
 
       </tr>";
     }
 
     $str.="</tbody>
     </table>
+    <h5>SUMA: $sum RSD</h5>
   </div>";
 
   $mpdf = new \Mpdf\Mpdf(['tempDir' => __DIR__ . "/../uploads"]);
-//   $stylesheet = file_get_contents('../css/invoice.css');
+  $mpdf->AddPage('L'); // Adds a new page in Landscape orientation
+  $stylesheet = file_get_contents('print.css');
 
   // Write some HTML code:
-//   $mpdf->WriteHTML($stylesheet,\Mpdf\HTMLParserMode::HEADER_CSS);
+  $mpdf->WriteHTML($stylesheet,\Mpdf\HTMLParserMode::HEADER_CSS);
   $mpdf->WriteHTML($str,\Mpdf\HTMLParserMode::HTML_BODY);
 
 

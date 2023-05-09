@@ -3,15 +3,15 @@
 include('config/session_user.php');
 require 'vendor/autoload.php';
 
-function insertPackage($street_id, $street_number, $phone, $ransom_type_id, $shipping_fee, $recipient, $content, $comment, $firm_id, $login_session, $db) {
+function insertPackage($street_id, $street_number, $phone, $ransom_type_id, $shipping_fee, $recipient, $content, $comment, $ptt, $firm_id, $login_session, $db) {
     $token = time();
     $sql = "INSERT INTO `package`(`street_id`, 
   `firm_id`, `street_number`, `token`, `curier_id`, 
   `phone`, `ransom_type_id`, `shipping_fee`, 
-  `recipient`, `content`, `comment`, `status_id`, `created_by`) 
+  `recipient`, `content`, `comment`, `ptt`,  `status_id`, `created_by`) 
   VALUES ('$street_id','$firm_id','$street_number',
   '$token', NULL, '$phone','$ransom_type_id','$shipping_fee'
-  ,'$recipient','$content', '$comment', '1', '$login_session')";
+  ,'$recipient','$content', '$comment', '$ptt', '1', '$login_session')";
     $result = mysqli_query($db, $sql);
     logEvent('User '.$login_session.': '.$sql);
   }
@@ -95,6 +95,9 @@ function insertPackage($street_id, $street_number, $phone, $ransom_type_id, $shi
                 if($i == 8){
                     $row_insert['comment'] = $cell;
                 }
+                if($i == 9){
+                  $row_insert['ptt'] = $cell;
+              }
                   
               
               $i++;
@@ -106,7 +109,7 @@ function insertPackage($street_id, $street_number, $phone, $ransom_type_id, $shi
 
         if(!isset($error_msg)){
           foreach($for_insert as $insert_row) {
-            insertPackage($insert_row['street_id'], $insert_row['street_number'], $insert_row['phone'], $insert_row['ransom_type_id'], $insert_row['shipping_fee'], $insert_row['recipient'], $insert_row['content'], $insert_row['comment'], $firm_id, $login_session, $db);            
+            insertPackage($insert_row['street_id'], $insert_row['street_number'], $insert_row['phone'], $insert_row['ransom_type_id'], $insert_row['shipping_fee'], $insert_row['recipient'], $insert_row['content'], $insert_row['comment'], $insert_row['ptt'], $firm_id, $login_session, $db);            
           }
           $success_msg = "Dodatu paketi!";
           

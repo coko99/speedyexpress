@@ -18,14 +18,19 @@
   firm_municipality.zip AS firm_zip,
   firm.name AS firm_name,
   firm.street_number AS firm_street_number,
-  firm.phone AS firm_phone
+  firm.phone AS firm_phone,
+  package_status_tracking.datetime as pst_date,
+  package_status_tracking.status as pst_status
   FROM `package`
   LEFT JOIN street ON package.street_id = street.id
   LEFT JOIN municipality ON street.municipality_id = municipality.id
   LEFT JOIN status ON package.status_id = status.id
   LEFT JOIN firm ON package.firm_id = firm.id
   LEFT JOIN street AS firm_street ON firm.street_id = firm_street.id
-  LEFT JOIN municipality AS firm_municipality ON firm_street.municipality_id = firm_municipality.id";
+  LEFT JOIN package_status_tracking ON package.id = package_status_tracking.package_id 
+  LEFT JOIN municipality AS firm_municipality ON firm_street.municipality_id = firm_municipality.id
+  WHERE package_status_tracking.status = 1 OR package_status_tracking.status IS NULL;
+  ";
   $result = mysqli_query($db, $sql);
   $packages = [];
   while($row = mysqli_fetch_array($result)) {
@@ -52,13 +57,16 @@
                   <th scope="col">Primalac</th>
                   <th scope="col">Pošiljalac</th>
                   <th scope="col">Opis</th>
+                  <th scope="col">PTT</th>
                   <th scope="col">Status</th>
+                  <th scope="col">VREME I DATUM STATUSA</th>
                 </tr>
               </thead>
               <tbody>
                 <?php
                 $counter = 0;
                 foreach($packages as $package){
+                  
                   $counter += 1;
                   $recipient = $package['recipient'];
                   $phone = $package['phone'];
@@ -79,6 +87,8 @@
                   $firm_phone = $package['firm_phone'];
                   $id_package = $package['id'];
                   $package_status = $package['status_name'];
+                  $pst_date = $package['pst_date'];
+                  $ptt = $package['ptt'];
 
                   $token = $package['token'];
 
@@ -104,7 +114,9 @@
                     <h6><strong>Plaća: </strong>$paid_by</h6>
                     <h6><strong>napomena: </strong>$comment</h6>
                   </td>
+                  <td><h6>$ptt RSD</h6></td>
                   <td>$package_status</td>
+                  <td>$pst_date</td>
                 </tr>
                   ";
 

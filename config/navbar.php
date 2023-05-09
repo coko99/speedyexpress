@@ -33,6 +33,11 @@
                 <a href="paketi.php" class="nav-item text-uppercase nav-link <?php if($active == 4) echo "active"; ?>"
                   >Paketi</a
                 >
+                <a
+                  href="dodaj.php"
+                  class="nav-item text-uppercase nav-link <?php if($active == 5) echo "active"; ?>"
+                  >Dodaj</a
+                >
               </div>
               <div class="navbar-nav">
                 <a href="logout.php" class="nav-item nav-link" style="width: 120px"

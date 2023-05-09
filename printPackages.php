@@ -25,13 +25,13 @@ $str = "
   <table class='table table-bordered table-striped mb-0'>
     <thead>
       <tr>
-        <th scope='col '>#ID</th>
         <th scope='col'>QR</th>
-        <th scope='col'>Primalac</th>
-        <th scope='col'>Opis</th>
+        <th scope='col'>OPIS</th>
+        <th scope='col'>QR</th>
+        <th scope='col'>OPIS</th>
       </tr>
     </thead>
-    <tbody>";
+    <tbody><tr>";
 
     $counter = 0;
     foreach($packages as $package){
@@ -48,8 +48,10 @@ $str = "
         $municipality_name = $package['municipality_name'];
         $token = $package['token'];
 
-        $str.="<tr>
-                <th scope='row'>$counter</th>
+        if($counter % 2 != 0){
+          $str.="<tr>";
+        }
+        $str.="
                 <td>
                     <img class='qr-slika' src='".(new QRCode())->render($token)."' alt='QR Code' />
                 </td>
@@ -58,14 +60,16 @@ $str = "
                     <h6>$municipality_name $zip</h6>
                     <h6>$street_name $street_number</h6>
                     <h6>$phone</h6>
-                </td>
-                <td>
                     <h6><strong>Otkup: </strong>$ransome rsd</h6>
                     <h6><strong>Vrednost: </strong>$ransome rsd</h6>
                     <h6><strong>Plaća: </strong>$paid_by</h6>
                     <h6><strong>napomena: </strong>$comment</h6>
                 </td>
-                </tr>";
+              ";
+
+              if($counter % 2 == 0){
+                $str.="<tr>";
+              }
     }
 
     $str.="</tbody>
