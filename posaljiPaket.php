@@ -201,6 +201,7 @@ use chillerlan\QRCode\QRCode;
             </div>
             <div class="form-group">
               <input
+              maxlength="255"
               required
                 type="text"
                 class="form-control"

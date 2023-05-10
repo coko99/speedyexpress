@@ -9,28 +9,28 @@ require 'vendor/autoload.php';
 $sql = "SELECT package.*, 
   municipality.name AS municipality_name, 
   municipality.zip AS zip,
-  street.name AS street_name 
+  street.name AS street_name,
+  firm.name AS firm_name,
+  firm.street_number AS firm_street_number,
+  firm_street.name AS firm_street_name,
+  firm_municipality.name AS firm_municipality_name,
+  firm_municipality.zip AS firm_municipality_zip
   FROM `package`
   LEFT JOIN street ON package.street_id = street.id
   LEFT JOIN municipality ON street.municipality_id = municipality.id
+  LEFT JOIN firm ON package.firm_id = firm.id
+  LEFT JOIN street AS firm_street ON firm.street_id = firm_street.id
+  LEFT JOIN municipality as firm_municipality ON firm_street.municipality_id = firm_municipality.id
   WHERE firm_id = $firm_id AND status_id = 1";
   $result = mysqli_query($db, $sql);
   $packages = [];
-while($row = mysqli_fetch_array($result)) {
-    array_push($packages, $row);
-}
+  while($row = mysqli_fetch_array($result)) {
+      array_push($packages, $row);
+  }
 
 $str = "
 <div class='col-12 table-wrapper-scroll-y my-custom-scrollbar'>
   <table class='table table-bordered table-striped mb-0'>
-    <thead>
-      <tr>
-        <th scope='col'>QR</th>
-        <th scope='col'>OPIS</th>
-        <th scope='col'>QR</th>
-        <th scope='col'>OPIS</th>
-      </tr>
-    </thead>
     <tbody><tr>";
 
     $counter = 0;
@@ -47,23 +47,37 @@ $str = "
         $zip = $package['zip'];
         $municipality_name = $package['municipality_name'];
         $token = $package['token'];
+        $ptt = $package['ptt'];
+
+
+        $firm_name = $package['firm_name'];
+        $firm_street = $package['firm_street_name'];
+        $firm_municipality_name = $package['firm_municipality_name'];
+        $firm_municipality_zip = $package['firm_municipality_zip'];
+        $firm_street_number = $package['firm_street_number'];
+
 
         if($counter % 2 != 0){
           $str.="<tr>";
         }
         $str.="
-                <td>
+                <td class='seccond'>
                     <img class='qr-slika' src='".(new QRCode())->render($token)."' alt='QR Code' />
+                    <br/>Otkup: $ransome RSD <br/>
+                    PTT: $ptt RSD <br/>
+                    Plaća: $paid_by RSD <br/>
+                    Napomena: $comment <br/>
                 </td>
                 <td>
-                    <h6>$recipient</h6>
-                    <h6>$municipality_name $zip</h6>
-                    <h6>$street_name $street_number</h6>
-                    <h6>$phone</h6>
-                    <h6><strong>Otkup: </strong>$ransome rsd</h6>
-                    <h6><strong>Vrednost: </strong>$ransome rsd</h6>
-                    <h6><strong>Plaća: </strong>$paid_by</h6>
-                    <h6><strong>napomena: </strong>$comment</h6>
+                    <h6>Pošiljalac</h6>
+                    $firm_name<br/>
+                    $firm_municipality_name $firm_municipality_zip<br/>
+                    $firm_street $firm_street_number<br/>
+                    <h6>Primalac</h6>
+                    $recipient<br/>
+                    $municipality_name $zip<br/>
+                    $street_name $street_number<br/>
+                    $phone
                 </td>
               ";
 
@@ -77,10 +91,10 @@ $str = "
   </div>";
 
   $mpdf = new \Mpdf\Mpdf(['tempDir' => __DIR__ . "/../uploads"]);
-//   $stylesheet = file_get_contents('../css/invoice.css');
+  $stylesheet = file_get_contents('print1.css');
 
   // Write some HTML code:
-//   $mpdf->WriteHTML($stylesheet,\Mpdf\HTMLParserMode::HEADER_CSS);
+  $mpdf->WriteHTML($stylesheet,\Mpdf\HTMLParserMode::HEADER_CSS);
   $mpdf->WriteHTML($str,\Mpdf\HTMLParserMode::HTML_BODY);
 
 
