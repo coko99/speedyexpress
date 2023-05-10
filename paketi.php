@@ -87,8 +87,13 @@
                   $firm_phone = $package['firm_phone'];
                   $id_package = $package['id'];
                   $package_status = $package['status_name'];
+                  $send_time = date("d/m/Y - H:i:s", $package['send_time']);
                   $pst_date = $package['pst_date'];
                   $ptt = $package['ptt'];
+
+                  if(!isset($pst_date)){
+                    $pst_date = $send_time;
+                  }
 
                   $token = $package['token'];
 

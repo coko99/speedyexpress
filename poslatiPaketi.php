@@ -9,12 +9,15 @@
   municipality.name AS municipality_name, 
   municipality.zip AS zip,
   street.name AS street_name,
-  status.name AS status_name
+  status.name AS status_name,
+  package_status_tracking.datetime AS datetime_status
   FROM `package`
   LEFT JOIN street ON package.street_id = street.id
   LEFT JOIN municipality ON street.municipality_id = municipality.id
   LEFT JOIN status ON package.status_id = status.id
-  WHERE firm_id = $firm_id AND status_id != 1";
+  LEFT JOIN package_status_tracking ON package.id = package_status_tracking.package_id 
+  WHERE package.firm_id = $firm_id AND package.status_id != 1
+  AND (package_status_tracking.status = 1 OR package_status_tracking.status IS NULL) ";
   $result = mysqli_query($db, $sql);
   $packages = [];
   while($row = mysqli_fetch_array($result)) {
@@ -52,6 +55,7 @@
               <th scope="col">Paket</th>
               <th scope="col">Cena</th>
               <th scope="col">Status</th>
+              <th scope="col">Vreme statusa</th>
             </tr>
           </thead>
           <tbody>
@@ -72,7 +76,10 @@
                 $token = $package['token'];
                 $send_time = date("d/m/Y - H:i:s", $package['send_time']);
                 $package_status = $package['status_name'];
-                
+                $datetime_status = $package['datetime_status'];
+                if(!isset($datetime_status)){
+                  $datetime_status = $send_time;
+                }
                 
 
                 echo "<tr>
@@ -94,6 +101,7 @@
                           <h6><strong>napomena: </strong>$comment</h6>
                         </td>
                         <td>$package_status</td>
+                        <td>$datetime_status</td>
                       </tr>";
               }
 
