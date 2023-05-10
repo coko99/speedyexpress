@@ -2,19 +2,12 @@
 
 use chillerlan\QRCode\QRCode;
 
-if(!isset($_GET['id'])){
-  header('Location: klijenti.php');
-}
 
 
 include('config/session_admin.php');
 require 'vendor/autoload.php';
 
-if(isset($_GET['date'])){
-  $datetime = mysqli_real_escape_string($db, $_GET['date']);
-}
-
-$id = mysqli_real_escape_string($db, $_GET['id']);
+$idsForSearch = mysqli_real_escape_string($db, $_GET['idsForSearch']);
 
 $sql = "SELECT package.*, 
 municipality.name AS municipality_name, 
@@ -35,12 +28,8 @@ LEFT JOIN firm ON package.firm_id = firm.id
 LEFT JOIN street AS firm_street ON firm.street_id = firm_street.id
 LEFT JOIN municipality AS firm_municipality ON firm_street.municipality_id = firm_municipality.id
 LEFT JOIN package_status_tracking ON package.id = package_status_tracking.package_id 
-WHERE package.firm_id = $id AND package.pay = 1 
-AND package_status_tracking.status = 1
+WHERE package.id in ($idsForSearch) AND package_status_tracking.status = 1
 ";
-if(isset($datetime)){
-  $sql.=" AND package_status_tracking.datetime BETWEEN STR_TO_DATE('$datetime', '%d/%m/%Y') AND DATE_ADD(STR_TO_DATE('$datetime', '%d/%m/%Y'), INTERVAL 1 DAY);";
-}
   $result = mysqli_query($db, $sql);
   $packages = [];
   $idsForUpdate = [];

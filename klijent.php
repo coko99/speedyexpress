@@ -21,6 +21,7 @@
     $ids = join(",",$package_for_pay_array);
     $sql = "UPDATE `package` SET `pay` = 1 WHERE package.id in ($ids);";
     $result = mysqli_query($db, $sql);
+    header("Location: printPackagesKlient.php?idsForSearch=$ids");
   }
 
   $sql = "SELECT firm.*,
@@ -270,7 +271,7 @@
               <div class="row">
                 <div class="col d-flex justify-content-end mt-3">
                   <button name="pay" class="btn btn-success">ISPLATI</button>
-                  <a href="printPackagesKlient.php?id=<?php echo $id; ?>&date=<?php echo $datetime; ?>" type="submit" class="btn <?php if (!isset($print)) echo "disabled"; ?> btn-success ml-3">ŠTAMPAJ</a>
+                  <!-- <a href="printPackagesKlient.php?id=<?php echo $id; ?>&date=<?php echo $datetime; ?>" type="submit" class="btn <?php if (!isset($print)) echo "disabled"; ?> btn-success ml-3">ŠTAMPAJ</a> -->
                 </div>
               </div>
               </form>

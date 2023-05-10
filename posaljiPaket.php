@@ -85,6 +85,14 @@ use chillerlan\QRCode\QRCode;
   ?>
   
   <body>
+  <div id='overlay' class="overlay d-none" >
+      <div class="d-flex justify-content-center">  
+        <div class="spinner-border text-primary text-primary" role="status" style="width: 16rem; height: 16rem; z-index: 20;">
+          <span class="sr-only">Loading...</span>
+        </div>
+      </div>
+    </div>
+
     
     <?php
       $active = 3;
@@ -296,16 +304,16 @@ use chillerlan\QRCode\QRCode;
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <h5 class="modal-title" id="exampleModalLabel">Import paketa</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <form action="mass_import.php" method="post" enctype="multipart/form-data">
+      <form id='importexcel' action="mass_import.php" method="post" enctype="multipart/form-data">
         <div class="modal-body">
           <input class="form-control" type="file" name='file' id="formFile">
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="submit" name='submit' class="btn btn-primary">Save changes</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zatvori</button>
+          <button type="submit" name='submit' class="btn btn-primary">Sačuvaj</button>
         </div>
       </form>
     </div>
@@ -349,6 +357,12 @@ use chillerlan\QRCode\QRCode;
 
       $('.confirmation').on('click', function () {
         return confirm('Da li ste sigurni da želite da obrišete paket.');
+      });
+
+      $( "#importexcel" ).on( "submit", function( event ) {
+        $('#overlay').show();
+        event.preventDefault();
+
       });
 
       
