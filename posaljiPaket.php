@@ -360,8 +360,7 @@ use chillerlan\QRCode\QRCode;
       });
 
       $( "#importexcel" ).on( "submit", function( event ) {
-        $('#overlay').show();
-        event.preventDefault();
+        $('#overlay').removeClass('d-none');
 
       });
 
