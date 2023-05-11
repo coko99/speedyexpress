@@ -62,7 +62,7 @@ $str = "
         }
         $str.="
                 <td class='seccond'>
-                    <img class='qr-slika' src='".(new QRCode())->render($token)."' alt='QR Code' />
+                    <img class='qr-slika' src='".(new QRCode())->render($package_id.'-'.$token)."' alt='QR Code' />
                     <br/>Otkup: $ransome RSD <br/>
                     PTT: $ptt RSD <br/>
                     Plaća: $paid_by RSD <br/>

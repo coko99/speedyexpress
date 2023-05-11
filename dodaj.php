@@ -1,6 +1,29 @@
 <?php
   include('config/session_admin.php');
 
+
+  if(isset($_POST['addcurier'])){
+    $name =  mysqli_real_escape_string($db, $_POST['name']);
+    $last_name =  mysqli_real_escape_string($db, $_POST['last_name']);
+    $password =  mysqli_real_escape_string($db, $_POST['password']);
+    $phone =  mysqli_real_escape_string($db, $_POST['phone']);
+
+    $sql = "INSERT INTO `courier`(`name`, `last_name`, `password`, `token`, `phone`) VALUES ('$name','$last_name','1234','$password','$phone')";
+    $result = mysqli_query($db, $sql);
+  }
+
+  if(isset($_POST['addfirm'])){
+    $name =  mysqli_real_escape_string($db, $_POST['name']);
+    $street_number =  mysqli_real_escape_string($db, $_POST['street_number']);
+    $street_id =  mysqli_real_escape_string($db, $_POST['street_id']);
+    $phone =  mysqli_real_escape_string($db, $_POST['phone']);
+    $pib =  mysqli_real_escape_string($db, $_POST['pib']);
+
+
+    $sql = "INSERT INTO `firm`(`name`, `street_number`, `street_id`, `phone`, `pib`) VALUES ('$name','$street_number','$street_id','$phone','$pib')";
+    $result = mysqli_query($db, $sql);
+  }
+
 ?>
 <!DOCTYPE html>
 <html lang="sr">
@@ -27,12 +50,12 @@
             </div>
             <div class="row">
               <div class="col-md-9">
-                <form id="" name="" action="" method="">
+                <form action="" method="post">
                   <div class="row">
                     <div class="col-12">
                       <div class="md-form mb-3">
                         <input
-                        placeholder="Ime i prezime"
+                        placeholder="Ime"
                           type="text"
                           id="name"
                           name="name"
@@ -45,10 +68,23 @@
                     <div class="col-12">
                       <div class="md-form mb-3">
                         <input
+                        placeholder="Prezime"
+                          type="text"
+                          id="last_name"
+                          name="last_name"
+                          class="form-control"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-12">
+                      <div class="md-form mb-3">
+                        <input
                         placeholder="Broj telefona"
                           type="number"
                           id=""
-                          name=""
+                          name="number"
                           class="form-control"
                         />
                       </div>
@@ -61,18 +97,15 @@
                         placeholder="Šifra"
                           type="number"
                           id=""
-                          name=""
+                          name="password"
                           class="form-control"
                         />
 
                       </div>
                     </div>
                   </div>
-                  <button class="btn btn-success" type="submit">
+                  <button name='addcurier' class="btn btn-success" type="submit">
                     Dodaj kurira
-                  </button>
-                  <button class="btn btn-warning disabled  " type="submit">
-                    Sačuvaj izmene
                   </button>
                 </form>
               </div>
