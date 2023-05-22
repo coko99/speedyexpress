@@ -1,13 +1,27 @@
 table, tbody, tr {
     border: 1px solid black;
   border-collapse: collapse;
-  padding: 5px;
+  /* padding: 1px; */
+  table-layout:fixed;
 }
 
 .seccond{
   border-left: 1px solid black;
   border-top: 1px solid black;
+  padding-left: 10px;
 
+}
+
+td {
+  width: 200px;
+  height: 375px;
+  overflow: hidden;
+}
+
+
+.napomena{
+  height: 300px; 
+  overflow:hidden;
 }
 
 @page {

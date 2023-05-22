@@ -17,11 +17,42 @@
     $street_number =  mysqli_real_escape_string($db, $_POST['street_number']);
     $street_id =  mysqli_real_escape_string($db, $_POST['street_id']);
     $phone =  mysqli_real_escape_string($db, $_POST['phone']);
-    $pib =  mysqli_real_escape_string($db, $_POST['pib']);
+    // $pib =  mysqli_real_escape_string($db, $_POST['pib']);
+    $email = mysqli_real_escape_string($db, $_POST['email']);
+    $password = password_hash(mysqli_real_escape_string($db, $_POST['password']), PASSWORD_DEFAULT);
 
-
-    $sql = "INSERT INTO `firm`(`name`, `street_number`, `street_id`, `phone`, `pib`) VALUES ('$name','$street_number','$street_id','$phone','$pib')";
+    $sql = "INSERT INTO `firm`(`name`, `street_number`, `street_id`, `phone`, `pib`) VALUES ('$name','$street_number','$street_id','$phone','1')";
     $result = mysqli_query($db, $sql);
+    $firm_id = mysqli_insert_id($db);
+
+    $sql = "INSERT INTO `user`(`email`, `password`, `firm_id`, `name`, 
+    `last_name`, `phone_number`, `email_verified`, `phone_verified`, 
+    `status`, `last_active`, `resettoken`, `resettokenexp`, `new_message`) 
+    VALUES ('$email','$password','$firm_id','name','last_name',
+    '$phone','1','1','1',','', '','1')";
+    $result = mysqli_query($db, $sql);
+  }
+
+  $sql = "SELECT *
+  FROM `courier`";
+  $result = mysqli_query($db, $sql);
+  $courieres = [];
+  while($row = mysqli_fetch_array($result)) {
+    array_push($courieres, $row);
+  }
+
+  $sql = "SELECT firm.*,
+  street.name AS street_name,
+  municipality.name AS municipality_name,
+  municipality.zip AS zip
+  FROM `firm`
+  LEFT JOIN street ON firm.street_id = street.id
+  LEFT JOIN municipality ON street.municipality_id = municipality.id
+  ";
+  $result = mysqli_query($db, $sql);
+  $firms = [];
+  while($row = mysqli_fetch_array($result)) {
+    array_push($firms, $row);
   }
 
 ?>
@@ -84,7 +115,7 @@
                         placeholder="Broj telefona"
                           type="number"
                           id=""
-                          name="number"
+                          name="phone"
                           class="form-control"
                         />
                       </div>
@@ -130,61 +161,34 @@
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <th scope="row">1</th>
-                <td class="align-items-center">
-                  <h4 class="m-0 p-0">Milos Mijajlovic</h4>
-                </td>
-                <td>
-                  <a href="kurir.html">
-                    <button class="btn btn-danger align-self-center">
-                      Izbriši
-                    </button></a
-                  >
-                  <a href="kurir.html">
-                    <button class="btn btn-warning align-self-center">
-                      Izmeni
-                    </button></a
-                  >
-                </td>
-              </tr>
-              <tr>
-                <th scope="row">1</th>
-                <td class="align-items-center">
-                  <h4 class="m-0 p-0">Milos Mijajlovic</h4>
-                </td>
-                <td>
-                  <a href="kurir.html">
-                    <button class="btn btn-danger align-self-center">
-                      Izbriši
-                    </button></a
-                  >
-                  <a href="kurir.html">
-                    <button class="btn btn-warning align-self-center">
-                      Izmeni
-                    </button></a
-                  >
-                </td>
-              </tr>
-              <tr>
-                <th scope="row">1</th>
-                <td class="align-items-center">
-                  <h4 class="m-0 p-0">Milos Mijajlovic</h4>
-                </td>
-                <td>
-                  <a href="kurir.html">
-                    <button class="btn btn-danger align-self-center">
-                      Izbriši
-                    </button></a
-                  >
-                  <a href="kurir.html">
-                    <button class="btn btn-warning align-self-center">
-                      Izmeni
-                    </button></a
-                  >
-                </td>
-              </tr>   
-              </tr>
+              <?php 
+                foreach($courieres as $courier){
+                  $id = $courier['id'];
+                  $name = $courier['name'];
+                  $last_name = $courier['last_name'];
+
+                  echo "
+                  <tr>
+                    <th scope='row'>$id</th>
+                    <td class='align-items-center'>
+                      <h4 class='m-0 p-0'>$name $last_name</h4>
+                    </td>
+                    <td>
+                      <a href='kurir.html'>
+                        <button class='btn btn-danger align-self-center'>
+                          Izbriši
+                        </button></a
+                      >
+                      <a href='kurir.html'>
+                        <button class='btn btn-warning align-self-center'>
+                          Izmeni
+                        </button></a
+                      >
+                    </td>
+                  </tr>
+                  ";
+                }
+              ?>
             </tbody>
           </table>
         </div>
@@ -227,7 +231,7 @@
                       type="text"
                       placeholder="Mesto"
                         id="name"
-                        name="name"
+                        name="municipality-id"
                         class="form-control"
                       />
                     </div>
@@ -238,23 +242,35 @@
                     <div class="md-form mb-3">
                       <input
                       type="text"
-                      placeholder="Adresa"
+                      placeholder="Ulica"
                         id="name"
-                        name="name"
+                        name="street_id"
                         class="form-control"
                       />
                     </div>
                   </div>
                 </div>
-             
                 <div class="row">
                   <div class="col-12">
                     <div class="md-form mb-3">
                       <input
-                      type="number"
+                      type="text"
+                      placeholder="Broj"
+                        id="name"
+                        name="street_number"
+                        class="form-control"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12">
+                    <div class="md-form mb-3">
+                      <input
+                      type="text"
                       placeholder="Broj telefona"
                         id=""
-                        name=""
+                        name="phone"
                         class="form-control"
                       />
                     </div>
@@ -266,7 +282,8 @@
                       <input
                       placeholder="Korisničko ime"
                         id="name"
-                        name="name"
+                        name="email"
+                        type="text"
                         class="form-control"
                       />
                     </div>
@@ -280,13 +297,26 @@
                       placeholder="Šifra"
                         type="number"
                         id=""
-                        name=""
+                        name="password"
                         class="form-control"
                       />
 
                     </div>
                   </div>
                 </div>
+                <!-- <div class="row">
+                  <div class="col-12">
+                    <div class="md-form mb-3">
+                      <input
+                      placeholder="PIB"
+                        id="name"
+                        name="pib"
+                        type="text"
+                        class="form-control"
+                      />
+                    </div>
+                  </div>
+                </div> -->
                 <button class="btn btn-success" type="submit">
                   Dodaj klijenta
                 </button>
@@ -318,61 +348,32 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <th scope="row">1</th>
-              <td class="align-items-center">
-                <h4 class="m-0 p-0">Milos Mijajlovic</h4>
-              </td>
-              <td>
-                <a href="kurir.html">
-                  <button class="btn btn-danger align-self-center">
-                    izbriši
-                  </button></a
-                >
-                <a href="kurir.html">
-                  <button class="btn btn-warning align-self-center">
-                    Izmeni
-                  </button></a
-                >
-              </td>
-            </tr>
-            <tr>
-              <th scope="row">1</th>
-              <td class="align-items-center">
-                <h4 class="m-0 p-0">Milos Mijajlovic</h4>
-              </td>
-              <td>
-                <a href="kurir.html">
-                  <button class="btn btn-danger align-self-center">
-                    Izbriši
-                  </button></a
-                >
-                <a href="kurir.html">
-                  <button class="btn btn-warning align-self-center">
-                    Izmeni
-                  </button></a
-                >
-              </td>
-            </tr>
-            <tr>
-              <th scope="row">1</th>
-              <td class="align-items-center">
-                <h4 class="m-0 p-0">Milos Mijajlovic</h4>
-              </td>
-              <td>
-                <a href="kurir.html">
-                  <button class="btn btn-danger align-self-center">
-                    Izbriši
-                  </button></a
-                >
-                <a href="kurir.html">
-                  <button class="btn btn-warning align-self-center">
-                    Izmeni
-                  </button></a
-                >
-              </td>
-            </tr>   
-            </tr>
+            <?php 
+              foreach($firms as $firm){
+
+                $id = $firm['id'];
+                $name = $firm['name'];
+
+                echo "<tr>
+                        <th scope='row'>$id</th>
+                        <td class='align-items-center'>
+                          <h4 class='m-0 p-0'>$name</h4>
+                        </td>
+                        <td>
+                          <a href='kurir.html'>
+                            <button class='btn btn-danger align-self-center'>
+                              izbriši
+                            </button></a
+                          >
+                          <a href='kurir.html'>
+                            <button class='btn btn-warning align-self-center'>
+                              Izmeni
+                            </button></a
+                          >
+                        </td>
+                      </tr>";
+              }
+            ?>
           </tbody>
         </table>
       </div>

@@ -61,14 +61,9 @@ $str = "
           $str.="<tr>";
         }
         $str.="
+                
                 <td class='seccond'>
                     <img class='qr-slika' src='".(new QRCode())->render($package_id.'-'.$token)."' alt='QR Code' />
-                    <br/>Otkup: $ransome RSD <br/>
-                    PTT: $ptt RSD <br/>
-                    Plaća: $paid_by RSD <br/>
-                    Napomena: $comment <br/>
-                </td>
-                <td>
                     <h6>Pošiljalac</h6>
                     $firm_name<br/>
                     $firm_municipality_name $firm_municipality_zip<br/>
@@ -78,6 +73,14 @@ $str = "
                     $municipality_name $zip<br/>
                     $street_name $street_number<br/>
                     $phone
+                </td>
+                <td >
+                   <div class='napomena'>
+                    <br/><h6>Otkup:</h6> $ransome RSD <br/>
+                    <h6>PTT:</h6> $ptt RSD <br/>
+                    <h6>Plaća:</h6> $paid_by RSD <br/>
+                    <h6>Napomena:</h6> $comment <br/>
+                    </div>
                 </td>
               ";
 
