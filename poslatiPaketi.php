@@ -56,6 +56,7 @@
               <th scope="col">Cena</th>
               <th scope="col">Status</th>
               <th scope="col">Vreme statusa</th>
+              <th scope="col">Opcije</th>
             </tr>
           </thead>
           <tbody>
@@ -77,6 +78,7 @@
                 $send_time = date("d/m/Y - H:i:s", $package['send_time']);
                 $package_status = $package['status_name'];
                 $datetime_status = $package['datetime_status'];
+                $status_id = $package['status_id'];
                 if(!isset($datetime_status)){
                   $datetime_status = $send_time;
                 }
@@ -101,8 +103,13 @@
                           <h6><strong>napomena: </strong>$comment</h6>
                         </td>
                         <td>$package_status</td>
-                        <td>$datetime_status</td>
-                      </tr>";
+                        <td>$datetime_status</td>";
+                        if($status_id != 4){
+                          echo "<td><a href='izmeniPaket.php?id=$package_id' class='btn btn-info'>Izmeni</a></td>";
+                        }else{
+                          echo "<td><button disabled class='btn btn-info'>Izmeni</button></td>";
+                        }
+                      echo "</tr>";
               }
 
             ?>
