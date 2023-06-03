@@ -227,7 +227,8 @@
                       <div class="md-form mb-3">
                         <input
                         placeholder="Šifra"
-                          type="number"
+                          type="text"
+                          pattern="\d*" minlength="4"
                           id=""
                           name="password"
                           class="form-control"
