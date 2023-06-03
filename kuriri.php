@@ -1,7 +1,7 @@
 <?php
   include('config/session_admin.php');
   $sql = "SELECT *
-  FROM `courier`";
+  FROM `courier` where status = 1";
   $result = mysqli_query($db, $sql);
   $courieres = [];
   while($row = mysqli_fetch_array($result)) {

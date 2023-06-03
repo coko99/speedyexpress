@@ -6,6 +6,73 @@
 <?php
   include('config/head.php');
 
+  //MESEC
+
+  $sql = "SELECT count(*) as c
+  FROM package WHERE
+  created_at >= LAST_DAY(CURDATE()) + INTERVAL 1 DAY - INTERVAL 1 MONTH
+  AND created_at <  LAST_DAY(CURDATE()) + INTERVAL 1 DAY;";
+  $result = mysqli_query($db, $sql);
+  $row = mysqli_fetch_array($result);
+  $num_tak = $row['c'];
+
+  $sql = "SELECT count(*) as c
+  FROM package WHERE
+  status_id = 4
+  AND created_at >= LAST_DAY(CURDATE()) + INTERVAL 1 DAY - INTERVAL 1 MONTH
+  AND created_at <  LAST_DAY(CURDATE()) + INTERVAL 1 DAY;";
+  $result = mysqli_query($db, $sql);
+  $row = mysqli_fetch_array($result);
+  $num_suc = $row['c'];
+
+  $sql = "SELECT count(*) as c
+  FROM package WHERE
+  status_id != 4
+  AND created_at >= LAST_DAY(CURDATE()) + INTERVAL 1 DAY - INTERVAL 1 MONTH
+  AND created_at <  LAST_DAY(CURDATE()) + INTERVAL 1 DAY;";
+  $result = mysqli_query($db, $sql);
+  $row = mysqli_fetch_array($result);
+  $num_fai = $row['c'];
+
+  // NEDELJA
+
+  $sql = "SELECT count(*) as c
+  FROM package WHERE
+  YEARWEEK(`created_at`, 1) = YEARWEEK(CURDATE(), 1);";
+  $result = mysqli_query($db, $sql);
+  $row = mysqli_fetch_array($result);
+  $num_tak_w = $row['c'];
+
+  $sql = "SELECT count(*) as c
+  FROM package WHERE
+  status_id = 4 AND
+  YEARWEEK(`created_at`, 1) = YEARWEEK(CURDATE(), 1);";
+  $result = mysqli_query($db, $sql);
+  $row = mysqli_fetch_array($result);
+  $num_suc_w = $row['c'];
+
+  $sql = "SELECT count(*) as c
+  FROM package WHERE
+  status_id != 4 AND
+  YEARWEEK(`created_at`, 1) = YEARWEEK(CURDATE(), 1);";
+  $result = mysqli_query($db, $sql);
+  $row = mysqli_fetch_array($result);
+  $num_fai_w = $row['c'];
+
+  // KURIR
+
+  $sql = "SELECT courier.name, count(*) as c
+  FROM package 
+  LEFT JOIN courier ON package.curier_id = courier.id
+  WHERE created_at >= LAST_DAY(CURDATE()) + INTERVAL 1 DAY - INTERVAL 1 MONTH
+  AND created_at <  LAST_DAY(CURDATE()) + INTERVAL 1 DAY
+  GROUP BY curier_id;";
+  $result = mysqli_query($db, $sql);
+  $kuriri_paketi = [];
+  while($row = mysqli_fetch_array($result)) {
+    array_push($kuriri_paketi, $row);
+  }
+
 ?>
   <body>
 
@@ -21,19 +88,19 @@
         >
           <h3 class="opsteh3 mb-3">Ove nedelje</h3>
           <div class="d-flex justify-content-between">
-            <h5 class="opsteh4 mt-3">Broj isporučenih:</h5>
+            <h5 class="opsteh4 mt-3">Broj preuzetih:</h5>
 
-            <spam class="spanh4 d-flex align-self-center">500</spam>
+            <spam class="spanh4 d-flex align-self-center"><?php echo $num_tak; ?></spam>
           </div>
           <div class="d-flex justify-content-between">
             <h5 class="opsteh4 mt-3">Broj isporučenih:</h5>
 
-            <spam class="spanh4 d-flex align-self-center">500</spam>
+            <spam class="spanh4 d-flex align-self-center"><?php echo $num_suc; ?></spam>
           </div>
           <div class="d-flex justify-content-between">
-            <h5 class="opsteh4 mt-3">Broj isporučenih:</h5>
+            <h5 class="opsteh4 mt-3">Broj neisporučenih:</h5>
 
-            <spam class="spanh4 d-flex align-self-center">500</spam>
+            <spam class="spanh4 d-flex align-self-center"><?php echo $num_fai; ?></spam>
           </div>
         </div>
         <div class="col-xs-12 mt-3 mb-3 col-sm-12 col-md-4">
@@ -51,19 +118,19 @@
         >
           <h3 class="opsteh3 mb-3">Ovaj mesec</h3>
           <div class="d-flex justify-content-between">
-            <h5 class="opsteh4 mt-3">Broj isporučenih:</h5>
+            <h5 class="opsteh4 mt-3">Broj preuzetih:</h5>
 
-            <spam class="spanh4 d-flex align-self-center">500</spam>
+            <spam class="spanh4 d-flex align-self-center"><?php echo $num_tak_w; ?></spam>
           </div>
           <div class="d-flex justify-content-between">
             <h5 class="opsteh4 mt-3">Broj isporučenih:</h5>
 
-            <spam class="spanh4 d-flex align-self-center">500</spam>
+            <spam class="spanh4 d-flex align-self-center"><?php echo $num_suc_w; ?></spam>
           </div>
           <div class="d-flex justify-content-between">
-            <h5 class="opsteh4 mt-3">Broj isporučenih:</h5>
+            <h5 class="opsteh4 mt-3">Broj neisporučenih:</h5>
 
-            <spam class="spanh4 d-flex align-self-center">500</spam>
+            <spam class="spanh4 d-flex align-self-center"><?php echo $num_fai; ?></spam>
           </div>
         </div>
       </div>
@@ -90,5 +157,55 @@
       integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
       crossorigin="anonymous"
     ></script>
+
+    <script>
+
+      <?php
+      echo "let kuriri = [";
+      foreach($kuriri_paketi as $kur){
+        $kur_name = $kur['name'];
+
+        echo "'$kur_name', ";
+      }
+      echo "];";
+      ?>
+
+      <?php
+      echo "let paketi = [";
+      foreach($kuriri_paketi as $kur){
+        $kur_name = $kur['c'];
+
+        echo "$kur_name, ";
+      }
+      echo "];";
+      ?>
+      
+      
+      var ctx = document.getElementById("myChart2").getContext("2d");
+      var myChart = new Chart(ctx, {
+        type: "doughnut",
+        data: {
+          datasets: [
+            {
+              data: paketi,
+              backgroundColor: ["rgba(255, 99, 132, 0.6)", "rgba(54, 162, 235, 0.6)"],
+            },
+          ],
+          labels: kuriri,
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutoutPercentage: 50, // podesiti na 50 da bude polukružni grafikon
+          legend: {
+            display: false, // isključiti legendu
+          },
+          animation: {
+            animateScale: true,
+            animateRotate: true,
+          },
+        },
+      });
+      </script>
   </body>
 </html>

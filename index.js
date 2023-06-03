@@ -44,31 +44,7 @@ var myChart = new Chart(ctx, {
 
 ///
 
-var ctx = document.getElementById("myChart2").getContext("2d");
-var myChart = new Chart(ctx, {
-  type: "doughnut",
-  data: {
-    datasets: [
-      {
-        data: [30, 70],
-        backgroundColor: ["rgba(255, 99, 132, 0.6)", "rgba(54, 162, 235, 0.6)"],
-      },
-    ],
-    labels: ["Kurir1", "Kurir2"],
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    cutoutPercentage: 50, // podesiti na 50 da bude polukružni grafikon
-    legend: {
-      display: false, // isključiti legendu
-    },
-    animation: {
-      animateScale: true,
-      animateRotate: true,
-    },
-  },
-});
+
 
 /*DATUM I VREME */
 function prikaziDatumVreme() {

@@ -6,6 +6,65 @@
   <?php
     include('config/head.php');
 
+    // MESEC
+
+  $sql = "SELECT count(*) as c
+  FROM package WHERE
+  firm_id = $firm_id
+  AND created_at >= LAST_DAY(CURDATE()) + INTERVAL 1 DAY - INTERVAL 1 MONTH
+  AND created_at <  LAST_DAY(CURDATE()) + INTERVAL 1 DAY;";
+  $result = mysqli_query($db, $sql);
+  $row = mysqli_fetch_array($result);
+  $num_tak = $row['c'];
+
+  $sql = "SELECT count(*) as c
+  FROM package WHERE
+  status_id = 4
+  AND firm_id = $firm_id
+  AND created_at >= LAST_DAY(CURDATE()) + INTERVAL 1 DAY - INTERVAL 1 MONTH
+  AND created_at <  LAST_DAY(CURDATE()) + INTERVAL 1 DAY;";
+  $result = mysqli_query($db, $sql);
+  $row = mysqli_fetch_array($result);
+  $num_suc = $row['c'];
+
+  $sql = "SELECT count(*) as c
+  FROM package WHERE
+  pay = 1
+  AND firm_id = $firm_id
+  AND created_at >= LAST_DAY(CURDATE()) + INTERVAL 1 DAY - INTERVAL 1 MONTH
+  AND created_at <  LAST_DAY(CURDATE()) + INTERVAL 1 DAY;";
+  $result = mysqli_query($db, $sql);
+  $row = mysqli_fetch_array($result);
+  $num_fai = $row['c'];
+
+  // NEDELJA
+
+  $sql = "SELECT count(*) as c
+  FROM package WHERE
+  firm_id = $firm_id
+  AND YEARWEEK(`created_at`, 1) = YEARWEEK(CURDATE(), 1);";
+  $result = mysqli_query($db, $sql);
+  $row = mysqli_fetch_array($result);
+  $num_tak_w = $row['c'];
+
+  $sql = "SELECT count(*) as c
+  FROM package WHERE
+  firm_id = $firm_id AND
+  status_id = 4 AND
+  YEARWEEK(`created_at`, 1) = YEARWEEK(CURDATE(), 1);";
+  $result = mysqli_query($db, $sql);
+  $row = mysqli_fetch_array($result);
+  $num_suc_w = $row['c'];
+
+  $sql = "SELECT count(*) as c
+  FROM package WHERE
+  firm_id = $firm_id AND
+  pay = 1 AND
+  YEARWEEK(`created_at`, 1) = YEARWEEK(CURDATE(), 1);";
+  $result = mysqli_query($db, $sql);
+  $row = mysqli_fetch_array($result);
+  $num_fai_w = $row['c'];
+
   ?>
   
   <body onload="prikaziDatumVreme()">
@@ -28,17 +87,17 @@
             <div class="d-flex justify-content-between">
               <h5 class="opsteh4 mt-3">Broj isporučenih:</h5>
 
-              <spam class="spanh4 d-flex align-self-center">500</spam>
+              <spam class="spanh4 d-flex align-self-center"><?php echo $num_tak_w; ?></spam>
             </div>
             <div class="d-flex justify-content-between">
               <h5 class="opsteh4 mt-3">Broj vraćenih:</h5>
 
-              <spam class="spanh4 d-flex align-self-center">500</spam>
+              <spam class="spanh4 d-flex align-self-center"><?php echo $num_suc_w; ?></spam>
             </div>
             <div class="d-flex justify-content-between">
               <h5 class="opsteh4 mt-3">Broj plaćenih:</h5>
 
-              <spam class="spanh4 d-flex align-self-center">500</spam>
+              <spam class="spanh4 d-flex align-self-center"><?php echo $num_fai_w; ?></spam>
             </div>
           </div>
           <div class="col-xs-12 mt-3 mb-3 col-sm-12 col-md-4">
@@ -58,17 +117,17 @@
             <div class="d-flex justify-content-between">
               <h5 class="opsteh4 mt-3">Broj isporučenih:</h5>
 
-              <spam class="spanh4 d-flex align-self-center">500</spam>
+              <spam class="spanh4 d-flex align-self-center"><?php echo $num_tak; ?></spam>
             </div>
             <div class="d-flex justify-content-between">
               <h5 class="opsteh4 mt-3">Broj vraćenih:</h5>
 
-              <spam class="spanh4 d-flex align-self-center">500</spam>
+              <spam class="spanh4 d-flex align-self-center"><?php echo $num_suc; ?></spam>
             </div>
             <div class="d-flex justify-content-between">
               <h5 class="opsteh4 mt-3">Broj plaćenih:</h5>
 
-              <spam class="spanh4 d-flex align-self-center">500</spam>
+              <spam class="spanh4 d-flex align-self-center"><?php echo $num_fai; ?></spam>
             </div>
           </div>
         </div>

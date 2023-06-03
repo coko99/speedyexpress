@@ -2,14 +2,14 @@
 
 use chillerlan\QRCode\QRCode;
 
-if(!isset($_GET['id'])){
+if(!isset($_GET['idsForSearch'])){
   header('Location: kuriri.php');
 }
 
 include('config/session_admin.php');
 require 'vendor/autoload.php';
 
-$id = mysqli_real_escape_string($db, $_GET['id']);
+$idsForSearch = mysqli_real_escape_string($db, $_GET['idsForSearch']);
 
 $sql = "SELECT package.*, 
 municipality.name AS municipality_name, 
@@ -29,7 +29,7 @@ LEFT JOIN status ON package.status_id = status.id
 LEFT JOIN firm ON package.firm_id = firm.id
 LEFT JOIN street AS firm_street ON firm.street_id = firm_street.id
 LEFT JOIN municipality AS firm_municipality ON firm_street.municipality_id = firm_municipality.id
-WHERE curier_id = $id AND status_id != 4";
+WHERE package.id in ($idsForSearch)";
   $result = mysqli_query($db, $sql);
   $packages = [];
 while($row = mysqli_fetch_array($result)) {
@@ -46,8 +46,7 @@ $str = "
         <th scope='col'>Primalac</th>
         <th scope='col'>Pošiljalac</th>
         <th scope='col'>Opis</th>
-        <th scope='col'>Status</th>
-        <th scope='col'>PTT</th>
+        <th scope='col'>PTT + OTKUP</th>
       </tr>
     </thead>
     <tbody>";
@@ -78,6 +77,8 @@ $str = "
 
                   $token = $package['token'];
 
+                  $pttransome = $ptt + $ransome;
+
 
         $str.="<tr>
         <th scope='row'>$package_id</th>
@@ -100,8 +101,7 @@ $str = "
           <h6><strong>Plaća: </strong>$paid_by</h6>
           <h6><strong>napomena: </strong>$comment</h6>
         </td>
-        <td>$package_status</td>
-        <td>$ptt</td>
+        <td>$ptt + $ransome = $pttransome</td>
       </tr>";
     }
 

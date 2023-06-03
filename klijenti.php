@@ -7,6 +7,7 @@
   FROM `firm`
   LEFT JOIN street ON firm.street_id = street.id
   LEFT JOIN municipality ON street.municipality_id = municipality.id
+  WHERE firm.status = 1
   ";
   $result = mysqli_query($db, $sql);
   $firms = [];

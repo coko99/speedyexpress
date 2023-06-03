@@ -19,7 +19,7 @@ function logEvent($message) {
     preg_match('/Token token="(.*)"/', $headers['Authorization'], $matches);
     if(isset($matches[1])){
       $token = $matches[1];
-      $sql = "SELECT * from courier WHERE token = '$token'";
+      $sql = "SELECT * from courier WHERE token = '$token' and status = 1";
       $result = mysqli_query($db, $sql);
       $courier = mysqli_fetch_array($result);
     }

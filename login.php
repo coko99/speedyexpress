@@ -32,7 +32,9 @@
       header("location: index.php");
     }else {
       // $error = "Neispravno korisničko ime ili lozinka!";
-      $sql = "SELECT * FROM user WHERE email = '$myusername'";
+      $sql = "SELECT * FROM user 
+      LEFT JOIN firm on user.firm_id = firm.id
+      WHERE email = '$myusername' AND firm.status = 1";
 
       $result = mysqli_query($db,$sql);
       $row = mysqli_fetch_array($result,MYSQLI_ASSOC);
