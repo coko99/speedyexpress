@@ -28,7 +28,7 @@ use chillerlan\QRCode\QRCode;
     }
   }
 
-  if(isset($_GET['send_packages'])){
+  if(isset($_POST['send_packages'])){
     $now = time();
     $sql = "UPDATE `package` SET `status_id`='2', `send_time`=$now
       WHERE firm_id = $firm_id AND status_id = 1";
@@ -234,7 +234,7 @@ use chillerlan\QRCode\QRCode;
                   <a href="printPackages.php" class="btn btn-primary">Štampaj</a>
                 </div>
                 <div class="col-4 text-center">
-                  <a href='posaljiPaket.php?send_packages' class="btn btn-success">POŠALJI</a>
+                  <form method='POST'><button name='send_packages' type='submit' class="btn btn-success">POŠALJI</button></form>
                 </div>
               </div>
             </div>
