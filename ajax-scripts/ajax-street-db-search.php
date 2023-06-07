@@ -7,13 +7,17 @@ if (isset($_GET['term'])) {
     $result = mysqli_query($db, $query);
  
     if (mysqli_num_rows($result) > 0) {
+      $names = [];
      while ($street = mysqli_fetch_array($result)) {
+      if(! in_array($street['name'], $names)){
+        array_push($names, $street['name']);
          $item = array(
             "value" => $street['name'],
             "label" => $street['name'],
             "id" =>  $street['id']
       );
-      $res[] = $item;
+        $res[] = $item;
+      }
      }
     } else {
       $res = array();
