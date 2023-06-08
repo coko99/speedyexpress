@@ -29,7 +29,8 @@ LEFT JOIN status ON package.status_id = status.id
 LEFT JOIN firm ON package.firm_id = firm.id
 LEFT JOIN street AS firm_street ON firm.street_id = firm_street.id
 LEFT JOIN municipality AS firm_municipality ON firm_street.municipality_id = firm_municipality.id
-WHERE curier_id = $id AND status_id != 4";
+WHERE curier_id = $id AND status_id != 4
+order by municipality_name ASC";
   $result = mysqli_query($db, $sql);
   $packages = [];
 while($row = mysqli_fetch_array($result)) {
@@ -53,6 +54,7 @@ $str = "
     <tbody>";
 
     $counter = 0;
+    $mun_grp = "";
                 foreach($packages as $package){
                   $counter += 1;
                   $recipient = $package['recipient'];
@@ -77,6 +79,12 @@ $str = "
                   $package_status = $package['status_name'];
 
                   $token = $package['token'];
+                  if($mun_grp != $municipality_name){
+                    $mun_grp = $municipality_name;
+                    $str.="<tr>
+                      <td  style='background-color: #BEBEBE;' colspan='7'><h4>$municipality_name</h4></td>
+                    </td>";
+                  }
 
 
         $str.="<tr>
