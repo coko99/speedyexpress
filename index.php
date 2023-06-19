@@ -59,6 +59,35 @@
   $row = mysqli_fetch_array($result);
   $num_fai_w = $row['c'];
 
+  //DAN
+
+  $sql = "SELECT count(*) as c
+  FROM package WHERE
+  created_at > CURDATE() - INTERVAL 1 DAY
+  AND created_at <  CURDATE() + INTERVAL 1 DAY;";
+  $result = mysqli_query($db, $sql);
+  $row = mysqli_fetch_array($result);
+  $num_tak_day = $row['c'];
+
+  $sql = "SELECT count(*) as c
+  FROM package WHERE
+  status_id = 4
+  AND created_at > CURDATE() - INTERVAL 1 DAY
+  AND created_at <  CURDATE() + INTERVAL 1 DAY;";
+  $result = mysqli_query($db, $sql);
+  $row = mysqli_fetch_array($result);
+  $num_suc_day = $row['c'];
+
+  $sql = "SELECT count(*) as c
+  FROM package WHERE
+  status_id != 4
+  AND created_at > CURDATE() - INTERVAL 1 DAY
+  AND created_at <  CURDATE() + INTERVAL 1 DAY;";
+  $result = mysqli_query($db, $sql);
+  $row = mysqli_fetch_array($result);
+  $num_fai_day = $row['c'];
+
+
   // KURIR
 
   $sql = "SELECT courier.name, count(*) as c
@@ -86,7 +115,7 @@
         <div
           class="statistika1 d-flex flex-column justify-content-between p-4 col-xs-12 col-sm-12 col-md-4"
         >
-          <h3 class="opsteh3 mb-3">Ove nedelje</h3>
+          <h3 class="opsteh3 mb-3">Ovaj mesec</h3>
           <div class="d-flex justify-content-between">
             <h5 class="opsteh4 mt-3">Broj preuzetih:</h5>
 
@@ -103,20 +132,11 @@
             <spam class="spanh4 d-flex align-self-center"><?php echo $num_fai; ?></spam>
           </div>
         </div>
-        <div class="col-xs-12 mt-3 mb-3 col-sm-12 col-md-4">
-          <div class="container">
-            <div class="row">
-              <div class="col-md-12 m-auto mt-5">
-                <!-- HTML element za grafikon -->
-                <canvas id="myChart2"></canvas>
-              </div>
-            </div>
-          </div>
-        </div>
+        
         <div
           class="statistika1 d-flex flex-column justify-content-between p-4 col-xs-12 col-sm-12 col-md-4"
         >
-          <h3 class="opsteh3 mb-3">Ovaj mesec</h3>
+          <h3 class="opsteh3 mb-3">Ove nedelje</h3>
           <div class="d-flex justify-content-between">
             <h5 class="opsteh4 mt-3">Broj preuzetih:</h5>
 
@@ -130,12 +150,46 @@
           <div class="d-flex justify-content-between">
             <h5 class="opsteh4 mt-3">Broj neisporučenih:</h5>
 
-            <spam class="spanh4 d-flex align-self-center"><?php echo $num_fai; ?></spam>
+            <spam class="spanh4 d-flex align-self-center"><?php echo $num_fai_w; ?></spam>
+          </div>
+        </div>
+
+        <div
+          class="statistika1 d-flex flex-column justify-content-between p-4 col-xs-12 col-sm-12 col-md-4"
+        >
+          <h3 class="opsteh3 mb-3">Ovaj dan</h3>
+          <div class="d-flex justify-content-between">
+            <h5 class="opsteh4 mt-3">Broj preuzetih:</h5>
+
+            <spam class="spanh4 d-flex align-self-center"><?php echo $num_tak_day; ?></spam>
+          </div>
+          <div class="d-flex justify-content-between">
+            <h5 class="opsteh4 mt-3">Broj isporučenih:</h5>
+
+            <spam class="spanh4 d-flex align-self-center"><?php echo $num_suc_day; ?></spam>
+          </div>
+          <div class="d-flex justify-content-between">
+            <h5 class="opsteh4 mt-3">Broj neisporučenih:</h5>
+
+            <spam class="spanh4 d-flex align-self-center"><?php echo $num_fai_day; ?></spam>
           </div>
         </div>
       </div>
     </div>
-
+    
+    <div class="container-fluid mt-5">
+      <div class="col mt-3 mb-3 ">
+          <div class="container">
+            <div class="row">
+              <div class="col-md-12 m-auto mt-5">
+                <!-- HTML element za grafikon -->
+                <canvas id="myChart2"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+        
     <div class="container-fluid mt-5">
       <div class="row">
         <div class="col">
