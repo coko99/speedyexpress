@@ -78,7 +78,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($courier) && isset($token)) {
     LEFT JOIN firm ON package.firm_id = firm.id
     WHERE token = $package_token 
     AND package.id = $package_id 
-    AND package.status_id != 0";
+    AND package.status_id != 0 
+    AND package.status_id != 4 ";
 
     $result = mysqli_query($db, $sql);
     $data_response = [];
