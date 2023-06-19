@@ -63,7 +63,7 @@
 
   $sql = "SELECT count(*) as c
   FROM package WHERE
-  created_at > CURDATE() - INTERVAL 1 DAY
+  created_at > CURDATE() 
   AND created_at <  CURDATE() + INTERVAL 1 DAY;";
   $result = mysqli_query($db, $sql);
   $row = mysqli_fetch_array($result);
@@ -72,7 +72,7 @@
   $sql = "SELECT count(*) as c
   FROM package WHERE
   status_id = 4
-  AND created_at > CURDATE() - INTERVAL 1 DAY
+  AND created_at > CURDATE()
   AND created_at <  CURDATE() + INTERVAL 1 DAY;";
   $result = mysqli_query($db, $sql);
   $row = mysqli_fetch_array($result);
@@ -81,7 +81,7 @@
   $sql = "SELECT count(*) as c
   FROM package WHERE
   status_id != 4
-  AND created_at > CURDATE() - INTERVAL 1 DAY
+  AND created_at > CURDATE() 
   AND created_at <  CURDATE() + INTERVAL 1 DAY;";
   $result = mysqli_query($db, $sql);
   $row = mysqli_fetch_array($result);
