@@ -55,7 +55,6 @@
               <th scope="col">Paket</th>
               <th scope="col">Cena</th>
               <th scope="col">Status</th>
-              <th scope="col">Vreme statusa</th>
               <th scope="col">Opcije</th>
             </tr>
           </thead>
@@ -82,7 +81,18 @@
                 if(!isset($datetime_status)){
                   $datetime_status = $send_time;
                 }
-                
+
+
+                $sql = "SELECT package_status_tracking.*, 
+                        status.name AS status_name
+                        FROM `package_status_tracking`
+                        LEFT JOIN status ON package_status_tracking.status_id = status.id
+                        WHERE package_status_tracking.package_id = $package_id; ";
+                        $result = mysqli_query($db, $sql);
+                        $statuses = [];
+                        while($row = mysqli_fetch_array($result)) {
+                          array_push($statuses, $row);
+                        }
 
                 echo "<tr>
                         <td style='display: none;' >$send_time</td>
@@ -102,12 +112,14 @@
                           <h6><strong>Plaća: </strong>$paid_by</h6>
                           <h6><strong>napomena: </strong>$comment</h6>
                         </td>
-                        <td>$package_status</td>
-                        <td>$datetime_status</td>";
+                      <td>";
+                        foreach($statuses as $sta){
+                          echo "".$sta['status_name']." - ".$sta['datetime']."<br/>";
+                        }
                         if($status_id != 4){
-                          echo "<td><a href='izmeniPaket.php?id=$package_id' class='btn btn-info'>Izmeni</a></td>";
+                          echo "</td><td><a href='izmeniPaket.php?id=$package_id' class='btn btn-info'>Izmeni</a></td>";
                         }else{
-                          echo "<td><button disabled class='btn btn-info'>Izmeni</button></td>";
+                          echo "</td><td><button disabled class='btn btn-info'>Izmeni</button></td>";
                         }
                       echo "</tr>";
               }
