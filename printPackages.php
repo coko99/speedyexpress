@@ -65,6 +65,7 @@ $str = "
                 <td class='seccond'>
                     <img class='qr-slika' src='".(new QRCode())->render($package_id.'-'.$token)."' alt='QR Code' />
                     <h6>Pošiljalac</h6>
+                    ID: $package_id<br/>
                     $firm_name<br/>
                     $firm_municipality_name $firm_municipality_zip<br/>
                     $firm_street $firm_street_number<br/>

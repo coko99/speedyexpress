@@ -84,6 +84,7 @@ $str = "
         <th scope='row'>$package_id</th>
         <td><img class='qr-slika' src='".(new QRCode())->render($package_id.'-'.$token)."' alt='' /></td>
         <td>
+          ID: $package_id<br/>
           <h6>$recipient</h6>
           <h6>$municipality_name $zip</h6>
           <h6>$street_name $street_number</h6>
