@@ -96,7 +96,7 @@
 
                 echo "<tr>
                         <td style='display: none;' >$send_time</td>
-                        <th scope='row'>$counter</th>
+                        <th scope='row'>$package_id</th>
                         <td>
                           <img class='qr-slika' src='".(new QRCode())->render($package_id.'-'.$token)."' alt='QR Code' />
                         </td>
