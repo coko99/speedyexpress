@@ -60,6 +60,7 @@
                   <th scope="col">PTT</th>
                   <th scope="col">Status</th>
                   <th scope="col">VREME I DATUM STATUSA</th>
+                  <th scope="col">PLAĆENO</th>
                   <th scope="col">ŠTAMPAJ</th>
                 </tr>
               </thead>
@@ -91,6 +92,7 @@
                   $send_time = date("d/m/Y - H:i:s", $package['send_time']);
                   $pst_date = $package['pst_date'];
                   $ptt = $package['ptt'];
+                  $pay = $package['pay'];
 
                   if(!isset($pst_date)){
                     $pst_date = $send_time;
@@ -123,6 +125,7 @@
                   <td><h6>$ptt RSD</h6></td>
                   <td>$package_status</td>
                   <td>$pst_date</td>
+                  <td>$pay</td>
                   <td><a class='btn btn-info' href='printPackagesAdmin.php?id=$id_package'>ŠTAMPAJ</a></td>
                 </tr>
                   ";

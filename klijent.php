@@ -191,6 +191,20 @@
                 Neisporučeni paketi
               </button>
             </li>
+            <li class="nav-item" role="presentation">
+              <button
+                class="nav-link"
+                id="neisporuceni"
+                data-bs-toggle="tab"
+                data-bs-target="#isplaceni"
+                type="button"
+                role="tab"
+                aria-controls="isplaceni"
+                aria-selected="false"
+              >
+                Isplaćeni paketi
+              </button>
+            </li>
             <li class="nav-item mt-2" role="presentation">
               <span id='otkup'>0</span> RSD
             </li>
@@ -315,6 +329,54 @@
                     $counter = 0;
                     foreach($packages as $package){
                       if($package['status_id'] != 4 && $package['status_id'] != 2){
+                        $counter += 1;
+                        $courier_name = $package['courier_name'];
+                        $courier_last_name = $package['courier_last_name'];
+                        $city_name = $package['city_name'];
+                        $municipality_name = $package['municipality_name'];
+                        $package_id = $package['id'];
+
+
+                        echo "<tr>
+                          <th scope='row'>$package_id</th>
+                          <td>
+                            <h6>$courier_name $courier_last_name</h6>
+                          </td>
+                          <td>
+                            <h6>$city_name-$municipality_name</h6>
+                          </td>
+                        </tr>";
+                      }
+                    }
+                    ?>   
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div
+              class="tab-pane fade border-0"
+              id="isplaceni"
+              role="tabpanel"
+              aria-labelledby="isplaceni"
+            >
+              <div
+                class="col-12 table-wrapper-scroll-y my-custom-scrollbar adminPaketi"
+              >
+                <table class="table mb-0">
+                  <thead>
+                    <tr>
+                      <th scope="col ">ID paketa</th>
+
+                      <th scope="col">Kurir/baza</th>
+
+                      <th scope="col">Lokacija</th>
+                    </tr>
+                  </thead>
+                  <tbody class="isplaceni">
+                  <?php
+                    $counter = 0;
+                    foreach($packages as $package){
+                      if($package['status_id'] == 4 && $package['pay'] == 1){
                         $counter += 1;
                         $courier_name = $package['courier_name'];
                         $courier_last_name = $package['courier_last_name'];

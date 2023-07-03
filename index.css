@@ -89,9 +89,13 @@
 }
 
 .isporuceni {
-  background-color: rgb(216, 255, 156);
+  background-color: rgb(156, 209, 255);
 }
 
 .neisporučeni {
   background-color: rgb(255, 104, 104);
+}
+
+.isplaceni {
+  background-color: rgb(216, 255, 156);
 }
