@@ -5,10 +5,13 @@
     header('Location: klijenti.php');
   }
   $id = mysqli_real_escape_string($db, $_GET['id']);
-  if(isset($_GET['date'])){
-    $datetime = mysqli_real_escape_string($db, $_GET['date']);
+  if(isset($_GET['dateFrom']) && isset($_GET['dateTo'])){
+    $datetimeFrom = mysqli_real_escape_string($db, $_GET['dateFrom']);
+    $datetimeTo = mysqli_real_escape_string($db, $_GET['dateTo']);
   }else{
-    $datetime = date('d/m/Y');
+    $datetimeFrom = date('d/m/Y');
+    $datetimeTo = date('d/m/Y');
+
   }
 
   if(isset($_POST['pay'])){
@@ -65,7 +68,7 @@
   WHERE firm.id = $id 
   AND package_status_tracking.status = 1";
   if(isset($datetime)){
-    $sql.=" AND package_status_tracking.datetime BETWEEN STR_TO_DATE('$datetime', '%d/%m/%Y') AND DATE_ADD(STR_TO_DATE('$datetime', '%d/%m/%Y'), INTERVAL 1 DAY);";
+    $sql.=" AND package_status_tracking.datetime BETWEEN STR_TO_DATE('$datetimeFrom', '%d/%m/%Y') AND DATE_ADD(STR_TO_DATE('$datetimeTo', '%d/%m/%Y'), INTERVAL 1 DAY);";
   }
   
   $result = mysqli_query($db, $sql);
@@ -136,15 +139,27 @@
           <h1>PREGLED PAKETA</h1>
 
           <form method="GET">
-          <input type="hidden" name="id" value="<?php echo $id; ?>"> 
-                <div class="input-group date" id="datepicker">
-                  <input onchange="this.form.submit()" autocomplete="off" value="<?php if(isset($_GET['date'])) echo $_GET['date'];?>" placeholder="Izaberi datum" required name='date' type="text" class="form-control"></input>
+            <input type="hidden" name="id" value="<?php echo $id; ?>">
+            <div class="row py-3 px-3">
+              <div class="input-group input-daterange" id="datepicker">
+                  <div class="input-group-addon mx-2 my-2">Datum od</div>
                   <span class="input-group-append">
                       <span class="input-group-text bg-white d-block">
                           <i class="fa fa-calendar"></i>
                       </span>
                   </span>
+                  <input autocomplete="off" requried value="<?php if(isset($_GET['dateFrom'])) echo $_GET['dateFrom'];?>" required name='dateFrom' type="text" class="form-control"></input>
+                  <div class="input-group-addon mx-2 my-2">do</div>
+                  <span class="input-group-append">
+                      <span class="input-group-text bg-white d-block">
+                          <i class="fa fa-calendar"></i>
+                      </span>
+                  </span>
+                  <input autocomplete="off" requried value="<?php if(isset($_GET['dateTo'])) echo $_GET['dateTo'];?>" required name='dateTo' type="text" class="form-control">
                 </div>
+                <button class='btn btn-info' type="submit">Potvrdi</button>
+            </div> 
+            
           </form>
 
           <ul class="nav nav-tabs" id="myTab" role="tablist">

@@ -204,7 +204,23 @@
       
                                   var cursorPosition = this.selectionStart;
                                   // Search the column for that value
-                                  api
+                                  if(colIdx === 5){
+                                      var searchTerm = this.value.toLowerCase(),
+                                    regex = '^' + searchTerm;
+                                    console.log(regex);
+                                    api
+                                      .column(colIdx)
+                                      .search(
+                                        this.value != ''
+                                        ? regex
+                                        : '',
+                                          this.value != '',
+                                          this.value == ''
+                                      )
+                                      .draw();
+                                    
+                                  }else{
+                                    api
                                       .column(colIdx)
                                       .search(
                                           this.value != ''
@@ -214,6 +230,8 @@
                                           this.value == ''
                                       )
                                       .draw();
+                                  }
+                                  
                               })
                               .on('keyup', function (e) {
                                   e.stopPropagation();
