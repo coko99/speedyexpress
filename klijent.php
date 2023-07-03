@@ -27,6 +27,18 @@
     header("Location: printPackagesKlient.php?idsForSearch=$ids");
   }
 
+  if(isset($_POST['print_mesecni'])){
+    $package_for_pay_array = [];
+    foreach($_POST as $key => $value){
+      if(str_starts_with($key, "print#")){
+        array_push($package_for_pay_array, explode("#", $key)[1]);
+      }
+    }
+    $ids = join(",",$package_for_pay_array);
+
+    header("Location: printPackagesKlient.php?idsForSearch=$ids");
+  }
+
   $sql = "SELECT firm.*,
     street.name AS street_name,
     municipality.name AS municipality_name,
@@ -362,9 +374,11 @@
               <div
                 class="col-12 table-wrapper-scroll-y my-custom-scrollbar adminPaketi"
               >
+              <form action="" method="POST">
                 <table class="table mb-0">
                   <thead>
                     <tr>
+                      <th scope="col">#</th>
                       <th scope="col ">ID paketa</th>
 
                       <th scope="col">Kurir/baza</th>
@@ -386,6 +400,14 @@
 
 
                         echo "<tr>
+                          <td><input
+                          class='checkbox_print'
+                          type='checkbox'
+                          id='checkbox_print'
+                          name='print#$package_id' 
+                          ";
+                          echo "/></td>
+                          
                           <th scope='row'>$package_id</th>
                           <td>
                             <h6>$courier_name $courier_last_name</h6>
@@ -399,6 +421,8 @@
                     ?>   
                   </tbody>
                 </table>
+                    <button name='print_mesecni' type="submit" class="btn btn-info">Štampaj</button>
+                </form>
               </div>
             </div>
           </div>
