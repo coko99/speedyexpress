@@ -67,7 +67,7 @@
   LEFT JOIN courier ON package.curier_id = courier.id 
   WHERE firm.id = $id 
   AND package_status_tracking.status = 1";
-  if(isset($datetime)){
+  if(isset($datetimeFrom) && isset($datetimeTo) ){
     $sql.=" AND package_status_tracking.datetime BETWEEN STR_TO_DATE('$datetimeFrom', '%d/%m/%Y') AND DATE_ADD(STR_TO_DATE('$datetimeTo', '%d/%m/%Y'), INTERVAL 1 DAY);";
   }
   
