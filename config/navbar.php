@@ -86,6 +86,13 @@
                   class="nav-item text-uppercase nav-link <?php if($active == 3) echo "active"; ?>"
                   >Pošalji paket</a
                 >
+                <?php if($firm_id == 35){?>
+                <a
+                  href="posaljiPaketTemp.php"
+                  class="nav-item text-uppercase nav-link <?php if($active == 4) echo "active"; ?>"
+                  >Uvezi pakete</a
+                >
+                <?php }?>
               </div>
               <div class="navbar-nav">
                 <a href="logout.php" class="nav-item nav-link" style="width: 120px"
