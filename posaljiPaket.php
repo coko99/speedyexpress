@@ -287,7 +287,9 @@ use chillerlan\QRCode\QRCode;
                               <h6><strong>Plaća: </strong>$paid_by</h6>
                               <h6><strong>napomena: </strong>$comment</h6>
                             </td>
-                            <td><a href='?delete_id=$package_id' class='confirmation btn btn-danger'>Obrisi</a></td>
+                            <td><a href='?delete_id=$package_id' class='confirmation btn btn-danger'>Obrisi</a>
+                            <a href='print_single_package.php?print_id=$package_id' class='btn btn-success my-2'>Štampaj</a>
+                            </td>
                           </tr>";
                   }
                   ?>
