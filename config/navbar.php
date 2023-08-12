@@ -86,7 +86,7 @@
                   class="nav-item text-uppercase nav-link <?php if($active == 3) echo "active"; ?>"
                   >Pošalji paket</a
                 >
-                <?php if($firm_id == 35){?>
+                <?php if($firm_id == 35 || $firm_id == 42){?>
                 <a
                   href="posaljiPaketTemp.php"
                   class="nav-item text-uppercase nav-link <?php if($active == 4) echo "active"; ?>"
