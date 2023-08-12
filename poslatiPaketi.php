@@ -55,7 +55,7 @@
         <form method="GET">
             <div class="row py-3 px-3">
               <div class="input-group input-daterange" id="datepicker">
-                  <div class="input-group-addon mx-2 my-2">Datum od</div>
+                  <div class="input-group-addon mx-2 my-2">Datum slanja od</div>
                   <span class="input-group-append">
                       <span class="input-group-text bg-white d-block">
                           <i class="fa fa-calendar"></i>
