@@ -63,14 +63,35 @@ use chillerlan\QRCode\QRCode;
     logEvent('User '.$login_session.': '.$sql);
   }
 
-  $sql = "SELECT package.*, 
+  if($firm_id == 43|| $firm_id == 35){
+    $sql = "SELECT package.*, 
   municipality.name AS municipality_name, 
   municipality.zip AS zip,
   street.name AS street_name 
   FROM `package`
   LEFT JOIN street ON package.street_id = street.id
   LEFT JOIN municipality ON street.municipality_id = municipality.id
-  WHERE firm_id = $firm_id AND status_id = 1";
+  WHERE firm_id = $firm_id AND status_id = 1
+  order by package.comment";
+  }else{
+    $sql = "SELECT package.*, 
+    municipality.name AS municipality_name, 
+    municipality.zip AS zip,
+    street.name AS street_name 
+    FROM `package`
+    LEFT JOIN street ON package.street_id = street.id
+    LEFT JOIN municipality ON street.municipality_id = municipality.id
+    WHERE firm_id = $firm_id AND status_id = 1";
+  }
+  // $sql = "SELECT package.*, 
+  // municipality.name AS municipality_name, 
+  // municipality.zip AS zip,
+  // street.name AS street_name 
+  // FROM `package`
+  // LEFT JOIN street ON package.street_id = street.id
+  // LEFT JOIN municipality ON street.municipality_id = municipality.id
+  // WHERE firm_id = $firm_id AND status_id = 1
+  // order by package.comment";
   $result = mysqli_query($db, $sql);
   $packages = [];
   while($row = mysqli_fetch_array($result)) {
@@ -219,21 +240,29 @@ use chillerlan\QRCode\QRCode;
         <!-- Komande za pošiljke -->
         <div class="col-md-8 col-sm-12 border mb-5">
           <div class="row d-flex justify-content-between">
-            <div class="col-6 align-self-center p-3">
+            <div class="col-4 align-self-center p-3">
               <h5>
                 POŠILJKE ZA DAN
                 <strong><span id="prikazDatumaVremena"></span></strong>
               </h5>
             </div>
-            <div class="col-6 align-self-center">
+            <div class="col-8 align-self-center">
               <div class="row">
-                <div class="col-4 text-center">
+                <div class="col-3 text-center">
                   <button data-bs-toggle="modal" data-bs-target="#exampleModal" class="btn btn-primary">Excel</button>
                 </div>
-                <div class="col-4 text-center">
+                <div class="col-3 text-center">
                   <a href="printPackages.php" class="btn btn-primary">Štampaj</a>
                 </div>
-                <div class="col-4 text-center">
+                <?php 
+                                    if($firm_id == 43 || $firm_id == 35){
+
+                echo '<div class="col-3 text-center">
+                  <a href="print_single_package_grup.php" class="btn btn-primary">Štampaj</a>
+                </div>';
+                                    }
+                ?>
+                <div class="col-3 text-center">
                   <form method='POST'><button name='send_packages' type='submit' class="btn btn-success">POŠALJI</button></form>
                 </div>
               </div>
@@ -247,6 +276,11 @@ use chillerlan\QRCode\QRCode;
                 <thead>
                   <tr>
                     <th scope="col ">#ID</th>
+                    <?php 
+                    if($firm_id == 43 || $firm_id == 35){
+                    echo '<th scope="col ">Napomena</th>';
+                    }
+                    ?>
                     <th scope="col">QR</th>
                     <th scope="col">Primalac</th>
                     <th scope="col">Opis</th>
@@ -271,8 +305,15 @@ use chillerlan\QRCode\QRCode;
                     $token = $package['token'];
 
                     echo "<tr>
-                            <th scope='row'>$package_id</th>
-                            <td>
+                            <th scope='row'>$package_id</th>";
+                            if($firm_id == 43 || $firm_id == 35){
+                              echo "<td>
+                      <h6><strong>$comment</h6>
+                      </td>";
+                              }
+                            
+                      
+                      echo "<td>
                               <img class='qr-slika' src='".(new QRCode())->render($package_id.'-'.$token)."' alt='QR Code' />
                             </td>
                             <td>
@@ -285,7 +326,6 @@ use chillerlan\QRCode\QRCode;
                               <h6><strong>Otkup: </strong>$ransome rsd</h6>
                               <h6><strong>Vrednost: </strong>$ransome rsd</h6>
                               <h6><strong>Plaća: </strong>$paid_by</h6>
-                              <h6><strong>napomena: </strong>$comment</h6>
                             </td>
                             <td><a href='?delete_id=$package_id' class='confirmation btn btn-danger'>Obrisi</a>
                             <a href='print_single_package.php?print_id=$package_id' class='btn btn-success my-2'>Štampaj</a>
