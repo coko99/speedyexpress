@@ -278,7 +278,7 @@ use chillerlan\QRCode\QRCode;
                     <th scope="col ">#ID</th>
                     <?php 
                     if($firm_id == 43 || $firm_id == 35){
-                    echo '<th scope="col ">Napomena</th>';
+                    echo '<th scope="col ">Opis</th>';
                     }
                     ?>
                     <th scope="col">QR</th>
