@@ -52,7 +52,8 @@ if(isset($_GET['print_id'])){
           $municipality_name = $package['municipality_name'];
           $token = $package['token'];
           $ptt = $package['ptt'];
-  
+          $content = $package['content'];
+
   
           $firm_name = $package['firm_name'];
           $firm_street = $package['firm_street_name'];
@@ -93,7 +94,7 @@ if(isset($_GET['print_id'])){
         </tr>
         <tr>
           <td class='seccond' colspan='3'>
-          $content 
+            $content 
           </td>
         </tr>";
 }
