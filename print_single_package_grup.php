@@ -25,7 +25,7 @@ require 'vendor/autoload.php';
   LEFT JOIN street AS firm_street ON firm.street_id = firm_street.id
   LEFT JOIN municipality as firm_municipality ON firm_street.municipality_id = firm_municipality.id
   WHERE firm_id = $firm_id AND status_id = 1
-  order by package.comment";
+  order by package.content";
     $result = mysqli_query($db, $sql);
     $packages = [];
     while($row = mysqli_fetch_array($result)) {
@@ -52,7 +52,7 @@ require 'vendor/autoload.php';
           $municipality_name = $package['municipality_name'];
           $token = $package['token'];
           $ptt = $package['ptt'];
-  
+          $content = $package['content'];
   
           $firm_name = $package['firm_name'];
           $firm_street = $package['firm_street_name'];
@@ -78,6 +78,7 @@ require 'vendor/autoload.php';
                      <div class='napomena'>
                       <br/><h6>Otkup:</h6> $ransome RSD <br/>
                       <h6>Plaća:</h6> $paid_by <br/>
+                      <h6>Napomena:</h6> $comment
                       </div>
                   </td>
                 </tr>
@@ -92,7 +93,7 @@ require 'vendor/autoload.php';
                 </tr>
                 <tr>
                   <td class='seccond' colspan='3'>
-                    $comment
+                    $content 
                   </td>
                 </tr>";
       }

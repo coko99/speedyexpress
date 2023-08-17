@@ -78,6 +78,7 @@ if(isset($_GET['print_id'])){
              <div class='napomena'>
               <br/><h6>Otkup:</h6> $ransome RSD <br/>
               <h6>Plaća:</h6> $paid_by <br/>
+              <h6>Napomena:</h6> $comment
               </div>
           </td>
         </tr>
@@ -92,7 +93,7 @@ if(isset($_GET['print_id'])){
         </tr>
         <tr>
           <td class='seccond' colspan='3'>
-            $comment
+          $content 
           </td>
         </tr>";
 }

@@ -72,7 +72,7 @@ use chillerlan\QRCode\QRCode;
   LEFT JOIN street ON package.street_id = street.id
   LEFT JOIN municipality ON street.municipality_id = municipality.id
   WHERE firm_id = $firm_id AND status_id = 1
-  order by package.comment";
+  order by package.content";
   }else{
     $sql = "SELECT package.*, 
     municipality.name AS municipality_name, 
@@ -303,12 +303,13 @@ use chillerlan\QRCode\QRCode;
                     $zip = $package['zip'];
                     $municipality_name = $package['municipality_name'];
                     $token = $package['token'];
+                    $content = $package['content'];
 
                     echo "<tr>
                             <th scope='row'>$package_id</th>";
                             if($firm_id == 43 || $firm_id == 35){
                               echo "<td>
-                      <h6><strong>$comment</h6>
+                      <h6><strong>$content </h6>
                       </td>";
                               }
                             
