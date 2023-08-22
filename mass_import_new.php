@@ -79,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $phone = $row[5];
       $content = $row[9];
       $shipping_fee = $row[10];
-      $ptt = -1*($row[19] + $row[20]);
+      $ptt = 0;
       $comment = "/";
       $ransome_type_id = 1;
 
