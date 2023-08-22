@@ -75,6 +75,7 @@ require 'vendor/autoload.php';
 
                   </td>
                   <td rowspan='2' style='padding: 10px'>
+                  <img width='100px' src='logosajt.jpeg' />
                      <div class='napomena'>
                       <br/><h6>Otkup:</h6> $ransome RSD <br/>
                       <h6>Plaća:</h6> $paid_by <br/>
