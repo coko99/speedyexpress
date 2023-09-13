@@ -109,6 +109,21 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($courier) && isset($token)) {
     }else if($status_id == 3){
       $curl = curl_init();
 
+      $request_text='{
+        "destinations": [
+        "'.$data_response['phone'].'"
+        ],
+        "sender": "AKTON",
+        "transactionId": "4e519e10-db88-4f53-b960-3a30e874af84",
+        "message": "Poštovani, Vaš paket je preuzeo kurir. Očekujte dostavu od 09h do 16h. Vaš SpeedyExpress.",
+        "ttl": 60,
+        "sms": {
+            "originator": "SMSakt",
+            "message": "Poštovani, Vaš paket je preuzeo kurir. Očekujte dostavu od 09h do 16h. Vaš SpeedyExpress.",
+            "unicode": true
+        }
+    }';
+
     curl_setopt_array($curl, array(
       CURLOPT_URL => 'https://viber.starionbgd.com/send',
       CURLOPT_RETURNTRANSFER => true,
@@ -118,22 +133,9 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($courier) && isset($token)) {
       CURLOPT_FOLLOWLOCATION => true,
       CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
       CURLOPT_CUSTOMREQUEST => 'POST',
-      CURLOPT_POSTFIELDS =>'{
-        "destinations": [
-        "'.$data_response['phone'].'"
-        ],
-        "sender": "AKTON",
-        "transactionId": "4e519e10-db88-4f53-b960-3a30e874af84",
-        "message": "Poštovani, Vaš paket je preuzeo kurir. Očekujte dostavu od 09h do 16h. Vaš SpeedyExpress.",
-        "ttl": 3600,
-        "sms": {
-            "originator": "SMSakt",
-            "message": "Poštovani, Vaš paket je preuzeo kurir. Očekujte dostavu od 09h do 16h. Vaš SpeedyExpress.",
-            "unicode": true
-        }
-    }',
+      CURLOPT_POSTFIELDS =>$request_text,
       CURLOPT_HTTPHEADER => array(
-        'Authorization: Basic ',
+        'Authorization: Basic =',
         'Content-Type: application/json'
       ),
     ));
@@ -142,6 +144,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($courier) && isset($token)) {
 
     curl_close($curl);
     echo $response;
+    echo $request_text;
     }
 
     header('Content-Type: application/json; charset=utf-8');
