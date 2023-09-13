@@ -115,6 +115,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($courier) && isset($token)) {
       }else if(str_starts_with($phone, "0")){
         $phone = preg_replace("/0/","381",$phone, 1);
       }
+      $phone = str_replace(" ","",$phone);
 
       $request_text='{
         "destinations": [
