@@ -111,7 +111,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($courier) && isset($token)) {
 
       $request_text='{
         "destinations": [
-        "'.$data_response['phone'].'"
+        "'.$data_response[0]['phone'].'"
         ],
         "sender": "AKTON",
         "transactionId": "4e519e10-db88-4f53-b960-3a30e874af84",
@@ -135,7 +135,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($courier) && isset($token)) {
       CURLOPT_CUSTOMREQUEST => 'POST',
       CURLOPT_POSTFIELDS =>$request_text,
       CURLOPT_HTTPHEADER => array(
-        'Authorization: Basic =',
+        'Authorization: Basic ',
         'Content-Type: application/json'
       ),
     ));
@@ -143,8 +143,6 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($courier) && isset($token)) {
     $response = curl_exec($curl);
 
     curl_close($curl);
-    echo $response;
-    echo $request_text;
     }
 
     header('Content-Type: application/json; charset=utf-8');
