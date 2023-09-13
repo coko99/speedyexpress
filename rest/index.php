@@ -106,6 +106,42 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($courier) && isset($token)) {
       $result = mysqli_query($db, $sql);
       $row = mysqli_fetch_array($result);
       array_push($data_response, $row);
+    }else if($status_id == 3){
+      $curl = curl_init();
+
+    curl_setopt_array($curl, array(
+      CURLOPT_URL => 'https://viber.starionbgd.com/send',
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_ENCODING => '',
+      CURLOPT_MAXREDIRS => 10,
+      CURLOPT_TIMEOUT => 0,
+      CURLOPT_FOLLOWLOCATION => true,
+      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_CUSTOMREQUEST => 'POST',
+      CURLOPT_POSTFIELDS =>'{
+        "destinations": [
+        "'.$data_response['phone'].'"
+        ],
+        "sender": "AKTON",
+        "transactionId": "4e519e10-db88-4f53-b960-3a30e874af84",
+        "message": "Poštovani, Vaš paket je preuzeo kurir. Očekujte dostavu od 09h do 16h. Vaš SpeedyExpress.",
+        "ttl": 3600,
+        "sms": {
+            "originator": "SMSakt",
+            "message": "Poštovani, Vaš paket je preuzeo kurir. Očekujte dostavu od 09h do 16h. Vaš SpeedyExpress.",
+            "unicode": true
+        }
+    }',
+      CURLOPT_HTTPHEADER => array(
+        'Authorization: Basic ',
+        'Content-Type: application/json'
+      ),
+    ));
+
+    $response = curl_exec($curl);
+
+    curl_close($curl);
+    echo $response;
     }
 
     header('Content-Type: application/json; charset=utf-8');
