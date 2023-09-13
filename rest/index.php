@@ -113,7 +113,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($courier) && isset($token)) {
       if(str_starts_with($phone, "+")){
         $phone = str_replace("+","",$phone);
       }else if(str_starts_with($phone, "0")){
-        $phone = str_replace("0","381",$phone, 1);
+        $phone = preg_replace("/0/","381",$phone, 1);
       }
 
       $request_text='{
