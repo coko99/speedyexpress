@@ -109,9 +109,16 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($courier) && isset($token)) {
     }else if($status_id == 3){
       $curl = curl_init();
 
+      $phone = $data_response[0]['phone'];
+      if(str_starts_with($phone, "+")){
+        $phone = str_replace("+","",$phone);
+      }else if(str_starts_with($phone, "0")){
+        $phone = str_replace("0","381",$phone, 1);
+      }
+
       $request_text='{
         "destinations": [
-        "'.$data_response[0]['phone'].'"
+        "'.$phone.'"
         ],
         "sender": "AKTON",
         "transactionId": "4e519e10-db88-4f53-b960-3a30e874af84",
@@ -135,7 +142,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($courier) && isset($token)) {
       CURLOPT_CUSTOMREQUEST => 'POST',
       CURLOPT_POSTFIELDS =>$request_text,
       CURLOPT_HTTPHEADER => array(
-        'Authorization: Basic ',
+        'Authorization: Basic =',
         'Content-Type: application/json'
       ),
     ));
