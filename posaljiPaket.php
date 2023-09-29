@@ -248,20 +248,16 @@ use chillerlan\QRCode\QRCode;
             </div>
             <div class="col-8 align-self-center">
               <div class="row">
-                <div class="col-3 text-center">
+                <!-- <div class="col-3 text-center">
                   <button data-bs-toggle="modal" data-bs-target="#exampleModal" class="btn btn-primary">Excel</button>
-                </div>
+                </div> -->
                 <div class="col-3 text-center">
                   <a href="printPackages.php" class="btn btn-primary">Štampaj</a>
                 </div>
-                <?php 
-                                    if($firm_id == 43 || $firm_id == 35){
 
-                echo '<div class="col-3 text-center">
+                <div class="col-3 text-center">
                   <a href="print_single_package_grup.php" class="btn btn-primary">Štampaj</a>
-                </div>';
-                                    }
-                ?>
+                </div>
                 <div class="col-3 text-center">
                   <form method='POST'><button name='send_packages' type='submit' class="btn btn-success">POŠALJI</button></form>
                 </div>
@@ -276,11 +272,7 @@ use chillerlan\QRCode\QRCode;
                 <thead>
                   <tr>
                     <th scope="col ">#ID</th>
-                    <?php 
-                    if($firm_id == 43 || $firm_id == 35){
-                    echo '<th scope="col ">Opis</th>';
-                    }
-                    ?>
+                    <th scope="col ">Opis</th>
                     <th scope="col">QR</th>
                     <th scope="col">Primalac</th>
                     <th scope="col">Opis</th>
@@ -307,11 +299,9 @@ use chillerlan\QRCode\QRCode;
 
                     echo "<tr>
                             <th scope='row'>$package_id</th>";
-                            if($firm_id == 43 || $firm_id == 35){
                               echo "<td>
                       <h6><strong>$content </h6>
                       </td>";
-                              }
                             
                       
                       echo "<td>

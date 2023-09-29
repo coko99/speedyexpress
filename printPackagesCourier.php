@@ -62,11 +62,13 @@ $str = "
                   $ransome = $package['shipping_fee'];
                   $paid_by = ($package['ransom_type_id'] == 1) ? 'Primalac' : 'Pošiljalac';
                   $comment = $package['comment'];
+                  $content = $package['content'];
                   $package_id = $package['id'];
                   $street_number = $package['street_number'];
                   $street_name = $package['street_name'];
                   $zip = $package['zip'];
                   $municipality_name = $package['municipality_name'];
+                  $send_time = date('d-m-Y', $package['send_time']);
 
                   $firm_name = $package['firm_name'];
                   $firm_street_number = $package['firm_street_number'];
@@ -74,6 +76,7 @@ $str = "
                   $firm_zip = $package['firm_zip'];
                   $firm_municipality_name = $package['firm_municipality_name'];
                   $firm_phone = $package['firm_phone'];
+                  
                   $ptt = $package['ptt'];
 
                   $package_status = $package['status_name'];
@@ -107,7 +110,9 @@ $str = "
           <h6><strong>Otkup: </strong>$ransome rsd</h6>
           <h6><strong>Vrednost: </strong>$ransome rsd</h6>
           <h6><strong>Plaća: </strong>$paid_by</h6>
-          <h6><strong>napomena: </strong>$comment</h6>
+          <h6><strong>Napomena: </strong>$comment</h6>
+          <h6>Opis:</h6> $content <br/>
+          <h6>Datum slanja:</h6> $send_time <br/>
         </td>
         <td>$package_status</td>
         <td>$ptt</td>

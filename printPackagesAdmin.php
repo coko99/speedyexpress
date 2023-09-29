@@ -18,7 +18,8 @@ $sql = "SELECT package.*,
   firm.street_number AS firm_street_number,
   firm_street.name AS firm_street_name,
   firm_municipality.name AS firm_municipality_name,
-  firm_municipality.zip AS firm_municipality_zip
+  firm_municipality.zip AS firm_municipality_zip,
+  firm.phone AS firm_phone
   FROM `package`
   LEFT JOIN street ON package.street_id = street.id
   LEFT JOIN municipality ON street.municipality_id = municipality.id
@@ -45,11 +46,14 @@ $str = "
         $ransome = $package['shipping_fee'];
         $paid_by = ($package['ransom_type_id'] == 1) ? 'Primalac' : 'Pošiljalac';
         $comment = $package['comment'];
+        $content = $package['content'];
         $package_id = $package['id'];
         $street_number = $package['street_number'];
         $street_name = $package['street_name'];
         $zip = $package['zip'];
         $municipality_name = $package['municipality_name'];
+        $send_time = date('d-m-Y', $package['send_time']);
+
         $token = $package['token'];
         $ptt = $package['ptt'];
 
@@ -59,6 +63,7 @@ $str = "
         $firm_municipality_name = $package['firm_municipality_name'];
         $firm_municipality_zip = $package['firm_municipality_zip'];
         $firm_street_number = $package['firm_street_number'];
+        $firm_phone = $package['firm_phone'];
 
 
         if($counter % 2 != 0){
@@ -73,6 +78,7 @@ $str = "
                     $firm_name<br/>
                     $firm_municipality_name $firm_municipality_zip<br/>
                     $firm_street $firm_street_number<br/>
+                    $firm_phone;
                     <h6>Primalac</h6>
                     $recipient<br/>
                     $municipality_name $zip<br/>
@@ -86,6 +92,8 @@ $str = "
                     <h6>PTT:</h6> $ptt RSD <br/>
                     <h6>Plaća:</h6> $paid_by RSD <br/>
                     <h6>Napomena:</h6> $comment <br/>
+                    <h6>Opis:</h6> $content <br/>
+                    <h6>Datum slanja:</h6> $send_time <br/>
                     </div>
                 </td>
               ";
