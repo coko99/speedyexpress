@@ -79,9 +79,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $phone = $row[5];
       $content = $row[9];
       $shipping_fee = $row[10];
-      $ptt = 0;
-      $comment = "/";
-      $ransome_type_id = 1;
+      if($firm_id == 43){
+        $ptt = 0;
+      }else{
+        $ptt = $row[19];
+      }
+      $comment = $row[22];
+      if($firm_id == 43){
+        $ransome_type_id = 1;
+      }else{
+        $ransome_type_id = $row[23];
+      }
 
       $municipality_name = $row[6];
       $municipality_zip = $row[8];
