@@ -78,8 +78,13 @@ require 'vendor/autoload.php';
                   <td rowspan='2' style='padding: 10px'>
                   <img width='100px' src='logosajt.jpeg' />
                      <div class='napomena'>
-                      <br/><h6>Otkup:</h6> $ransome RSD <br/>
-                      <h6>Plaća:</h6> $paid_by <br/>
+                      <br/><h6>Otkup:</h6> $ransome RSD <br/>";
+                      if($firm_id != 43){
+                        $str.="<h6>PTT:</h6> $ptt RSD <br/>";
+                      }
+                      
+
+                      $str.="<h6>Plaća:</h6> $paid_by <br/>
                       <h6>Napomena:</h6> $comment
                       <h6>Datum slanja:</h6> $send_time <br/>
                       </div>
