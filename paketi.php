@@ -96,7 +96,6 @@
                   <th scope="col">Opis</th>
                   <th scope="col">PTT</th>
                   <th scope="col">Status</th>
-                  <th scope="col">VREME I DATUM STATUSA</th>
                   <th scope="col">PLAĆENO</th>
                   <th scope="col">ŠTAMPAJ</th>
                 </tr>
@@ -176,7 +175,7 @@
                     echo "".$sta['status_name']." - ".$sta['datetime']."<br/>";
                   }
                  
-                  echo "</td><td>$pst_date</td>
+                  echo "</td>
                   <td>$pay</td>
                   <td><a class='btn btn-info' href='printPackagesAdmin.php?id=$id_package'>ŠTAMPAJ</a></td>
                 </tr>
