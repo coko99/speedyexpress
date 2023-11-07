@@ -137,6 +137,17 @@
 
                   $token = $package['token'];
 
+                  $sql = "SELECT package_status_tracking.*, 
+                        status.name AS status_name
+                        FROM `package_status_tracking`
+                        LEFT JOIN status ON package_status_tracking.status_id = status.id
+                        WHERE package_status_tracking.package_id = $package_id; ";
+                        $result = mysqli_query($db, $sql);
+                        $statuses = [];
+                        while($row = mysqli_fetch_array($result)) {
+                          array_push($statuses, $row);
+                        }
+
                   echo "
                   <tr>
                   <th scope='row'>$id_package</th>
@@ -159,9 +170,13 @@
                     <h6><strong>Plaća: </strong>$paid_by</h6>
                     <h6><strong>napomena: </strong>$comment</h6>
                   </td>
-                  <td><h6>$ptt RSD</h6></td>
-                  <td>$package_status</td>
-                  <td>$pst_date</td>
+                  <td><h6>$ptt RSD</h6></td><td>";
+
+                  foreach($statuses as $sta){
+                    echo "".$sta['status_name']." - ".$sta['datetime']."<br/>";
+                  }
+                 
+                  echo "</td><td>$pst_date</td>
                   <td>$pay</td>
                   <td><a class='btn btn-info' href='printPackagesAdmin.php?id=$id_package'>ŠTAMPAJ</a></td>
                 </tr>
