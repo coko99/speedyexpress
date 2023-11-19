@@ -133,10 +133,15 @@
                   $status_track = $package['status_tracking_gr'];
                   $token = $package['token'];
 
-                  $datetime = new DateTime($send_time);
+                  $date_send ="";
+                  $time_send="";
+                  if(isset($send_time)){
+                    $datetime = new DateTime($send_time);
 
-                  $date_send = $datetime->format('d-m-Y');
-                  $time_send = $datetime->format('H:i:s');
+                    $date_send = $datetime->format('d-m-Y');
+                    $time_send = $datetime->format('H:i:s');
+                  }
+                  
 
                   echo "
                   <tr>
