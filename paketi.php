@@ -200,10 +200,10 @@
 
         var oTable = $('#example').DataTable({
           paging: false,
-          // dom: 'Bfrtip',
-          // buttons: [
-          //     'copy', 'csv', 'excel', 'pdf', 'print'
-          // ],
+          dom: 'Bfrtip',
+          buttons: [
+              'excel'
+          ],
           paging: false,
           language: {
                       "url": "//cdn.datatables.net/plug-ins/1.10.18/i18n/Serbian.json"

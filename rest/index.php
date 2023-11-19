@@ -1,6 +1,20 @@
 <?php
 include('../config/config.php');
 
+function guidv4($data = null) {
+    // Generate 16 bytes (128 bits) of random data or use the data passed into the function.
+    $data = $data ?? random_bytes(16);
+    assert(strlen($data) == 16);
+
+    // Set version to 0100
+    $data[6] = chr(ord($data[6]) & 0x0f | 0x40);
+    // Set bits 6-7 to 10
+    $data[8] = chr(ord($data[8]) & 0x3f | 0x80);
+
+    // Output the 36 character UUID.
+    return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
+}
+
 function logEvent($message) {
     if ($message != '') {
         // Add a timestamp to the start of the $message
@@ -78,79 +92,108 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($courier) && isset($token)) {
     LEFT JOIN firm ON package.firm_id = firm.id
     WHERE token = $package_token 
     AND package.id = $package_id 
-    AND package.status_id != 0 
-    AND package.status_id != 4 ";
+    AND package.status_id != 0 ";
 
     $result = mysqli_query($db, $sql);
     $data_response = [];
     while($row = mysqli_fetch_array($result)) {
       array_push($data_response, $row);
     }
+
+    $sql = "SELECT * 
+    FROM configuration WHERE id = 1;";
+    $result = mysqli_query($db, $sql);
+    $send_sms = mysqli_fetch_array($result)['send_sms'];
+
     // logEvent('User '.$courier_id.': '.$sql);
     if($status_id == 4){
-      $sql = "SELECT package.*, 
-      municipality.name AS municipality_name, 
-      municipality.zip AS zip,
-      street.name AS street_name, 
-      firm.name AS firm,
-      city.name AS city_name
-      FROM `package`
-      LEFT JOIN street ON package.street_id = street.id
-      LEFT JOIN municipality ON street.municipality_id = municipality.id
-      LEFT JOIN city ON municipality.city_id = city.id
-      LEFT JOIN firm ON package.firm_id = firm.id
-      WHERE token = $package_token 
-      AND package.id = $package_id 
-      AND package.status_id != 0";
+    //   $sql = "SELECT package.*, 
+    //   municipality.name AS municipality_name, 
+    //   municipality.zip AS zip,
+    //   street.name AS street_name, 
+    //   firm.name AS firm,
+    //   city.name AS city_name
+    //   FROM `package`
+    //   LEFT JOIN street ON package.street_id = street.id
+    //   LEFT JOIN municipality ON street.municipality_id = municipality.id
+    //   LEFT JOIN city ON municipality.city_id = city.id
+    //   LEFT JOIN firm ON package.firm_id = firm.id
+    //   WHERE token = $package_token 
+    //   AND package.id = $package_id 
+    //   AND package.status_id != 0";
 
-      $result = mysqli_query($db, $sql);
-      $row = mysqli_fetch_array($result);
-      array_push($data_response, $row);
-    }else if($status_id == 3){
-      $curl = curl_init();
-
-      $phone = $data_response[0]['phone'];
-      if(str_starts_with($phone, "+")){
-        $phone = str_replace("+","",$phone);
-      }else if(str_starts_with($phone, "0")){
-        $phone = preg_replace("/0/","381",$phone, 1);
-      }
-      $phone = str_replace(" ","",$phone);
-
-      $request_text='{
-        "destinations": [
-        "'.$phone.'"
-        ],
-        "sender": "AKTON",
-        "transactionId": "4e519e10-db88-4f53-b960-3a30e874af84",
-        "message": "Poštovani, Vaš paket je preuzeo kurir. Očekujte dostavu od 09h do 16h. Vaš SpeedyExpress.",
-        "ttl": 60,
-        "sms": {
-            "originator": "SMSakt",
-            "message": "Poštovani, Vaš paket je preuzeo kurir. Očekujte dostavu od 09h do 16h. Vaš SpeedyExpress.",
-            "unicode": true
+    //   $result = mysqli_query($db, $sql);
+    //   $row = mysqli_fetch_array($result);
+    //   array_push($data_response, $row);
+    }else if(($status_id == 3 || $status_id == 9) && $send_sms == 1){
+        
+        $phone = $data_response[0]['phone'];
+          if(str_starts_with($phone, "+")){
+            $phone = str_replace("+","",$phone);
+          }else if(str_starts_with($phone, "0")){
+            $phone = preg_replace("/0/","381",$phone, 1);
+          }
+          $phone = str_replace(" ","",$phone);
+     
+        $curl = curl_init();
+        
+        $ptt = $data_response[0]['ptt'];
+        $shipping_fee = $data_response[0]['shipping_fee'];
+        $fee = 0;
+        if($data_response[0]['ransom_type_id'] == 1){
+            $fee = $ptt + $shipping_fee;
+        }else{
+            $fee = $shipping_fee;
         }
-    }';
 
-    curl_setopt_array($curl, array(
-      CURLOPT_URL => 'https://viber.starionbgd.com/send',
-      CURLOPT_RETURNTRANSFER => true,
-      CURLOPT_ENCODING => '',
-      CURLOPT_MAXREDIRS => 10,
-      CURLOPT_TIMEOUT => 0,
-      CURLOPT_FOLLOWLOCATION => true,
-      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-      CURLOPT_CUSTOMREQUEST => 'POST',
-      CURLOPT_POSTFIELDS =>$request_text,
-      CURLOPT_HTTPHEADER => array(
-        'Authorization: Basic =',
-        'Content-Type: application/json'
-      ),
-    ));
+        $sms_text = "";
+        if($status_id == 3){
+          $sms_text = '{
+            "username":"speedexpviber",
+            "password":"",
+            "originator":"SPEEDYkurir",
+            "msisdn":["'.$phone.'"],
+            "type":"text",
+            "message":"Postovani vas paket je preuzeo Speedy kurir molimo vas da obezbedite prijem paketa u vremenskom periodu od 9h do 17h na vasoj adresi. Iznos vaseg paketa je '.$fee.' din. Vas speedy kurir. www.speedyexpress.rs",
+            "sequence":"'.time().'",
+            "priority":1,
+            "dr":false
+            }';
+        }else{
+          $sms_text = '{
+            "username":"speedexpviber",
+            "password":"",
+            "originator":"SPEEDYkurir",
+            "msisdn":["'.$phone.'"],
+            "type":"text",
+            "message":"Postovni, doslo je do kvara dostavnog vozila kurira. Vas paket ce sutra biti isporucen.Hvala na razumevanju i strpljenju. Vas Speedy kurir www.speedyexpress.rs",
+            "sequence":"'.time().'",
+            "priority":1,
+            "dr":false
+            }';
+        }
+        
+    
+        curl_setopt_array($curl, array(
+          CURLOPT_URL => 'https://bulk.dopler.rs/api/send',
+          CURLOPT_RETURNTRANSFER => true,
+          CURLOPT_ENCODING => '',
+          CURLOPT_MAXREDIRS => 10,
+          CURLOPT_TIMEOUT => 0,
+          CURLOPT_FOLLOWLOCATION => true,
+          CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+          CURLOPT_CUSTOMREQUEST => 'POST',
+          CURLOPT_POSTFIELDS =>$sms_text,
+          CURLOPT_HTTPHEADER => array(
+            'Content-Type: application/json'
+          ),
+        ));
+        
+        $response = curl_exec($curl);
+        curl_close($curl);
 
-    $response = curl_exec($curl);
-
-    curl_close($curl);
+        $sql = "INSERT INTO SMS (`sms`, `package_id`, `response`, `status_id`) VALUES ('$sms_text', $package_id, '$response', $status_id)";
+        $result = mysqli_query($db, $sql);
     }
 
     header('Content-Type: application/json; charset=utf-8');

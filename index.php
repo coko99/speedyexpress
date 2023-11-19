@@ -6,6 +6,15 @@
 <?php
   include('config/head.php');
 
+  if(isset($_POST['send_sms_of'])){
+    $sql = "UPDATE `configuration` SET `send_sms` = 0 WHERE id = 1;";
+    $result = mysqli_query($db, $sql);
+  }
+  if(isset($_POST['send_sms_on'])){
+    $sql = "UPDATE `configuration` SET `send_sms` = 1 WHERE id = 1;";
+    $result = mysqli_query($db, $sql);
+  }
+
   //MESEC
 
   $sql = "SELECT count(*) as c
@@ -102,6 +111,19 @@
     array_push($kuriri_paketi, $row);
   }
 
+  $sql = "SELECT count(*) as c
+  FROM SMS 
+  WHERE timestamp >= LAST_DAY(CURDATE()) + INTERVAL 1 DAY - INTERVAL 1 MONTH
+  AND timestamp <  LAST_DAY(CURDATE()) + INTERVAL 1 DAY";
+  $result = mysqli_query($db, $sql);
+  $sms_count = mysqli_fetch_array($result)[0];
+
+  $sql = "SELECT * 
+  FROM configuration WHERE id = 1;";
+  $result = mysqli_query($db, $sql);
+  $send_sms = mysqli_fetch_array($result)['send_sms'];
+
+
 ?>
   <body>
 
@@ -111,6 +133,20 @@
   ?>
 
     <div class="container mt-5">
+      <div class="row">
+        <div class="col-4">Broj poslatih poruka za ovaj mesec - <?php echo $sms_count; ?></div>
+      </div>
+      <div class="row mb-1">
+        <div class="col-4">
+          <form method="POST">
+            <?php if($send_sms == 0) {?>
+              <button name="send_sms_on" type="submit" class="btn btn-success">Upali SMS</button>
+            <?php }else{ ?>
+              <button name="send_sms_of" type="submit" class="btn btn-danger">Ugasi SMS</button>
+            <?php }?>
+          </form>
+        </div>
+      </div>
       <div class="row">
         <div
           class="statistika1 d-flex flex-column justify-content-between p-4 col-xs-12 col-sm-12 col-md-4"
@@ -177,7 +213,7 @@
       </div>
     </div>
     
-    <div class="container-fluid mt-5">
+    <div class="container-fluid mt-1">
       <div class="col mt-3 mb-3 ">
           <div class="container">
             <div class="row">
