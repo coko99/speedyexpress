@@ -25,8 +25,7 @@
   firm.name AS firm_name,
   firm.street_number AS firm_street_number,
   firm.phone AS firm_phone,
-  package_status_tracking.datetime as pst_date,
-  package_status_tracking.status as pst_status
+  GROUP_CONCAT(status_tracking.name, '-', package_status_tracking.datetime SEPARATOR '\n') as status_tracking_gr
   FROM `package`
   LEFT JOIN street ON package.street_id = street.id
   LEFT JOIN municipality ON street.municipality_id = municipality.id
@@ -35,9 +34,9 @@
   LEFT JOIN street AS firm_street ON firm.street_id = firm_street.id
   LEFT JOIN package_status_tracking ON package.id = package_status_tracking.package_id 
   LEFT JOIN municipality AS firm_municipality ON firm_street.municipality_id = firm_municipality.id
-  WHERE (package_status_tracking.status = 1 OR package_status_tracking.status IS NULL)
-  AND FROM_UNIXTIME(package.send_time) BETWEEN STR_TO_DATE('$datetimeFrom','%d/%m/%Y') AND STR_TO_DATE('$datetimeTo', '%d/%m/%Y')
-  ;
+  LEFT JOIN status as status_tracking ON package_status_tracking.status_id = status_tracking.id
+  WHERE FROM_UNIXTIME(package.send_time) BETWEEN STR_TO_DATE('$datetimeFrom','%d/%m/%Y') AND STR_TO_DATE('$datetimeTo', '%d/%m/%Y')
+  GROUP BY package.id;;
   ";
   $result = mysqli_query($db, $sql);
   while($row = mysqli_fetch_array($result)) {
@@ -126,26 +125,11 @@
                   $id_package = $package['id'];
                   $package_status = $package['status_name'];
                   $send_time = date("d/m/Y - H:i:s", $package['send_time']);
-                  $pst_date = $package['pst_date'];
                   $ptt = $package['ptt'];
                   $pay = $package['pay'];
-
-                  if(!isset($pst_date)){
-                    $pst_date = $send_time;
-                  }
-
+                  $status_track = $package['status_tracking_gr'];
                   $token = $package['token'];
 
-                  $sql = "SELECT package_status_tracking.*, 
-                        status.name AS status_name
-                        FROM `package_status_tracking`
-                        LEFT JOIN status ON package_status_tracking.status_id = status.id
-                        WHERE package_status_tracking.package_id = $package_id; ";
-                        $result = mysqli_query($db, $sql);
-                        $statuses = [];
-                        while($row = mysqli_fetch_array($result)) {
-                          array_push($statuses, $row);
-                        }
 
                   echo "
                   <tr>
@@ -169,13 +153,8 @@
                     <h6><strong>Plaća: </strong>$paid_by</h6>
                     <h6><strong>napomena: </strong>$comment</h6>
                   </td>
-                  <td><h6>$ptt RSD</h6></td><td>";
-
-                  foreach($statuses as $sta){
-                    echo "".$sta['status_name']." - ".$sta['datetime']."<br/>";
-                  }
-                 
-                  echo "</td>
+                  <td><h6>$ptt RSD</h6></td>
+                  <td>$status_track</td>
                   <td>$pay</td>
                   <td><a class='btn btn-info' href='printPackagesAdmin.php?id=$id_package'>ŠTAMPAJ</a></td>
                 </tr>
