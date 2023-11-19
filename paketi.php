@@ -136,10 +136,8 @@
                   $date_send ="";
                   $time_send="";
                   if(isset($send_time)){
-                    $datetime = new DateTime($send_time);
-
-                    $date_send = $datetime->format('d-m-Y');
-                    $time_send = $datetime->format('H:i:s');
+                    $date_send = date("d/m/Y", $package['send_time']);
+                    $time_send = date("H:i:s", $package['send_time']);
                   }
                   
 
