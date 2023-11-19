@@ -94,7 +94,9 @@
                   <th scope="col">Pošiljalac</th>
                   <th scope="col">Opis</th>
                   <th scope="col">PTT</th>
-                  <th scope="col">Status</th>
+                  <th scope="col">TRENUTNI STATUS</th>
+                  <th scope="col">VREME SLANJA</th>
+                  <th scope="col">STATUS</th>
                   <th scope="col">PLAĆENO</th>
                   <th scope="col">ŠTAMPAJ</th>
                 </tr>
@@ -154,6 +156,8 @@
                     <h6><strong>napomena: </strong>$comment</h6>
                   </td>
                   <td><h6>$ptt RSD</h6></td>
+                  <td>h6>$package_status</h6></td>
+                  <td><h6>$send_time</h6></td>
                   <td>$status_track</td>
                   <td>$pay</td>
                   <td><a class='btn btn-info' href='printPackagesAdmin.php?id=$id_package'>ŠTAMPAJ</a></td>
