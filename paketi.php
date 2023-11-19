@@ -156,7 +156,7 @@
                     <h6><strong>napomena: </strong>$comment</h6>
                   </td>
                   <td><h6>$ptt RSD</h6></td>
-                  <td>h6>$package_status</h6></td>
+                  <td><h6>$package_status</h6></td>
                   <td><h6>$send_time</h6></td>
                   <td>$status_track</td>
                   <td>$pay</td>
