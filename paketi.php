@@ -36,7 +36,7 @@
   LEFT JOIN municipality AS firm_municipality ON firm_street.municipality_id = firm_municipality.id
   LEFT JOIN status as status_tracking ON package_status_tracking.status_id = status_tracking.id
   WHERE FROM_UNIXTIME(package.send_time) BETWEEN STR_TO_DATE('$datetimeFrom','%d/%m/%Y') AND STR_TO_DATE('$datetimeTo', '%d/%m/%Y')
-  GROUP BY package.id;;
+  GROUP BY package.id;
   ";
   $result = mysqli_query($db, $sql);
   while($row = mysqli_fetch_array($result)) {

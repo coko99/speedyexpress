@@ -10,20 +10,37 @@
     $datetimeFrom = mysqli_real_escape_string($db, $_GET['dateFrom']);
     $datetimeTo = mysqli_real_escape_string($db, $_GET['dateTo']);
 
+  // $sql = "SELECT package.*, 
+  // municipality.name AS municipality_name, 
+  // municipality.zip AS zip,
+  // street.name AS street_name,
+  // status.name AS status_name,
+  // package_status_tracking.datetime AS datetime_status
+  // FROM `package`
+  // LEFT JOIN street ON package.street_id = street.id
+  // LEFT JOIN municipality ON street.municipality_id = municipality.id
+  // LEFT JOIN status ON package.status_id = status.id
+  // LEFT JOIN package_status_tracking ON package.id = package_status_tracking.package_id 
+  // WHERE package.firm_id = $firm_id AND package.status_id != 1
+  // AND (package_status_tracking.status = 1 OR package_status_tracking.status IS NULL)
+  // AND FROM_UNIXTIME(package.send_time) BETWEEN STR_TO_DATE('$datetimeFrom','%d/%m/%Y') AND STR_TO_DATE('$datetimeTo', '%d/%m/%Y') ";
+  
   $sql = "SELECT package.*, 
   municipality.name AS municipality_name, 
   municipality.zip AS zip,
   street.name AS street_name,
   status.name AS status_name,
-  package_status_tracking.datetime AS datetime_status
+  GROUP_CONCAT(status_tracking.name, '-', package_status_tracking.datetime SEPARATOR '\n') as status_tracking_gr
   FROM `package`
   LEFT JOIN street ON package.street_id = street.id
   LEFT JOIN municipality ON street.municipality_id = municipality.id
   LEFT JOIN status ON package.status_id = status.id
   LEFT JOIN package_status_tracking ON package.id = package_status_tracking.package_id 
-  WHERE package.firm_id = $firm_id AND package.status_id != 1
-  AND (package_status_tracking.status = 1 OR package_status_tracking.status IS NULL)
-  AND FROM_UNIXTIME(package.send_time) BETWEEN STR_TO_DATE('$datetimeFrom','%d/%m/%Y') AND STR_TO_DATE('$datetimeTo', '%d/%m/%Y') ";
+  LEFT JOIN status as status_tracking ON package_status_tracking.status_id = status_tracking.id
+  WHERE package.firm_id = $firm_id AND package.status_id != 1 AND
+  FROM_UNIXTIME(package.send_time) BETWEEN STR_TO_DATE('$datetimeFrom','%d/%m/%Y') AND STR_TO_DATE('$datetimeTo', '%d/%m/%Y')
+  GROUP BY package.id;";
+  
   $result = mysqli_query($db, $sql);
   while($row = mysqli_fetch_array($result)) {
     array_push($packages, $row);
@@ -109,23 +126,9 @@
                 $token = $package['token'];
                 $send_time = date("d/m/Y - H:i:s", $package['send_time']);
                 $package_status = $package['status_name'];
-                $datetime_status = $package['datetime_status'];
-                $status_id = $package['status_id'];
-                if(!isset($datetime_status)){
-                  $datetime_status = $send_time;
-                }
-
-
-                $sql = "SELECT package_status_tracking.*, 
-                        status.name AS status_name
-                        FROM `package_status_tracking`
-                        LEFT JOIN status ON package_status_tracking.status_id = status.id
-                        WHERE package_status_tracking.package_id = $package_id; ";
-                        $result = mysqli_query($db, $sql);
-                        $statuses = [];
-                        while($row = mysqli_fetch_array($result)) {
-                          array_push($statuses, $row);
-                        }
+                $status_id =$package['status_id'];
+                
+                $status_tracking = $package['status_tracking_gr'];
 
                 echo "<tr>
                         <td style='display: none;' >$send_time</td>
@@ -145,14 +148,11 @@
                           <h6><strong>Plaća: </strong>$paid_by</h6>
                           <h6><strong>napomena: </strong>$comment</h6>
                         </td>
-                      <td>";
-                        foreach($statuses as $sta){
-                          echo "".$sta['status_name']." - ".$sta['datetime']."<br/>";
-                        }
+                      <td>$status_tracking</td>";
                         if($status_id != 4){
-                          echo "</td><td><a href='izmeniPaket.php?id=$package_id' class='btn btn-info'>Izmeni</a></td>";
+                          echo "<td><a href='izmeniPaket.php?id=$package_id' class='btn btn-info'>Izmeni</a></td>";
                         }else{
-                          echo "</td><td><button disabled class='btn btn-info'>Izmeni</button></td>";
+                          echo "<td><button disabled class='btn btn-info'>Izmeni</button></td>";
                         }
                       echo "</tr>";
               }
@@ -190,6 +190,10 @@
 
       var oTable = $('#example').DataTable({
         paging: false,
+        dom: 'Bfrtip',
+          buttons: [
+              'excel'
+          ],
         language: {
                     "url": "//cdn.datatables.net/plug-ins/1.10.18/i18n/Serbian.json"
                 },
