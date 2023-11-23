@@ -21,7 +21,7 @@
   municipality.name AS municipality_name, 
   municipality.zip AS zip,
   street.name AS street_name,
-  status.name AS status_name,
+  status_tracking.name AS status_name,
   firm_street.name AS firm_street_name,
   firm_municipality.name AS firm_municipality_name, 
   firm_municipality.zip AS firm_zip,
@@ -47,7 +47,7 @@
   LEFT JOIN firm ON package.firm_id = firm.id
   LEFT JOIN street AS firm_street ON firm.street_id = firm_street.id
   LEFT JOIN municipality AS firm_municipality ON firm_street.municipality_id = firm_municipality.id
-  LEFT JOIN status as status_tracking ON package_status_tracking.status_id = status_tracking.id
+  LEFT JOIN status as status_tracking ON package.status_id = status_tracking.id
   WHERE FROM_UNIXTIME(package.send_time) BETWEEN STR_TO_DATE('$datetimeFrom','%d/%m/%Y') AND STR_TO_DATE('$datetimeTo', '%d/%m/%Y') 
   AND (package_status_tracking.status = 1 OR package_status_tracking.status IS NULL);
   ";
@@ -157,11 +157,17 @@
                   if(isset($send_time)){
                     $date_send = date("d/m/Y", $package['send_time']);
                     $time_send = date("H:i:s", $package['send_time']);
+                  }else{
+                    $date_send = date("d/m/Y", $package['created_at']);
+                    $time_send = date("H:i:s", $package['created_at']);
                   }
 
                   if(isset($status_time)){
                     $date_status = date("d/m/Y", strtotime($package['active_status_date_time']));
                     $time_status = date("H:i:s", strtotime($package['active_status_date_time']));
+                  }else{
+                    $date_status = $date_send;
+                    $time_status = $time_send;
                   }
                   
 
