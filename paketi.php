@@ -14,7 +14,10 @@
     $datetimeFrom = mysqli_real_escape_string($db, $_GET['dateFrom']);
     $datetimeTo = mysqli_real_escape_string($db, $_GET['dateTo']);
 
-  $sql = "SELECT package.*, 
+  $sql = "SELECT
+  package.*,
+  pst.status_tracking_log as status_tracking,
+  package_status_tracking.datetime as active_status_date_time,
   municipality.name AS municipality_name, 
   municipality.zip AS zip,
   street.name AS street_name,
@@ -24,19 +27,29 @@
   firm_municipality.zip AS firm_zip,
   firm.name AS firm_name,
   firm.street_number AS firm_street_number,
-  firm.phone AS firm_phone,
-  GROUP_CONCAT(status_tracking.name, '-', package_status_tracking.datetime SEPARATOR '\n') as status_tracking_gr
-  FROM `package`
+  firm.phone AS firm_phone
+  FROM
+    package
+  JOIN (
+    SELECT
+        package_id,
+        GROUP_CONCAT(s.name, ' - ', datetime order by datetime desc SEPARATOR '<br/>') AS status_tracking_log
+    FROM
+        package_status_tracking
+        left join status s on package_status_tracking.status_id = s.id
+    GROUP BY
+        package_id
+  ) pst ON package.id = pst.package_id
+  LEFT JOIN package_status_tracking on package.id = package_status_tracking.package_id
+  LEFT JOIN status on package_status_tracking.status_id = status.id
   LEFT JOIN street ON package.street_id = street.id
   LEFT JOIN municipality ON street.municipality_id = municipality.id
-  LEFT JOIN status ON package.status_id = status.id
   LEFT JOIN firm ON package.firm_id = firm.id
   LEFT JOIN street AS firm_street ON firm.street_id = firm_street.id
-  LEFT JOIN package_status_tracking ON package.id = package_status_tracking.package_id 
   LEFT JOIN municipality AS firm_municipality ON firm_street.municipality_id = firm_municipality.id
   LEFT JOIN status as status_tracking ON package_status_tracking.status_id = status_tracking.id
-  WHERE FROM_UNIXTIME(package.send_time) BETWEEN STR_TO_DATE('$datetimeFrom','%d/%m/%Y') AND STR_TO_DATE('$datetimeTo', '%d/%m/%Y')
-  GROUP BY package.id;
+  WHERE FROM_UNIXTIME(package.send_time) BETWEEN STR_TO_DATE('$datetimeFrom','%d/%m/%Y') AND STR_TO_DATE('$datetimeTo', '%d/%m/%Y') 
+  AND package_status_tracking.status=1;
   ";
   $result = mysqli_query($db, $sql);
   while($row = mysqli_fetch_array($result)) {
@@ -95,6 +108,8 @@
                   <th scope="col">Opis</th>
                   <th scope="col">PTT</th>
                   <th scope="col">TRENUTNI STATUS</th>
+                  <th scope="col">DATUM STATUS</th>
+                  <th scope="col">VREME STATUS</th>
                   <th scope="col">DATUM SLANJA</th>
                   <th scope="col">VREME SLANJA</th>
                   <th scope="col">STATUS</th>
@@ -126,11 +141,15 @@
                   $firm_municipality_name = $package['firm_municipality_name'];
                   $firm_phone = $package['firm_phone'];
                   $id_package = $package['id'];
-                  $package_status = $package['status_name'];
-                  $send_time = date("d/m/Y - H:i:s", $package['send_time']);
+                  
                   $ptt = $package['ptt'];
                   $pay = $package['pay'];
-                  $status_track = $package['status_tracking_gr'];
+
+                  $status_track = $package['status_tracking'];
+                  $package_status = $package['status_name'];
+                  $send_time = date("d/m/Y - H:i:s", $package['send_time']);
+                  $status_time = $package['active_status_date_time'];
+
                   $token = $package['token'];
 
                   $date_send ="";
@@ -138,6 +157,11 @@
                   if(isset($send_time)){
                     $date_send = date("d/m/Y", $package['send_time']);
                     $time_send = date("H:i:s", $package['send_time']);
+                  }
+
+                  if(isset($status_time)){
+                    $date_status = date("d/m/Y", strtotime($package['active_status_date_time']));
+                    $time_status = date("H:i:s", strtotime($package['active_status_date_time']));
                   }
                   
 
@@ -165,6 +189,8 @@
                   </td>
                   <td><h6>$ptt RSD</h6></td>
                   <td><h6>$package_status</h6></td>
+                  <td><h6>$date_status</h6></td>
+                  <td><h6>$time_status</h6></td>
                   <td><h6>$date_send</h6></td>
                   <td><h6>$time_send</h6></td>
                   <td>$status_track</td>
