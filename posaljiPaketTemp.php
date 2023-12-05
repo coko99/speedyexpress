@@ -49,6 +49,7 @@ use chillerlan\QRCode\QRCode;
     insertPackage($street_id, $street_number, $phone, $ransom_type_id, $shipping_fee, $recipient, $content, $comment,$ptt, $firm_id, $login_session, $db);
     $sql = "DELETE FROM `temporary_package` WHERE id = $edit_id AND firm_id = $firm_id";
     $result = mysqli_query($db, $sql);
+    header("Location: posaljiPaketTemp.php");
   }
 
   if(isset($_GET['delete_id'])){
