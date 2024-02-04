@@ -23,7 +23,6 @@ use chillerlan\QRCode\QRCode;
   VALUES ('$street_id','$firm_id','$street_number',
   '$token', NULL, '$phone','$ransom_type_id','$shipping_fee'
   ,'$recipient','$content', '$comment', '$ptt', '1', '$login_session', $groupId, $orderInGrupu)";
-  print_r($sql);
     $result = mysqli_query($db, $sql);
     logEvent('User '.$login_session.': '.$sql);
   }
