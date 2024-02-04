@@ -247,6 +247,7 @@
           </section>
         </div>
         <div class="col-md-6 col-sm-12 ">
+        <div class="col-12 table-wrapper-scroll-y my-custom-scrollbar">
           <div class="col-12">
           <div class="row">
             <div class="col-md-12 col-sm-12">
@@ -296,6 +297,7 @@
           </table>
         </div>
       </div>
+        </div>
     </div>
 
 
