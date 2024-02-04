@@ -53,7 +53,7 @@ use chillerlan\QRCode\QRCode;
   LEFT JOIN street AS firm_street ON firm.street_id = firm_street.id
   LEFT JOIN municipality AS firm_municipality ON firm_street.municipality_id = firm_municipality.id
   LEFT JOIN grup on package.group_id = grup.id
-  WHERE curier_id = $courier_id AND status_id != 4";
+  WHERE curier_id = $courier_id AND status_id != 4 AND status_id != 66";
   $result = mysqli_query($db, $sql);
   $packages = [];
   while($row = mysqli_fetch_array($result)) {
