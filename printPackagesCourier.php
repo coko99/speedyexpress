@@ -21,7 +21,8 @@ firm_municipality.name AS firm_municipality_name,
 firm_municipality.zip AS firm_zip,
 firm.name AS firm_name,
 firm.street_number AS firm_street_number,
-firm.phone AS firm_phone
+firm.phone AS firm_phone,
+grup.number_of_packages AS number_of_packages
 FROM `package`
 LEFT JOIN street ON package.street_id = street.id
 LEFT JOIN municipality ON street.municipality_id = municipality.id
@@ -29,6 +30,7 @@ LEFT JOIN status ON package.status_id = status.id
 LEFT JOIN firm ON package.firm_id = firm.id
 LEFT JOIN street AS firm_street ON firm.street_id = firm_street.id
 LEFT JOIN municipality AS firm_municipality ON firm_street.municipality_id = firm_municipality.id
+LEFT JOIN grup on package.group_id = grup.id
 WHERE curier_id = $id AND status_id != 4
 order by municipality_name ASC";
   $result = mysqli_query($db, $sql);
@@ -76,6 +78,10 @@ $str = "
                   $firm_zip = $package['firm_zip'];
                   $firm_municipality_name = $package['firm_municipality_name'];
                   $firm_phone = $package['firm_phone'];
+
+                  $numOfPackages = $package['number_of_packages'];
+                  $orderInGrupu = $package['order_in_group'];
+                  $grupId = sprintf('SX%08d', $package['group_id']);
                   
                   $ptt = $package['ptt'];
 
@@ -91,7 +97,10 @@ $str = "
 
 
         $str.="<tr>
-        <th scope='row'>$package_id</th>
+        <th scope='row'>$package_id
+          <h6>$grupId</h6>
+          <h6>$orderInGrupu/$numOfPackages</h6>  
+        </th>
         <td><img class='qr-slika' src='".(new QRCode())->render($package_id.'-'.$token)."' alt='' /></td>
         <td>
           ID: $package_id<br/>
@@ -108,7 +117,6 @@ $str = "
         </td>
         <td>
           <h6><strong>Otkup: </strong>$ransome rsd</h6>
-          <h6><strong>Vrednost: </strong>$ransome rsd</h6>
           <h6><strong>Plaća: </strong>$paid_by</h6>
           <h6><strong>Napomena: </strong>$comment</h6>
           <h6>Opis:</h6> $content <br/>

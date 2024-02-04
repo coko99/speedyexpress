@@ -30,6 +30,7 @@
   municipality.zip AS zip,
   street.name AS street_name,
   status.name AS status_name,
+  grup.number_of_packages AS number_of_packages,
   GROUP_CONCAT(status_tracking.name, '-', package_status_tracking.datetime SEPARATOR '\n') as status_tracking_gr
   FROM `package`
   LEFT JOIN street ON package.street_id = street.id
@@ -37,6 +38,7 @@
   LEFT JOIN status ON package.status_id = status.id
   LEFT JOIN package_status_tracking ON package.id = package_status_tracking.package_id 
   LEFT JOIN status as status_tracking ON package_status_tracking.status_id = status_tracking.id
+  LEFT JOIN grup ON package.group_id = grup.id
   WHERE package.firm_id = $firm_id AND package.status_id != 1 AND
   FROM_UNIXTIME(package.send_time) BETWEEN STR_TO_DATE('$datetimeFrom','%d/%m/%Y') AND STR_TO_DATE('$datetimeTo', '%d/%m/%Y')
   GROUP BY package.id;";
@@ -127,6 +129,9 @@
                 $send_time = date("d/m/Y - H:i:s", $package['send_time']);
                 $package_status = $package['status_name'];
                 $status_id =$package['status_id'];
+                $numOfPackages = $package['number_of_packages'];
+                $orderInGrupu = $package['order_in_group'];
+                $grupId = sprintf('SX%08d', $package['group_id']);
                 
                 $status_tracking = $package['status_tracking_gr'];
 
@@ -147,6 +152,8 @@
                           <h6><strong>Vrednost: </strong>$ransome rsd</h6>
                           <h6><strong>Plaća: </strong>$paid_by</h6>
                           <h6><strong>napomena: </strong>$comment</h6>
+                          <h6><strong>Groupa:</strong> $grupId</h6>
+                          <h6>$orderInGrupu/$numOfPackages</h6>
                         </td>
                       <td>$status_tracking</td>";
                         if($status_id != 4){

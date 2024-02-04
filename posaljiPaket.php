@@ -5,15 +5,25 @@ use chillerlan\QRCode\QRCode;
   include('config/session_user.php');
   require 'vendor/autoload.php';
 
-  function insertPackage($street_id, $street_number, $phone, $ransom_type_id, $shipping_fee, $recipient, $content, $comment, $ptt, $firm_id, $login_session, $db) {
+  function insertPackage($street_id, $street_number, $phone, $ransom_type_id, $shipping_fee, $recipient, $content, $comment, $ptt, $firm_id, $groupId, $orderInGrupu, $login_session, $db) {
+   if($orderInGrupu != null && $orderInGrupu != 1){
+    $ptt = 0;
+    $shipping_fee = 0;
+   }
+   if($groupId == NULL){
+    $groupId = 'NULL';
+    $orderInGrupu = 'NULL';
+   }
+
     $token = time();
     $sql = "INSERT INTO `package`(`street_id`, 
   `firm_id`, `street_number`, `token`, `curier_id`, 
   `phone`, `ransom_type_id`, `shipping_fee`, 
-  `recipient`, `content`, `comment`, `ptt`, `status_id`, `created_by`) 
+  `recipient`, `content`, `comment`, `ptt`, `status_id`, `created_by`, `group_id`, `order_in_group`) 
   VALUES ('$street_id','$firm_id','$street_number',
   '$token', NULL, '$phone','$ransom_type_id','$shipping_fee'
-  ,'$recipient','$content', '$comment', '$ptt', '1', '$login_session')";
+  ,'$recipient','$content', '$comment', '$ptt', '1', '$login_session', $groupId, $orderInGrupu)";
+  print_r($sql);
     $result = mysqli_query($db, $sql);
     logEvent('User '.$login_session.': '.$sql);
   }
@@ -50,9 +60,19 @@ use chillerlan\QRCode\QRCode;
     $content = mysqli_real_escape_string($db, $_POST['description']);
     $comment = mysqli_real_escape_string($db, $_POST['comment']);
     $ptt = mysqli_real_escape_string($db, $_POST['ptt']);
+    $numOfPackages = mysqli_real_escape_string($db, $_POST['numOfPackages']);
 
-
-    insertPackage($street_id, $street_number, $phone, $ransom_type_id, $shipping_fee, $recipient, $content, $comment,$ptt, $firm_id, $login_session, $db);
+    if($numOfPackages > 1){
+      $sql = "INSERT INTO `grup`(`number_of_packages`) VALUES ($numOfPackages)";
+      mysqli_query($db, $sql);
+      $groupId = mysqli_insert_id($db);
+      for($i = 0; $i < $numOfPackages; $i++){
+        insertPackage($street_id, $street_number, $phone, $ransom_type_id, $shipping_fee, $recipient, $content, $comment,$ptt, $firm_id, $groupId, $i+1, $login_session, $db);
+      }
+    }else{
+      insertPackage($street_id, $street_number, $phone, $ransom_type_id, $shipping_fee, $recipient, $content, $comment,$ptt, $firm_id, null, null, $login_session, $db);
+    }
+    
     header("Location: posaljiPaket.php");
 
   }
@@ -68,10 +88,12 @@ use chillerlan\QRCode\QRCode;
     $sql = "SELECT package.*, 
   municipality.name AS municipality_name, 
   municipality.zip AS zip,
-  street.name AS street_name 
+  street.name AS street_name,
+  grup.number_of_packages AS number_of_packages
   FROM `package`
   LEFT JOIN street ON package.street_id = street.id
   LEFT JOIN municipality ON street.municipality_id = municipality.id
+  LEFT JOIN grup ON package.group_id = grup.id
   WHERE firm_id = $firm_id AND status_id = 1
   order by package.content";
   }else{
@@ -232,6 +254,19 @@ use chillerlan\QRCode\QRCode;
                 name="comment"
               />
             </div>
+            <div class="form-group">
+              <input
+              required
+                type="number"
+                class="form-control"
+                id="number_of_packages"
+                placeholder="Broj paketa u grupi:"
+                name="numOfPackages"
+                value="1"
+                min="1" 
+                max="100"
+              />
+            </div>
             <button name="add_single_package" type="submit" class="btn btn-primary mt-3 mb-3">
               Ubaci
             </button>
@@ -297,6 +332,9 @@ use chillerlan\QRCode\QRCode;
                     $municipality_name = $package['municipality_name'];
                     $token = $package['token'];
                     $content = $package['content'];
+                    $numOfPackages = $package['number_of_packages'];
+                    $orderInGrupu = $package['order_in_group'];
+                    $grupId = sprintf('SX%08d', $package['group_id']);
 
                     echo "<tr>
                             <th scope='row'>$package_id</th>";
@@ -318,6 +356,8 @@ use chillerlan\QRCode\QRCode;
                               <h6><strong>Otkup: </strong>$ransome rsd</h6>
                               <h6><strong>Vrednost: </strong>$ransome rsd</h6>
                               <h6><strong>Plaća: </strong>$paid_by</h6>
+                              <h6><strong>Groupa:</strong> $grupId</h6>
+                              <h6>$orderInGrupu/$numOfPackages</h6>
                             </td>
                             <td><a href='?delete_id=$package_id' class='confirmation btn btn-danger'>Obrisi</a>
                             <a href='print_single_package.php?print_id=$package_id' class='btn btn-success my-2'>Štampaj</a>

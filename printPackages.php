@@ -15,13 +15,15 @@ $sql = "SELECT package.*,
   firm_street.name AS firm_street_name,
   firm_municipality.name AS firm_municipality_name,
   firm_municipality.zip AS firm_municipality_zip,
-  firm.phone AS firm_phone
+  firm.phone AS firm_phone,
+  grup.number_of_packages AS number_of_packages
   FROM `package`
   LEFT JOIN street ON package.street_id = street.id
   LEFT JOIN municipality ON street.municipality_id = municipality.id
   LEFT JOIN firm ON package.firm_id = firm.id
   LEFT JOIN street AS firm_street ON firm.street_id = firm_street.id
   LEFT JOIN municipality as firm_municipality ON firm_street.municipality_id = firm_municipality.id
+  LEFT JOIN grup on package.group_id = grup.id
   WHERE firm_id = $firm_id AND status_id = 1";
   $result = mysqli_query($db, $sql);
   $packages = [];
@@ -53,7 +55,6 @@ $str = "
         $token = $package['token'];
         $ptt = $package['ptt'];
 
-
         $firm_name = $package['firm_name'];
         $firm_street = $package['firm_street_name'];
         $firm_municipality_name = $package['firm_municipality_name'];
@@ -61,12 +62,18 @@ $str = "
         $firm_street_number = $package['firm_street_number'];
         $firm_phone = $package['firm_phone'];
 
+        $numOfPackages = $package['number_of_packages'];
+        $orderInGrupu = $package['order_in_group'];
+        $grupId = sprintf('SX%08d', $package['group_id']);
+
         if($counter % 2 != 0){
           $str.="<tr>";
         }
         $str.="
                 
                 <td class='seccond'>
+                    <h6><strong>Grupa:</strong> $grupId</h6>
+                    <h6>$orderInGrupu/$numOfPackages</h6>    
                     <img class='qr-slika' src='".(new QRCode())->render($package_id.'-'.$token)."' alt='QR Code' />
                     <h6>Pošiljalac</h6>
                     ID: $package_id<br/>

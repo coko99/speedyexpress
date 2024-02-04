@@ -1,6 +1,8 @@
 <?php
 include('../config/config.php');
 
+$admin_curier = 1;
+
 function guidv4($data = null) {
     // Generate 16 bytes (128 bits) of random data or use the data passed into the function.
     $data = $data ?? random_bytes(16);
@@ -49,7 +51,15 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($courier) && isset($token)) {
     $status_id = (isset($data->status_id)) ? mysqli_real_escape_string($db, $data->status_id) : null;
     $courier_id = $courier['id'];
 
-    if(isset($status_id)){
+    if($status_id == 66 && $courier_id != $admin_curier){
+      return;
+    }
+
+    $sql = "SELECT status_id as c from package where id = $package_id";
+    $result=mysqli_query($db, $sql);
+    $current_status =mysqli_fetch_assoc($result)['c'];
+
+    if(isset($status_id) && ($current_status != 4 || $courier_id == $admin_curier)){
       if($status_id == 11){
         $sql = "UPDATE `package` 
         SET `status_id`='$status_id',
@@ -66,7 +76,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($courier) && isset($token)) {
         AND status_id != 0";
       }
         $result = mysqli_query($db, $sql);
-
+      
         $sql = "UPDATE `package_status_tracking` 
         SET `status`=0
         WHERE package_id = $package_id";
@@ -84,12 +94,14 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($courier) && isset($token)) {
     municipality.zip AS zip,
     street.name AS street_name, 
     firm.name AS firm,
-    city.name AS city_name
+    city.name AS city_name,
+    grup.number_of_packages AS number_of_packages
     FROM `package`
     LEFT JOIN street ON package.street_id = street.id
     LEFT JOIN municipality ON street.municipality_id = municipality.id
     LEFT JOIN city ON municipality.city_id = city.id
     LEFT JOIN firm ON package.firm_id = firm.id
+    LEFT JOIN grup on package.group_id = grup.id
     WHERE token = $package_token 
     AND package.id = $package_id 
     AND package.status_id != 0 ";
@@ -97,6 +109,9 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($courier) && isset($token)) {
     $result = mysqli_query($db, $sql);
     $data_response = [];
     while($row = mysqli_fetch_array($result)) {
+      if($courier_id == $admin_curier){
+        $row['can_return'] = 1;
+      }
       array_push($data_response, $row);
     }
 
@@ -150,11 +165,11 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($courier) && isset($token)) {
         if($status_id == 3){
           $sms_text = '{
             "username":"speedexpviber",
-            "password":"",
+            "password":"hs0!lqM22",
             "originator":"SPEEDYkurir",
             "msisdn":["'.$phone.'"],
             "type":"text",
-            "message":"Postovani vas paket je preuzeo Speedy kurir molimo vas da obezbedite prijem paketa u vremenskom periodu od 9h do 17h na vasoj adresi. Iznos vaseg paketa je '.$fee.' din. Vas speedy kurir. www.speedyexpress.rs",
+            "message":"Postovani, Kurir speedyexpressa je preuzeo vas paket koji mozete ocekivati u toku dana. Iznos za uplatu vaseg paketa je '.$fee.' din. Vas speedyexpress. www.speedyexpress.rs",
             "sequence":"'.time().'",
             "priority":1,
             "dr":false
@@ -162,7 +177,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($courier) && isset($token)) {
         }else{
           $sms_text = '{
             "username":"speedexpviber",
-            "password":"",
+            "password":"hs0!lqM22",
             "originator":"SPEEDYkurir",
             "msisdn":["'.$phone.'"],
             "type":"text",
@@ -189,7 +204,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($courier) && isset($token)) {
           ),
         ));
         
-        $response = curl_exec($curl);
+        $response = "";
         curl_close($curl);
 
         $sql = "INSERT INTO SMS (`sms`, `package_id`, `response`, `status_id`) VALUES ('$sms_text', $package_id, '$response', $status_id)";
@@ -201,4 +216,3 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($courier) && isset($token)) {
 }else{
     http_response_code(404); exit;
 }
-

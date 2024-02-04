@@ -66,7 +66,8 @@
   firm.street_number AS firm_street_number,
   firm.phone AS firm_phone,
   courier.name as courier_name,
-  courier.last_name as courier_last_name
+  courier.last_name as courier_last_name,
+  grup.number_of_packages AS number_of_packages
   FROM `package`
   LEFT JOIN street ON package.street_id = street.id
   LEFT JOIN municipality ON street.municipality_id = municipality.id
@@ -77,6 +78,7 @@
   LEFT JOIN municipality AS firm_municipality ON firm_street.municipality_id = firm_municipality.id
   LEFT JOIN package_status_tracking ON package.id = package_status_tracking.package_id 
   LEFT JOIN courier ON package.curier_id = courier.id 
+  LEFT JOIN grup on package.group_id = grup.id
   WHERE firm.id = $id 
   AND package_status_tracking.status = 1";
   if(isset($datetimeFrom) && isset($datetimeTo) ){
@@ -232,6 +234,13 @@
               <div
                 class="col-12 table-wrapper-scroll-y my-custom-scrollbar adminPaketi"
               >
+              
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="toggle-all" value=""></input>
+                <label class="form-check-label" for="toggle-all">
+                  Obeleži sve
+                </label>
+              </div>
                 <table class="table mb-0">
                   <thead>
                     <tr>
@@ -261,6 +270,10 @@
                         $municipality_name = $package['municipality_name'];
                         $package_id = $package['id'];
                         $package_ransome = $package['shipping_fee'];
+
+                        $numOfPackages = $package['number_of_packages'];
+                        $orderInGrupu = $package['order_in_group'];
+                        $grupId = sprintf('SX%08d', $package['group_id']);
 
                         $sql = "SELECT * FROM package_status_tracking where package_id = $package_id AND status_id = 3 ORDER BY datetime asc";
                         $result = mysqli_query($db, $sql);
@@ -346,6 +359,10 @@
                         $city_name = $package['city_name'];
                         $municipality_name = $package['municipality_name'];
                         $package_id = $package['id'];
+
+                        $numOfPackages = $package['number_of_packages'];
+                        $orderInGrupu = $package['order_in_group'];
+                        $grupId = sprintf('SX%08d', $package['group_id']);
 
 
                         echo "<tr>
@@ -437,6 +454,8 @@
     ></script>
     <script src="bootstrap-datetimepicker.js"></script>
     <script type="text/javascript">
+      
+
     $(function() {
         $('#datepicker').datepicker({
           format: 'dd/mm/yyyy',
@@ -470,6 +489,19 @@
         }else{
           $('#otkup').html($suma -= otkup);
         }
+    });
+
+    $('#toggle-all').click(function() {
+        $('.checkbox_pay').prop('checked', $(this).is(':checked'));
+        
+        $('.checkbox_pay').each(function(i, obj) {
+          let otkup = parseFloat($(obj).data("ransom"));
+          if(obj.checked) {
+              $('#otkup').html($suma += otkup);
+          }else{
+            $('#otkup').html($suma -= otkup);
+          }
+        })
     });
         
     </script>

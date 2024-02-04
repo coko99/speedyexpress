@@ -43,7 +43,8 @@ use chillerlan\QRCode\QRCode;
   firm_municipality.zip AS firm_zip,
   firm.name AS firm_name,
   firm.street_number AS firm_street_number,
-  firm.phone AS firm_phone
+  firm.phone AS firm_phone,
+  grup.number_of_packages AS number_of_packages
   FROM `package`
   LEFT JOIN street ON package.street_id = street.id
   LEFT JOIN municipality ON street.municipality_id = municipality.id
@@ -51,6 +52,7 @@ use chillerlan\QRCode\QRCode;
   LEFT JOIN firm ON package.firm_id = firm.id
   LEFT JOIN street AS firm_street ON firm.street_id = firm_street.id
   LEFT JOIN municipality AS firm_municipality ON firm_street.municipality_id = firm_municipality.id
+  LEFT JOIN grup on package.group_id = grup.id
   WHERE curier_id = $courier_id AND status_id != 4";
   $result = mysqli_query($db, $sql);
   $packages = [];
@@ -68,7 +70,8 @@ use chillerlan\QRCode\QRCode;
   firm_municipality.zip AS firm_zip,
   firm.name AS firm_name,
   firm.street_number AS firm_street_number,
-  firm.phone AS firm_phone
+  firm.phone AS firm_phone,
+  grup.number_of_packages AS number_of_packages
   FROM `package`
   LEFT JOIN street ON package.street_id = street.id
   LEFT JOIN municipality ON street.municipality_id = municipality.id
@@ -76,6 +79,7 @@ use chillerlan\QRCode\QRCode;
   LEFT JOIN firm ON package.firm_id = firm.id
   LEFT JOIN street AS firm_street ON firm.street_id = firm_street.id
   LEFT JOIN municipality AS firm_municipality ON firm_street.municipality_id = firm_municipality.id
+  LEFT JOIN grup on package.group_id = grup.id
   WHERE curier_id = $courier_id AND status_id = 4 AND paid_currier != 1";
   $result = mysqli_query($db, $sql);
   $packages_delivered = [];
@@ -200,12 +204,19 @@ use chillerlan\QRCode\QRCode;
                   $firm_phone = $package['firm_phone'];
                   $ptt = $package['ptt'];
 
+                  $numOfPackages = $package['number_of_packages'];
+                  $orderInGrupu = $package['order_in_group'];
+                  $grupId = sprintf('SX%08d', $package['group_id']);
+
                   $package_status = $package['status_name'];
 
                   $token = $package['token'];
 
                   echo "<tr>
-                        <th scope='row'>$package_id</th>
+                        <th scope='row'>$package_id
+                        <h6>$grupId</h6>
+                        <h6>$orderInGrupu/$numOfPackages</h6>  
+                        </th>
                         <td><img class='qr-slika' src='".(new QRCode())->render($package_id.'-'.$token)."' alt='' /></td>
                         <td>
                           <h6>$recipient</h6>
@@ -221,7 +232,6 @@ use chillerlan\QRCode\QRCode;
                         </td>
                         <td>
                           <h6><strong>Otkup: </strong>$ransome rsd</h6>
-                          <h6><strong>Vrednost: </strong>$ransome rsd</h6>
                           <h6><strong>Plaća: </strong>$paid_by</h6>
                           <h6><strong>Napomena: </strong>$comment</h6>
                         </td>
@@ -286,6 +296,10 @@ use chillerlan\QRCode\QRCode;
                   $firm_phone = $package['firm_phone'];
                   $ptt = $package['ptt'];
 
+                  $numOfPackages = $package['number_of_packages'];
+                  $orderInGrupu = $package['order_in_group'];
+                  $grupId = sprintf('SX%08d', $package['group_id']);
+
                   $package_ransome = $ransome + $ptt;
 
                   $package_status = $package['status_name'];
@@ -302,7 +316,10 @@ use chillerlan\QRCode\QRCode;
                           name='paycheck#$package_id' 
                         >
                         </td>
-                        <th scope='row'>$package_id</th>
+                        <th scope='row'>$package_id
+                          <h6>$grupId</h6>
+                          <h6>$orderInGrupu/$numOfPackages</h6>  
+                        </th>
                         <td><img class='qr-slika' src='".(new QRCode())->render($package_id.'-'.$token)."' alt='' /></td>
                         <td>
                           <h6>$recipient</h6>

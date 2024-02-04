@@ -27,7 +27,11 @@
   firm_municipality.zip AS firm_zip,
   firm.name AS firm_name,
   firm.street_number AS firm_street_number,
-  firm.phone AS firm_phone
+  firm.phone AS firm_phone,
+  courier.name AS courier,
+  grup.number_of_packages AS number_of_packages_in_group,
+  package.group_id AS group_id,
+  package.order_in_group AS order_in_group
   FROM
     package
   LEFT JOIN (
@@ -48,6 +52,8 @@
   LEFT JOIN street AS firm_street ON firm.street_id = firm_street.id
   LEFT JOIN municipality AS firm_municipality ON firm_street.municipality_id = firm_municipality.id
   LEFT JOIN status as status_tracking ON package.status_id = status_tracking.id
+  LEFT JOIN courier on package.curier_id = courier.id
+  LEFT JOIN grup on package.group_id = grup.id
   WHERE FROM_UNIXTIME(package.send_time) BETWEEN STR_TO_DATE('$datetimeFrom','%d/%m/%Y') AND STR_TO_DATE('$datetimeTo', '%d/%m/%Y') 
   AND (package_status_tracking.status = 1 OR package_status_tracking.status IS NULL);
   ";
@@ -105,7 +111,9 @@
                   <th scope="col">QR</th>
                   <th scope="col">Primalac</th>
                   <th scope="col">Pošiljalac</th>
+                  <th scope="col">Kurir</th>
                   <th scope="col">Opis</th>
+                  <th scope="col">Grupa</th>
                   <th scope="col">PTT</th>
                   <th scope="col">TRENUTNI STATUS</th>
                   <th scope="col">DATUM STATUS</th>
@@ -133,6 +141,10 @@
                   $street_name = $package['street_name'];
                   $zip = $package['zip'];
                   $municipality_name = $package['municipality_name'];
+                  $courier = $package['courier'];
+                  $number_of_packages_in_group = $package['number_of_packages_in_group'];
+                  $grupId = sprintf('SX%08d', $package['group_id']);
+                  $order_in_group = $package['order_in_group'];
 
                   $firm_name = $package['firm_name'];
                   $firm_street_number = $package['firm_street_number'];
@@ -170,11 +182,12 @@
                     $time_status = $time_send;
                   }
                   
+                  $qrtext = $package_id.'-'.$token;
 
                   echo "
                   <tr>
                   <th scope='row'>$id_package</th>
-                  <td><img class='qr-slika' src='".(new QRCode())->render($package_id.'-'.$token)."' alt='' /></td>
+                  <td><img class='qr-slika' src='".(new QRCode())->render($qrtext)."' alt='' /></td>
                   <td>
                     <h6>$recipient</h6>
                     <h6>$municipality_name $zip</h6>
@@ -188,10 +201,17 @@
                     <h6>$firm_phone</h6>
                   </td>
                   <td>
+                    <h6>$courier</h6>
+                  </td>
+                  <td>
                     <h6><strong>Otkup: </strong>$ransome rsd</h6>
                     <h6><strong>Vrednost: </strong>$ransome rsd</h6>
                     <h6><strong>Plaća: </strong>$paid_by</h6>
                     <h6><strong>napomena: </strong>$comment</h6>
+                  </td>
+                  <td>
+                    <h6>Grupa: $grupId</h6>
+                    <h6>$order_in_group/$number_of_packages_in_group</h6>
                   </td>
                   <td><h6>$ptt RSD</h6></td>
                   <td><h6>$package_status</h6></td>
