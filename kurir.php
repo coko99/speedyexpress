@@ -253,10 +253,16 @@ use chillerlan\QRCode\QRCode;
             <h1 class="mt-3">Dostavljeni paketi</h1>
             <button name='pay' type="submit" class="btn btn-primary mb-3">Isplati</a>
           </div>
-          <li class="nav-item mt-2" role="presentation">
+          <div class="nav-item mt-2 mx-4" role="presentation">
               <span id='otkup'>0</span> RSD
-            </li>
+          </div>
 
+            <div class="form-check mx-4">
+                <input class="form-check-input" type="checkbox" id="toggle-all" value=""></input>
+                <label class="form-check-label" for="toggle-all">
+                  Obeleži sve
+                </label>
+              </div>
           <div class="col-12 table-wrapper-scroll-y my-custom-scrollbar">
             <table class="table table-bordered table-striped mb-0">
               <thead>
@@ -372,6 +378,19 @@ use chillerlan\QRCode\QRCode;
             $('#otkup').html($suma -= otkup);
           }
       });
+
+      $('#toggle-all').click(function() {
+        $('.checkbox_pay').prop('checked', $(this).is(':checked'));
+        
+        $('.checkbox_pay').each(function(i, obj) {
+          let otkup = parseFloat($(obj).data("ransom"));
+          if(obj.checked) {
+              $('#otkup').html($suma += otkup);
+          }else{
+            $('#otkup').html($suma -= otkup);
+          }
+        })
+    });
     </script>
   </body>
 </html>
