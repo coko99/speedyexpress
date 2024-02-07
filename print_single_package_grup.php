@@ -72,8 +72,6 @@ require 'vendor/autoload.php';
                   <img class='qr-slika' src='".(new QRCode())->render($package_id.'-'.$token)."' alt='QR Code' />
                   </td>
                   <td class='seccond'>
-                      <h6><strong>Grupa:</strong> $grupId</h6>
-                      <h6>$orderInGrupu/$numOfPackages</h6>
                       <h6>Pošiljalac</h6>
                       ID: $package_id<br/>
                       $firm_name<br/>
@@ -82,19 +80,20 @@ require 'vendor/autoload.php';
                       $firm_phone
 
                   </td>
-                  <td rowspan='2' style='padding: 10px'>
+                  <td rowspan='1' style='padding: 10px'>
+                        <h6>Otkup:</h6> $ransome RSD <br/>";
+                        if($firm_id != 43){
+                          $str.="<h6>PTT:</h6> $ptt RSD <br/>";
+                        }
+                        $str.="<h6>Plaća:</h6> $paid_by <br/>
+                        <h6>Datum slanja:</h6> $send_time <br/>
+                      </div>
+                  </td>
+                  <td rowspan='1'>
                   <img width='100px' src='logosajt.jpeg' />
                      <div class='napomena'>
-                      <br/><h6>Otkup:</h6> $ransome RSD <br/>";
-                      if($firm_id != 43){
-                        $str.="<h6>PTT:</h6> $ptt RSD <br/>";
-                      }
-                      
-
-                      $str.="<h6>Plaća:</h6> $paid_by <br/>
-                      <h6>Napomena:</h6> $comment
-                      <h6>Datum slanja:</h6> $send_time <br/>
-                      </div>
+                      <h6><strong>Grupa:</strong> $grupId</h6>
+                        <h6>$orderInGrupu/$numOfPackages</h6>
                   </td>
                 </tr>
                 <tr >
@@ -105,9 +104,12 @@ require 'vendor/autoload.php';
                       $street_name $street_number<br/>
                       $phone
                     </td>
+                    <td colspan='2' class='seccond'>
+                    <h6>Napomena:</h6> $comment
+                    </td>
                 </tr>
                 <tr>
-                  <td class='seccond' colspan='3'>
+                  <td class='seccond' colspan='4'>
                     $content 
                   </td>
                 </tr>";
