@@ -31,7 +31,7 @@
   street.name AS street_name,
   status.name AS status_name,
   grup.number_of_packages AS number_of_packages,
-  GROUP_CONCAT(status_tracking.name, '-', package_status_tracking.datetime SEPARATOR '\n') as status_tracking_gr
+  GROUP_CONCAT(status_tracking.name, '-', package_status_tracking.datetime SEPARATOR '<br\>') as status_tracking_gr
   FROM `package`
   LEFT JOIN street ON package.street_id = street.id
   LEFT JOIN municipality ON street.municipality_id = municipality.id
