@@ -1,7 +1,7 @@
 <?php
 include('../config/config.php');
 
-$admin_curier = 1;
+$admin_curier = [1, 70, 71];
 
 function guidv4($data = null) {
     // Generate 16 bytes (128 bits) of random data or use the data passed into the function.
@@ -51,7 +51,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($courier) && isset($token)) {
     $status_id = (isset($data->status_id)) ? mysqli_real_escape_string($db, $data->status_id) : null;
     $courier_id = $courier['id'];
 
-    if($status_id == 66 && $courier_id != $admin_curier){
+    if($status_id == 66 &&  !in_array($courier_id, $admin_curier)){
       return;
     }
 
@@ -59,7 +59,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($courier) && isset($token)) {
     $result=mysqli_query($db, $sql);
     $current_status =mysqli_fetch_assoc($result)['c'];
 
-    if(isset($status_id) && ($current_status != 4 || $courier_id == $admin_curier)){
+    if(isset($status_id) && ($current_status != 4 || in_array($courier_id, $admin_curier))){
       if($status_id == 11){
         $sql = "UPDATE `package` 
         SET `status_id`='$status_id',
@@ -109,7 +109,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($courier) && isset($token)) {
     $result = mysqli_query($db, $sql);
     $data_response = [];
     while($row = mysqli_fetch_array($result)) {
-      if($courier_id == $admin_curier){
+      if(in_array($courier_id, $admin_curier)){
         $row['can_return'] = 1;
       }
       array_push($data_response, $row);
