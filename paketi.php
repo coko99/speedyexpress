@@ -13,6 +13,25 @@
 
     $datetimeFrom = mysqli_real_escape_string($db, $_GET['dateFrom']);
     $datetimeTo = mysqli_real_escape_string($db, $_GET['dateTo']);
+    
+    if(isset($_GET['odabranaFirma']) && ctype_digit($_GET['odabranaFirma'])){
+      $odabranaFirma = (int)$_GET['odabranaFirma'];
+    }else{
+      $odabranaFirma = -1;
+    }
+
+    if(isset($_GET['odabraniStatus']) && ctype_digit($_GET['odabraniStatus'])){
+      $odabraniStatus = (int)$_GET['odabraniStatus'];
+    }else{
+      $odabraniStatus = -1;
+    }
+
+    if(isset($_GET['odabraniPlaceno']) && ctype_digit($_GET['odabraniPlaceno'])){
+      $odabraniPlaceno = (int)$_GET['odabraniPlaceno'];
+    }else{
+      $odabraniPlaceno = -1;
+    }
+    
 
   $sql = "SELECT
   package.*,
@@ -55,13 +74,40 @@
   LEFT JOIN courier on package.curier_id = courier.id
   LEFT JOIN grup on package.group_id = grup.id
   WHERE FROM_UNIXTIME(package.send_time) BETWEEN STR_TO_DATE('$datetimeFrom','%d/%m/%Y') AND STR_TO_DATE('$datetimeTo', '%d/%m/%Y') 
-  AND (package_status_tracking.status = 1 OR package_status_tracking.status IS NULL);
+  AND (package_status_tracking.status = 1 OR package_status_tracking.status IS NULL)
+  ";
+  if($odabranaFirma != -1){
+    $sql = $sql." AND package.firm_id = $odabranaFirma";
+  }
+  if($odabraniStatus != -1){
+    $sql = $sql." AND package.status_id = $odabraniStatus";
+  }
+  if($odabraniPlaceno != -1){
+    $sql = $sql." AND package.pay = $odabraniPlaceno";
+  }
+  $sql = $sql."
+  ;
   ";
   $result = mysqli_query($db, $sql);
   while($row = mysqli_fetch_array($result)) {
     array_push($packages, $row);
   }
 }
+
+$firms = [];
+$sql = "SELECT * FROM FIRM WHERE STATUS = 1";
+$result = mysqli_query($db, $sql);
+while($row = mysqli_fetch_array($result)) {
+  array_push($firms, $row);
+}
+
+$statusi = [];
+$sql = "SELECT * FROM STATUS";
+$result = mysqli_query($db, $sql);
+while($row = mysqli_fetch_array($result)) {
+  array_push($statusi, $row);
+}
+
 
   
 ?>
@@ -81,6 +127,38 @@
         <div class="row mb-4 text-left">
         <form method="GET">
             <div class="row py-3 px-3">
+              <select name="odabranaFirma">
+                <option id="-1">Sve firme</option>
+                <?php 
+                foreach($firms as $firm){
+                  if($firm['id'] == $odabranaFirma){
+                    echo "<option value=".$firm['id']." selected>".$firm['name']."</option>";
+                  }else{
+                    echo "<option value=".$firm['id'].">".$firm['name']."</option>";
+                  }
+                }
+                ?>
+              </select>
+              <select name="odabraniStatus">
+                <option id="-1">Svi statusi</option>
+                <?php 
+                foreach($statusi as $status){
+                  if($status['id'] == $odabraniStatus){
+                    echo "<option value=".$status['id']." selected>".$status['name']."</option>";
+                  }else{
+                    echo "<option value=".$status['id'].">".$status['name']."</option>";
+                  }
+                }
+                ?>
+              </select>
+              <select name="odabraniPlaceno">
+                <option <?php if($odabraniPlaceno == -1) echo "selected"; ?> value="-1">Plaćeno i neplaćeno</option>
+                <option <?php if($odabraniPlaceno == 1) echo "selected"; ?> value="1">Plaćeno</option>
+                <option <?php if($odabraniPlaceno == 0) echo "selected"; ?> value="0">Neplaćeno</option>
+              </select>
+              <br/>
+            </div>
+              <div class="row py-3 px-3">
               <div class="input-group input-daterange" id="datepicker">
                   <div class="input-group-addon mx-2 my-2">Datum slanja od</div>
                   <span class="input-group-append">
@@ -111,15 +189,19 @@
                   <th scope="col">QR</th>
                   <th scope="col">Primalac - ime</th>
                   <th scope="col">Primalac - opština</th>
+                  <th scope="col">Primalac - poštanski broj</th>
                   <th scope="col">Primalac - ulica i broj</th>
                   <th scope="col">Primalac - telefon</th>
                   <th scope="col">Pošiljalac - naziv</th>
                   <th scope="col">Pošiljalac - opština</th>
+                  <th scope="col">Pošiljalac - poštanski broj</th>
                   <th scope="col">Pošiljalac - ulica</th>
                   <th scope="col">Pošiljalac - telefon</th>
                   <th scope="col">Kurir</th>
-                  <th scope="col">Opis</th>
-                  <th scope="col">Grupa</th>
+                  <th scope="col">OTKUP</th>
+                  <th scope="col">PLAĆA</th>
+                  <th scope="col">NAPOMENA</th>
+                  <th scope="col">GRUPA</th>
                   <th scope="col">PTT</th>
                   <th scope="col">TRENUTNI STATUS</th>
                   <th scope="col">DATUM STATUS</th>
@@ -128,6 +210,7 @@
                   <th scope="col">VREME SLANJA</th>
                   <th scope="col">STATUS - ISTORIJA</th>
                   <th scope="col">PLAĆENO</th>
+                  <th scope="col">OTKUP + PTT</th>
                   <th scope="col">ŠTAMPAJ</th>
                 </tr>
               </thead>
@@ -198,7 +281,10 @@
                     <h6>$recipient</h6>
                   </td>
                   <td>
-                    <h6>$municipality_name $zip</h6>
+                    <h6>$municipality_name</h6>
+                  </td>
+                  <td>
+                    <h6>$zip</h6>
                   </td>
                   <td>
                     <h6>$street_name $street_number</h6>
@@ -210,7 +296,10 @@
                     <h6>$firm_name</h6>
                   </td>
                   <td>
-                    <h6>$firm_municipality_name $firm_zip</h6>
+                    <h6>$firm_municipality_name</h6>
+                  </td>
+                  <td>
+                    <h6>$firm_zip</h6>
                   </td>
                   <td>
                     <h6>$firm_street_name $firm_street_number</h6>
@@ -222,16 +311,19 @@
                     <h6>$courier</h6>
                   </td>
                   <td>
-                    <h6><strong>Otkup: </strong>$ransome rsd</h6>
-                    <h6><strong>Vrednost: </strong>$ransome rsd</h6>
+                    <h6>$ransome</h6>
+                  </td>
+                  <td>
                     <h6><strong>Plaća: </strong>$paid_by</h6>
+                  </td>
+                  <td>
                     <h6><strong>napomena: </strong>$comment</h6>
                   </td>
                   <td>
                     <h6>Grupa: $grupId</h6>
                     <h6>$order_in_group/$number_of_packages_in_group</h6>
                   </td>
-                  <td><h6>$ptt RSD</h6></td>
+                  <td><h6>$ptt</h6></td>
                   <td><h6>$package_status</h6></td>
                   <td><h6>$date_status</h6></td>
                   <td><h6>$time_status</h6></td>
@@ -239,6 +331,7 @@
                   <td><h6>$time_send</h6></td>
                   <td>$status_track</td>
                   <td>$pay</td>
+                  <td>". ($ransome+$ptt) ."</td>
                   <td>
                     <a class='btn btn-info' href='printPackagesAdmin.php?id=$id_package'>ŠTAMPAJ</a>
                     <br/>
