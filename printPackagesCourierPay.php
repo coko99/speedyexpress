@@ -10,6 +10,7 @@ include('config/session_admin.php');
 require 'vendor/autoload.php';
 
 $idsForSearch = mysqli_real_escape_string($db, $_GET['idsForSearch']);
+$id = mysqli_real_escape_string($db, $_GET['id']);
 
 $sql = "SELECT package.*, 
 municipality.name AS municipality_name, 
@@ -38,8 +39,23 @@ while($row = mysqli_fetch_array($result)) {
     array_push($packages, $row);
 }
 
+
+$sql = "select * from courier where id = $id";
+$result = mysqli_query($db, $sql);
+$curier = mysqli_fetch_array($result);
+
+$suma = 0;
+foreach($packages as $pack){
+  $suma += $pack['shipping_fee'] + $package['ptt'];
+
+}
+
 $str = "
 <div class='col-12 table-wrapper-scroll-y my-custom-scrollbar'>
+<h3>
+    ".
+    $curier['name'] . " " . $curier['last_name'] . " - " . date("Y/m/d") . " - Isplaćeno: " . sizeof($packages) . " - Suma: " . $suma."
+  </h3>
   <table class='table table-bordered table-striped mb-0'>
     <thead>
       <tr>

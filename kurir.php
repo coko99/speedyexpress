@@ -19,7 +19,7 @@ use chillerlan\QRCode\QRCode;
     $ids = join(",",$package_for_pay_array);
     $sql = "UPDATE `package` SET `paid_currier` = 1 WHERE package.id in ($ids);";
     $result = mysqli_query($db, $sql);
-    header("Location: printPackagesCourierPay.php?idsForSearch=$ids");
+    header("Location: printPackagesCourierPay.php?id=$id&idsForSearch=$ids");
   }
 
   $sql = "SELECT *

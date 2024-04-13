@@ -109,8 +109,14 @@
                 <tr>
                   <th scope="col ">#ID</th>
                   <th scope="col">QR</th>
-                  <th scope="col">Primalac</th>
-                  <th scope="col">Pošiljalac</th>
+                  <th scope="col">Primalac - ime</th>
+                  <th scope="col">Primalac - opština</th>
+                  <th scope="col">Primalac - ulica i broj</th>
+                  <th scope="col">Primalac - telefon</th>
+                  <th scope="col">Pošiljalac - naziv</th>
+                  <th scope="col">Pošiljalac - opština</th>
+                  <th scope="col">Pošiljalac - ulica</th>
+                  <th scope="col">Pošiljalac - telefon</th>
                   <th scope="col">Kurir</th>
                   <th scope="col">Opis</th>
                   <th scope="col">Grupa</th>
@@ -120,7 +126,7 @@
                   <th scope="col">VREME STATUS</th>
                   <th scope="col">DATUM SLANJA</th>
                   <th scope="col">VREME SLANJA</th>
-                  <th scope="col">STATUS</th>
+                  <th scope="col">STATUS - ISTORIJA</th>
                   <th scope="col">PLAĆENO</th>
                   <th scope="col">ŠTAMPAJ</th>
                 </tr>
@@ -190,14 +196,26 @@
                   <td><img class='qr-slika' src='".(new QRCode())->render($qrtext)."' alt='' /></td>
                   <td>
                     <h6>$recipient</h6>
+                  </td>
+                  <td>
                     <h6>$municipality_name $zip</h6>
+                  </td>
+                  <td>
                     <h6>$street_name $street_number</h6>
+                  </td>
+                  <td>
                     <h6>$phone</h6>
                   </td>
                   <td>
                     <h6>$firm_name</h6>
+                  </td>
+                  <td>
                     <h6>$firm_municipality_name $firm_zip</h6>
+                  </td>
+                  <td>
                     <h6>$firm_street_name $firm_street_number</h6>
+                  </td>
+                  <td>
                     <h6>$firm_phone</h6>
                   </td>
                   <td>
@@ -221,7 +239,11 @@
                   <td><h6>$time_send</h6></td>
                   <td>$status_track</td>
                   <td>$pay</td>
-                  <td><a class='btn btn-info' href='printPackagesAdmin.php?id=$id_package'>ŠTAMPAJ</a></td>
+                  <td>
+                    <a class='btn btn-info' href='printPackagesAdmin.php?id=$id_package'>ŠTAMPAJ</a>
+                    <br/>
+                    <a class='btn btn-info' href='printPackagesAdminZebra.php?id=$id_package'>ŠTAMPAJ</a>
+                  </td>
                 </tr>
                   ";
 

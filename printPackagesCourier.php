@@ -39,8 +39,22 @@ while($row = mysqli_fetch_array($result)) {
     array_push($packages, $row);
 }
 
+$sql = "select * from courier where id = $id";
+$result = mysqli_query($db, $sql);
+$curier = mysqli_fetch_array($result);
+
+$suma = 0;
+foreach($packages as $pack){
+  $suma += $pack['shipping_fee'] + $package['ptt'];
+
+}
+
 $str = "
 <div class='col-12 table-wrapper-scroll-y my-custom-scrollbar'>
+  <h3>
+    ".
+    $curier['name'] . " " . $curier['last_name'] . " - " . date("Y/m/d") . " - Zaduženo: " . sizeof($packages) . " - Suma: " . $suma."
+  </h3>
   <table class='table table-bordered table-striped mb-0'>
     <thead>
       <tr>
@@ -131,6 +145,7 @@ $str = "
     </table>
   </div>";
 
+  // echo $str;
   $mpdf = new \Mpdf\Mpdf(['tempDir' => __DIR__ . "/../uploads"]);
 //   $stylesheet = file_get_contents('../css/invoice.css');
 
