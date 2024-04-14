@@ -13,24 +13,30 @@
 
     $datetimeFrom = mysqli_real_escape_string($db, $_GET['dateFrom']);
     $datetimeTo = mysqli_real_escape_string($db, $_GET['dateTo']);
-    
-    if(isset($_GET['odabranaFirma']) && ctype_digit($_GET['odabranaFirma'])){
-      $odabranaFirma = (int)$_GET['odabranaFirma'];
-    }else{
-      $odabranaFirma = -1;
-    }
+  }else{
+    $datetimeFrom = "".date("d/m/Y");
+    $datetimeTo = "".(new DateTime(date("Y/m/d")))->add(new DateInterval("P1D"))
+    ->format('d/m/Y');
 
-    if(isset($_GET['odabraniStatus']) && ctype_digit($_GET['odabraniStatus'])){
-      $odabraniStatus = (int)$_GET['odabraniStatus'];
-    }else{
-      $odabraniStatus = -1;
-    }
+  }
+  
+  if(isset($_GET['odabranaFirma']) && ctype_digit($_GET['odabranaFirma'])){
+    $odabranaFirma = (int)$_GET['odabranaFirma'];
+  }else{
+    $odabranaFirma = -1;
+  }
 
-    if(isset($_GET['odabraniPlaceno']) && ctype_digit($_GET['odabraniPlaceno'])){
-      $odabraniPlaceno = (int)$_GET['odabraniPlaceno'];
-    }else{
-      $odabraniPlaceno = -1;
-    }
+  if(isset($_GET['odabraniStatus']) && ctype_digit($_GET['odabraniStatus'])){
+    $odabraniStatus = (int)$_GET['odabraniStatus'];
+  }else{
+    $odabraniStatus = -1;
+  }
+
+  if(isset($_GET['odabraniPlaceno']) && ctype_digit($_GET['odabraniPlaceno'])){
+    $odabraniPlaceno = (int)$_GET['odabraniPlaceno'];
+  }else{
+    $odabraniPlaceno = -1;
+  }
     
 
   $sql = "SELECT
@@ -76,23 +82,23 @@
   WHERE FROM_UNIXTIME(package.send_time) BETWEEN STR_TO_DATE('$datetimeFrom','%d/%m/%Y') AND STR_TO_DATE('$datetimeTo', '%d/%m/%Y') 
   AND (package_status_tracking.status = 1 OR package_status_tracking.status IS NULL)
   ";
-  if($odabranaFirma != -1){
-    $sql = $sql." AND package.firm_id = $odabranaFirma";
-  }
-  if($odabraniStatus != -1){
-    $sql = $sql." AND package.status_id = $odabraniStatus";
-  }
-  if($odabraniPlaceno != -1){
-    $sql = $sql." AND package.pay = $odabraniPlaceno";
-  }
-  $sql = $sql."
-  ;
-  ";
-  $result = mysqli_query($db, $sql);
-  while($row = mysqli_fetch_array($result)) {
-    array_push($packages, $row);
-  }
+if($odabranaFirma != -1){
+  $sql = $sql." AND package.firm_id = $odabranaFirma";
 }
+if($odabraniStatus != -1){
+  $sql = $sql." AND package.status_id = $odabraniStatus";
+}
+if($odabraniPlaceno != -1){
+  $sql = $sql." AND package.pay = $odabraniPlaceno";
+}
+$sql = $sql."
+;
+";
+$result = mysqli_query($db, $sql);
+while($row = mysqli_fetch_array($result)) {
+  array_push($packages, $row);
+}
+
 
 $firms = [];
 $sql = "SELECT * FROM FIRM WHERE STATUS = 1";
@@ -166,15 +172,15 @@ while($row = mysqli_fetch_array($result)) {
                           <i class="fa fa-calendar"></i>
                       </span>
                   </span>
-                  <input autocomplete="off" requried value="<?php if(isset($_GET['dateFrom'])) echo $_GET['dateFrom'];?>" required name='dateFrom' type="text" class="form-control"></input>
+                  <input autocomplete="off" requried value="<?php if(isset($datetimeFrom)) echo $datetimeFrom;?>" required name='dateFrom' type="text" class="form-control"></input>
                   <div class="input-group-addon mx-2 my-2">do</div>
                   <span class="input-group-append">
                       <span class="input-group-text bg-white d-block">
                           <i class="fa fa-calendar"></i>
                       </span>
                   </span>
-                  <input autocomplete="off" requried value="<?php if(isset($_GET['dateTo'])) echo $_GET['dateTo'];?>" required name='dateTo' type="text" class="form-control">
-                  <button class='btn btn-info' type="submit">Potvrdi</button>
+                  <input autocomplete="off" requried value="<?php if(isset($datetimeTo)) echo $datetimeTo;?>" required name='dateTo' type="text" class="form-control">
+                  <button class='btn btn-info' type="submit" onclick="startSpiner()">Potvrdi</button>
 
                 </div>
             </div> 
@@ -182,7 +188,14 @@ while($row = mysqli_fetch_array($result)) {
       </div>
         <div class="row">
           <div class="col-12 table-wrapper-scroll-y my-custom-scrollbar">
-            <table id="example" class="table table-bordered table-striped mb-0">
+
+          <div  class="d-flex justify-content-center">
+            <div id="dt_loader" class="spinner-border" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+          </div>
+
+            <table style="display:none" id="example" class="table table-bordered table-striped mb-0">
               <thead>
                 <tr>
                   <th scope="col ">#ID</th>
@@ -364,7 +377,6 @@ while($row = mysqli_fetch_array($result)) {
       crossorigin="anonymous"
     ></script>
     <script>
-
       $(document).ready(function () {
 
         $('#example thead tr')
@@ -463,7 +475,16 @@ while($row = mysqli_fetch_array($result)) {
           collapsedGroups[name] = !collapsedGroups[name];
           oTable.draw(false);
         });
+
+        $('#dt_loader').hide();
+        $('#example').show(); 
       });
+
+      function startSpiner() {
+        $('#dt_loader').show();
+        $('#example').hide(); 
+      }
+
   </script>
   <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
