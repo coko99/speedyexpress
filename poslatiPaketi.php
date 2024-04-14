@@ -88,7 +88,7 @@
                       </span>
                   </span>
                   <input autocomplete="off" requried value="<?php if(isset($_GET['dateTo'])) echo $_GET['dateTo'];?>" required name='dateTo' type="text" class="form-control">
-                  <button class='btn btn-info' type="submit">Potvrdi</button>
+                  <button class='btn btn-info' onclick="startSpiner()" type="submit">Potvrdi</button>
 
                 </div>
             </div> 
@@ -97,78 +97,110 @@
 
 
       <div class="row">
-        <div class="col-12">
-        <table  id="example" class="display" style="width:100%" >
-          <thead>
-            <tr>
-            <th style="display: none;" scope="col">Send time</th>
-              <th scope="col">#</th>
-              <th scope="col">ID paketa</th>
-              <th scope="col">Paket</th>
-              <th scope="col">Cena</th>
-              <th scope="col">Status</th>
-              <th scope="col">Opcije</th>
-            </tr>
-          </thead>
-          <tbody>
-            <?php
-              $counter = 0;
-              foreach($packages as $package){
-                $counter += 1;
-                $recipient = $package['recipient'];
-                $phone = $package['phone'];
-                $ransome = $package['shipping_fee'];
-                $paid_by = ($package['ransom_type_id'] == 1) ? 'Primalac' : 'Pošiljalac';
-                $comment = $package['comment'];
-                $package_id = $package['id'];
-                $street_number = $package['street_number'];
-                $street_name = $package['street_name'];
-                $zip = $package['zip'];
-                $municipality_name = $package['municipality_name'];
-                $token = $package['token'];
-                $send_time = date("d/m/Y - H:i:s", $package['send_time']);
-                $package_status = $package['status_name'];
-                $status_id =$package['status_id'];
-                $numOfPackages = $package['number_of_packages'];
-                $orderInGrupu = $package['order_in_group'];
-                $grupId = sprintf('SX%08d', $package['group_id']);
-                
-                $status_tracking = $package['status_tracking_gr'];
+      <div class="col-12 table-wrapper-scroll-y my-custom-scrollbar">
 
-                echo "<tr>
-                        <td style='display: none;' >$send_time</td>
-                        <th scope='row'>$package_id</th>
-                        <td>
-                          <img class='qr-slika' src='".(new QRCode())->render($package_id.'-'.$token)."' alt='QR Code' />
-                        </td>
-                        <td>
-                          <h6>$recipient</h6>
-                          <h6>$municipality_name $zip</h6>
-                          <h6>$street_name $street_number</h6>
-                          <h6>$phone</h6>
-                        </td>
-                        <td>
-                          <h6><strong>Otkup: </strong>$ransome rsd</h6>
-                          <h6><strong>Vrednost: </strong>$ransome rsd</h6>
-                          <h6><strong>Plaća: </strong>$paid_by</h6>
-                          <h6><strong>napomena: </strong>$comment</h6>
-                          <h6><strong>Groupa:</strong> $grupId</h6>
-                          <h6>$orderInGrupu/$numOfPackages</h6>
-                        </td>
-                      <td>$status_tracking</td>";
-                        if($status_id != 4){
-                          echo "<td><a href='izmeniPaket.php?id=$package_id' class='btn btn-info'>Izmeni</a></td>";
-                        }else{
-                          echo "<td><button disabled class='btn btn-info'>Izmeni</button></td>";
-                        }
-                      echo "</tr>";
-              }
+          <div  class="d-flex justify-content-center">
+                <div id="dt_loader" class="spinner-border" role="status">
+                  <span class="sr-only">Loading...</span>
+                </div>
+              </div>
+            <div class="col-12">
+            <table  id="example" style="display:none" class="display" style="width:100%" >
+              <thead>
+                <tr>
+                <th style="display: none;" scope="col">Send time</th>
+                  <th scope="col">#</th>
+                  <th scope="col">ID paketa</th>
+                  <th scope="col">Primalac</th>
+                  <th scope="col">Primalac - opština</th>
+                  <th scope="col">Primalac - poštanski broj</th>
+                  <th scope="col">Primalac - adresa</th>
+                  <th scope="col">Primalac - telefon</th>
+                  <th scope="col">Cena</th>
+                  <th scope="col">Plaća</th>
+                  <th scope="col">Napomena</th>
+                  <th scope="col">Grupa</th>
+                  <th scope="col">Broj paketa u grupi</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Opcije</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php
+                  $counter = 0;
+                  foreach($packages as $package){
+                    $counter += 1;
+                    $recipient = $package['recipient'];
+                    $phone = $package['phone'];
+                    $ransome = $package['shipping_fee'];
+                    $paid_by = ($package['ransom_type_id'] == 1) ? 'Primalac' : 'Pošiljalac';
+                    $comment = $package['comment'];
+                    $package_id = $package['id'];
+                    $street_number = $package['street_number'];
+                    $street_name = $package['street_name'];
+                    $zip = $package['zip'];
+                    $municipality_name = $package['municipality_name'];
+                    $token = $package['token'];
+                    $send_time = date("d/m/Y - H:i:s", $package['send_time']);
+                    $package_status = $package['status_name'];
+                    $status_id =$package['status_id'];
+                    $numOfPackages = $package['number_of_packages'];
+                    $orderInGrupu = $package['order_in_group'];
+                    $grupId = sprintf('SX%08d', $package['group_id']);
+                    
+                    $status_tracking = $package['status_tracking_gr'];
 
-            ?>
-          </tbody>
-        </table>
+                    echo "<tr>
+                            <td style='display: none;' >$send_time</td>
+                            <th scope='row'>$package_id</th>
+                            <td>
+                              <img class='qr-slika' src='".(new QRCode())->render($package_id.'-'.$token)."' alt='QR Code' />
+                            </td>
+                            <td>
+                              <h6>$recipient</h6>
+                            </td>
+                            <td>
+                              <h6>$municipality_name</h6
+                            </td>
+                            <td>
+                              <h6>$zip</h6>
+                            </td>
+                            <td>
+                              <h6>$street_name $street_number</h6>
+                            </td>
+                            <td>
+                              <h6>$phone</h6>
+                            </td>
+                            <td>
+                              <h6>$ransome</h6>
+                            </td>
+                            <td>
+                              <h6>$paid_by</h6>
+                            </td>
+                            <td>
+                              <h6>$comment</h6>
+                            </td>
+                            <td>
+                              <h6>$grupId</h6>
+                            </td>
+                            <td>
+                              <h6>$orderInGrupu/$numOfPackages</h6>
+                            </td>
+                          <td>$status_tracking</td>";
+                            if($status_id != 4){
+                              echo "<td><a href='izmeniPaket.php?id=$package_id' class='btn btn-info'>Izmeni</a></td>";
+                            }else{
+                              echo "<td><button disabled class='btn btn-info'>Izmeni</button></td>";
+                            }
+                          echo "</tr>";
+                  }
+
+                ?>
+              </tbody>
+            </table>
         </div>
       </div>
+          </div>
     </div>
 
     <script src="index.js"></script>
@@ -222,7 +254,7 @@
 
             // Add category name to the <tr>. NOTE: Hardcoded colspan
             return $('<tr/>')
-              .append('<td colspan="7">' + group + ' <br /> Broj elemenata: <strong>' + rows.count() + '</strong></td>')
+              .append('<td colspan="14">' + group + ' <br /> Broj elemenata: <strong>' + rows.count() + '</strong></td>')
               .attr('data-name', group)
               .toggleClass('collapsed', collapsed);
           }
@@ -234,9 +266,15 @@
         collapsedGroups[name] = !collapsedGroups[name];
         oTable.draw(false);
       });
-
+      $('#dt_loader').hide();
+        $('#example').show(); 
       
     });
+
+    function startSpiner() {
+        $('#dt_loader').show();
+        $('#example').hide(); 
+      }
   </script>
 
 <script src="index.js"></script>
