@@ -45,17 +45,20 @@ $result = mysqli_query($db, $sql);
 $curier = mysqli_fetch_array($result);
 
 $suma = 0;
+$pttSuma = 0;
+$pttOtkupSuma = 0;
 foreach($packages as $pack){
-  $suma += $pack['shipping_fee'] + $package['ptt'];
-
+  $suma += $pack['shipping_fee'];
+  $pttSuma += $package['ptt'];
+  $pttOtkupSuma += $pack['shipping_fee'] + $package['ptt'];
 }
 
 $str = "
 <div class='col-12 table-wrapper-scroll-y my-custom-scrollbar'>
-<h3>
+<h4>
     ".
-    $curier['name'] . " " . $curier['last_name'] . " - " . date("Y/m/d") . " - Isplaćeno: " . sizeof($packages) . " - Suma: " . $suma."
-  </h3>
+    $curier['name'] . " " . $curier['last_name'] . " - " . date("Y/m/d") . " - Zaduženo: " . sizeof($packages) . " - Suma: " . $suma." - PTT: " .$pttSuma . " - Ukupno: " .$pttOtkupSuma."
+  </h4>
   <table class='table table-bordered table-striped mb-0'>
     <thead>
       <tr>
@@ -129,7 +132,11 @@ $str = "
           <h6>Opis:</h6> $content <br/>
           <h6>Datum slanja:</h6> $send_time <br/>
         </td>
-        <td>$ptt + $ransome = $pttransome</td>
+        <td>
+          <h6>$ptt</h6>
+          <hr/>
+          <h3>".$ptt + $ransome."</h3>
+        </td>
       </tr>";
     }
 
