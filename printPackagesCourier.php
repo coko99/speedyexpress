@@ -48,8 +48,8 @@ $pttSuma = 0;
 $pttOtkupSuma = 0;
 foreach($packages as $pack){
   $suma += $pack['shipping_fee'];
-  $pttSuma += $package['ptt'];
-  $pttOtkupSuma += $pack['shipping_fee'] + $package['ptt'];
+  $pttSuma += $pack['ptt'];
+  $pttOtkupSuma += $pack['shipping_fee'] + $pack['ptt'];
 }
 
 $str = "
