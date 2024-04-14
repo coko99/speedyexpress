@@ -15,8 +15,8 @@
     $datetimeTo = mysqli_real_escape_string($db, $_GET['dateTo']);
   }else{
     $datetimeFrom = "".date("d/m/Y");
-    $datetimeTo = "".(new DateTime(date("Y/m/d")))->add(new DateInterval("P1D"))
-    ->format('d/m/Y');
+    $datetime = new DateTime('tomorrow');
+    $datetimeTo = "".($datetime->format('d/m/Y'));
 
   }
   
