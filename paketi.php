@@ -101,14 +101,14 @@ while($row = mysqli_fetch_array($result)) {
 
 
 $firms = [];
-$sql = "SELECT * FROM FIRM WHERE STATUS = 1";
+$sql = "SELECT * FROM firm WHERE status = 1";
 $result = mysqli_query($db, $sql);
 while($row = mysqli_fetch_array($result)) {
   array_push($firms, $row);
 }
 
 $statusi = [];
-$sql = "SELECT * FROM STATUS";
+$sql = "SELECT * FROM status";
 $result = mysqli_query($db, $sql);
 while($row = mysqli_fetch_array($result)) {
   array_push($statusi, $row);
