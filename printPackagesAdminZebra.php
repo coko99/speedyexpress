@@ -91,7 +91,7 @@ $str = "
           <img width='100px' src='logosajt.jpeg' />
              <div class='napomena'>
               <br/><h6>Otkup:</h6> $ransome RSD <br/>";
-              if($firm_id != 43){
+              if($firm_id != 43 || $firm_id != 111){
                 $str.="<h6>PTT:</h6> $ptt RSD <br/>";
               }
               
