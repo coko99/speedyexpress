@@ -79,13 +79,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $phone = $row[5];
       $content = $row[9];
       $shipping_fee = $row[10];
-      if($firm_id == 43){
+      if($firm_id == 43 || $firm_id == 111){
         $ptt = 0;
       }else{
         $ptt = $row[19];
       }
       $comment = $row[22];
-      if($firm_id == 43){
+      if($firm_id == 43 || $firm_id == 111){
         $ransome_type_id = 1;
       }else{
         $ransome_type_id = $row[23];
