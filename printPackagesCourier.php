@@ -32,7 +32,7 @@ LEFT JOIN street AS firm_street ON firm.street_id = firm_street.id
 LEFT JOIN municipality AS firm_municipality ON firm_street.municipality_id = firm_municipality.id
 LEFT JOIN grup on package.group_id = grup.id
 WHERE curier_id = $id AND status_id != 4
-order by municipality_name ASC";
+order by municipality_name ASC, street.name ASC";
   $result = mysqli_query($db, $sql);
   $packages = [];
 while($row = mysqli_fetch_array($result)) {
