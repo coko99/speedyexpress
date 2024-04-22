@@ -8,18 +8,6 @@
 <?php
   include('config/head.php');
 
-  $packages = [];
-  if(isset($_GET['dateFrom']) && isset($_GET['dateTo'])){
-
-    $datetimeFrom = mysqli_real_escape_string($db, $_GET['dateFrom']);
-    $datetimeTo = mysqli_real_escape_string($db, $_GET['dateTo']);
-  }else{
-    $datetimeFrom = "".date("d/m/Y");
-    $datetime = new DateTime('tomorrow');
-    $datetimeTo = "".($datetime->format('d/m/Y'));
-
-  }
-  
   if(isset($_GET['odabranaFirma']) && ctype_digit($_GET['odabranaFirma'])){
     $odabranaFirma = (int)$_GET['odabranaFirma'];
   }else{
@@ -37,85 +25,155 @@
   }else{
     $odabraniPlaceno = -1;
   }
-    
 
-  $sql = "SELECT
-  package.*,
-  pst.status_tracking_log as status_tracking,
-  package_status_tracking.datetime as active_status_date_time,
-  municipality.name AS municipality_name, 
-  municipality.zip AS zip,
-  street.name AS street_name,
-  status_tracking.name AS status_name,
-  firm_street.name AS firm_street_name,
-  firm_municipality.name AS firm_municipality_name, 
-  firm_municipality.zip AS firm_zip,
-  firm.name AS firm_name,
-  firm.street_number AS firm_street_number,
-  firm.phone AS firm_phone,
-  courier.name AS courier,
-  grup.number_of_packages AS number_of_packages_in_group,
-  package.group_id AS group_id,
-  package.order_in_group AS order_in_group
-  FROM
-    package
-  LEFT JOIN (
-    SELECT
-        package_id,
-        GROUP_CONCAT(s.name, ' - ', datetime order by datetime desc SEPARATOR '<br/>') AS status_tracking_log
+  $packages = [];
+  if(isset($_GET['idsForSearch'])){
+
+    $idsForSearch = mysqli_real_escape_string($db, $_GET['idsForSearch']);
+
+    $sql = "SELECT
+    package.*,
+    pst.status_tracking_log as status_tracking,
+    package_status_tracking.datetime as active_status_date_time,
+    municipality.name AS municipality_name, 
+    municipality.zip AS zip,
+    street.name AS street_name,
+    status_tracking.name AS status_name,
+    firm_street.name AS firm_street_name,
+    firm_municipality.name AS firm_municipality_name, 
+    firm_municipality.zip AS firm_zip,
+    firm.name AS firm_name,
+    firm.street_number AS firm_street_number,
+    firm.phone AS firm_phone,
+    courier.name AS courier,
+    grup.number_of_packages AS number_of_packages_in_group,
+    package.group_id AS group_id,
+    package.order_in_group AS order_in_group
     FROM
-        package_status_tracking
-        left join status s on package_status_tracking.status_id = s.id
-    GROUP BY
-        package_id
-  ) pst ON package.id = pst.package_id
-  LEFT JOIN package_status_tracking on package.id = package_status_tracking.package_id
-  LEFT JOIN status on package_status_tracking.status_id = status.id
-  LEFT JOIN street ON package.street_id = street.id
-  LEFT JOIN municipality ON street.municipality_id = municipality.id
-  LEFT JOIN firm ON package.firm_id = firm.id
-  LEFT JOIN street AS firm_street ON firm.street_id = firm_street.id
-  LEFT JOIN municipality AS firm_municipality ON firm_street.municipality_id = firm_municipality.id
-  LEFT JOIN status as status_tracking ON package.status_id = status_tracking.id
-  LEFT JOIN courier on package.curier_id = courier.id
-  LEFT JOIN grup on package.group_id = grup.id
-  WHERE FROM_UNIXTIME(package.send_time) BETWEEN STR_TO_DATE('$datetimeFrom','%d/%m/%Y') AND STR_TO_DATE('$datetimeTo', '%d/%m/%Y') 
-  AND (package_status_tracking.status = 1 OR package_status_tracking.status IS NULL)
-  ";
-if($odabranaFirma != -1){
-  $sql = $sql." AND package.firm_id = $odabranaFirma";
-}
-if($odabraniStatus != -1){
-  $sql = $sql." AND package.status_id = $odabraniStatus";
-}
-if($odabraniPlaceno != -1){
-  $sql = $sql." AND package.pay = $odabraniPlaceno";
-}
-$sql = $sql."
-;
-";
-$result = mysqli_query($db, $sql);
-while($row = mysqli_fetch_array($result)) {
-  array_push($packages, $row);
-}
+      package
+    LEFT JOIN (
+      SELECT
+          package_id,
+          GROUP_CONCAT(s.name, ' - ', datetime order by datetime desc SEPARATOR '<br/>') AS status_tracking_log
+      FROM
+          package_status_tracking
+          left join status s on package_status_tracking.status_id = s.id
+      GROUP BY
+          package_id
+    ) pst ON package.id = pst.package_id
+    LEFT JOIN package_status_tracking on package.id = package_status_tracking.package_id
+    LEFT JOIN status on package_status_tracking.status_id = status.id
+    LEFT JOIN street ON package.street_id = street.id
+    LEFT JOIN municipality ON street.municipality_id = municipality.id
+    LEFT JOIN firm ON package.firm_id = firm.id
+    LEFT JOIN street AS firm_street ON firm.street_id = firm_street.id
+    LEFT JOIN municipality AS firm_municipality ON firm_street.municipality_id = firm_municipality.id
+    LEFT JOIN status as status_tracking ON package.status_id = status_tracking.id
+    LEFT JOIN courier on package.curier_id = courier.id
+    LEFT JOIN grup on package.group_id = grup.id
+    WHERE 
+    (package_status_tracking.status = 1 OR package_status_tracking.status IS NULL)
+    AND package.id in ($idsForSearch)
+    ";
 
+    $result = mysqli_query($db, $sql);
+    while($row = mysqli_fetch_array($result)) {
+      array_push($packages, $row);
+    }
 
-$firms = [];
-$sql = "SELECT * FROM firm WHERE status = 1";
-$result = mysqli_query($db, $sql);
-while($row = mysqli_fetch_array($result)) {
-  array_push($firms, $row);
-}
+  }else{
 
-$statusi = [];
-$sql = "SELECT * FROM status";
-$result = mysqli_query($db, $sql);
-while($row = mysqli_fetch_array($result)) {
-  array_push($statusi, $row);
-}
+    if(isset($_GET['dateFrom']) && isset($_GET['dateTo'])){
 
-
+      $datetimeFrom = mysqli_real_escape_string($db, $_GET['dateFrom']);
+      $datetimeTo = mysqli_real_escape_string($db, $_GET['dateTo']);
+    }else{
+      $datetimeFrom = "".date("d/m/Y");
+      $datetime = new DateTime('tomorrow');
+      $datetimeTo = "".($datetime->format('d/m/Y'));
   
+    }
+    
+   
+      
+  
+    $sql = "SELECT
+    package.*,
+    pst.status_tracking_log as status_tracking,
+    package_status_tracking.datetime as active_status_date_time,
+    municipality.name AS municipality_name, 
+    municipality.zip AS zip,
+    street.name AS street_name,
+    status_tracking.name AS status_name,
+    firm_street.name AS firm_street_name,
+    firm_municipality.name AS firm_municipality_name, 
+    firm_municipality.zip AS firm_zip,
+    firm.name AS firm_name,
+    firm.street_number AS firm_street_number,
+    firm.phone AS firm_phone,
+    courier.name AS courier,
+    grup.number_of_packages AS number_of_packages_in_group,
+    package.group_id AS group_id,
+    package.order_in_group AS order_in_group
+    FROM
+      package
+    LEFT JOIN (
+      SELECT
+          package_id,
+          GROUP_CONCAT(s.name, ' - ', datetime order by datetime desc SEPARATOR '<br/>') AS status_tracking_log
+      FROM
+          package_status_tracking
+          left join status s on package_status_tracking.status_id = s.id
+      GROUP BY
+          package_id
+    ) pst ON package.id = pst.package_id
+    LEFT JOIN package_status_tracking on package.id = package_status_tracking.package_id
+    LEFT JOIN status on package_status_tracking.status_id = status.id
+    LEFT JOIN street ON package.street_id = street.id
+    LEFT JOIN municipality ON street.municipality_id = municipality.id
+    LEFT JOIN firm ON package.firm_id = firm.id
+    LEFT JOIN street AS firm_street ON firm.street_id = firm_street.id
+    LEFT JOIN municipality AS firm_municipality ON firm_street.municipality_id = firm_municipality.id
+    LEFT JOIN status as status_tracking ON package.status_id = status_tracking.id
+    LEFT JOIN courier on package.curier_id = courier.id
+    LEFT JOIN grup on package.group_id = grup.id
+    WHERE FROM_UNIXTIME(package.send_time) BETWEEN STR_TO_DATE('$datetimeFrom','%d/%m/%Y') AND STR_TO_DATE('$datetimeTo', '%d/%m/%Y') 
+    AND (package_status_tracking.status = 1 OR package_status_tracking.status IS NULL)
+    ";
+    if($odabranaFirma != -1){
+      $sql = $sql." AND package.firm_id = $odabranaFirma";
+    }
+    if($odabraniStatus != -1){
+      $sql = $sql." AND package.status_id = $odabraniStatus";
+    }
+    if($odabraniPlaceno != -1){
+      $sql = $sql." AND package.pay = $odabraniPlaceno";
+    }
+    $sql = $sql."
+    ;
+    ";
+    $result = mysqli_query($db, $sql);
+    while($row = mysqli_fetch_array($result)) {
+      array_push($packages, $row);
+    }
+    
+    
+    
+  }
+
+    $firms = [];
+    $sql = "SELECT * FROM firm WHERE status = 1";
+    $result = mysqli_query($db, $sql);
+    while($row = mysqli_fetch_array($result)) {
+      array_push($firms, $row);
+    }
+    
+    $statusi = [];
+    $sql = "SELECT * FROM status";
+    $result = mysqli_query($db, $sql);
+    while($row = mysqli_fetch_array($result)) {
+      array_push($statusi, $row);
+    }
 ?>
   <body>
 

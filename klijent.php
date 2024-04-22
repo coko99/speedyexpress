@@ -39,6 +39,18 @@
     header("Location: printPackagesKlient.php?idsForSearch=$ids");
   }
 
+  if(isset($_POST['print_excel'])){
+    $package_for_pay_array = [];
+    foreach($_POST as $key => $value){
+      if(str_starts_with($key, "print#")){
+        array_push($package_for_pay_array, explode("#", $key)[1]);
+      }
+    }
+    $ids = join(",",$package_for_pay_array);
+
+    header("Location: paketi.php?idsForSearch=$ids");
+  }
+
   $sql = "SELECT firm.*,
     street.name AS street_name,
     municipality.name AS municipality_name,
@@ -438,6 +450,8 @@
                   </tbody>
                 </table>
                     <button name='print_mesecni' type="submit" class="btn btn-info">Štampaj</button>
+                    <button name='print_excel' type="submit" class="btn btn-info">Excel</button>
+
                 </form>
               </div>
             </div>
