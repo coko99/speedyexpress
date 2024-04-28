@@ -185,6 +185,18 @@
 
     <div class="container mt-4">
 
+    <?php
+if(isset($_GET['idsForSearch'])){
+      echo '
+        <div class="col">
+          <a  href="javascript:history.back()"
+            ><button class="btn btn-info">NAZAD</button></a
+          >
+        </div>
+        ';
+}
+        ?>
+      
     
       <div class="row mb-4 text-left">
         <h2 class="mt-3 mb-3">Paketa kurira</h2>

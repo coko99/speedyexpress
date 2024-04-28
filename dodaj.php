@@ -30,14 +30,16 @@
     $last_name =  mysqli_real_escape_string($db, $_POST['last_name']);
     $password =  mysqli_real_escape_string($db, $_POST['password']);
     $phone =  mysqli_real_escape_string($db, $_POST['phone']);
+    $currier_order =  mysqli_real_escape_string($db, $_POST['currier_order']);
+
     if(isset($_POST['id_currier'])){
       $id_currier =  mysqli_real_escape_string($db, $_POST['id_currier']);
     }
 
     if(isset($id_currier)){
-      $sql = "UPDATE `courier` SET `name`='$name',`last_name`='$last_name',`password`='1234',`token`='$password',`phone`='$phone' WHERE id=$id_currier";
+      $sql = "UPDATE `courier` SET `name`='$name',`last_name`='$last_name',`password`='1234',`token`='$password',`phone`='$phone',`courier_order`='$currier_order' WHERE id=$id_currier";
     }else{
-      $sql = "INSERT INTO `courier`(`name`, `last_name`, `password`, `token`, `phone`) VALUES ('$name','$last_name','1234','$password','$phone')";
+      $sql = "INSERT INTO `courier`(`name`, `last_name`, `password`, `token`, `phone`, `courier_order`) VALUES ('$name','$last_name','1234','$password','$phone','$currier_order')";
     }
 
     $result = mysqli_query($db, $sql);
@@ -97,6 +99,7 @@
       $currier_edit_last_name = $currier_edit['last_name'];
       $currier_edit_phone = $currier_edit['phone'];
       $currier_edit_token = $currier_edit['token'];
+      $currier_order = $currier_edit['courier_order'];
     }
   }
 
@@ -130,7 +133,7 @@
   }
 
   $sql = "SELECT *
-  FROM `courier` where status = 1";
+  FROM `courier` where status = 1 order by courier_order, name";
   $result = mysqli_query($db, $sql);
   $courieres = [];
   while($row = mysqli_fetch_array($result)) {
@@ -233,6 +236,20 @@
                           name="password"
                           class="form-control"
                           value='<?php echo (isset($currier_edit)) ? $currier_edit_token : ""; ?>'
+                        />
+
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-12">
+                      <div class="md-form mb-3">
+                        <input
+                        placeholder="Redosled"
+                          type="number"
+                          name="currier_order"
+                          class="form-control"
+                          value='<?php echo (isset($currier_edit)) ? $currier_order : ""; ?>'
                         />
 
                       </div>

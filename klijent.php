@@ -14,6 +14,18 @@
 
   }
 
+  // if(isset($_POST['print_excel_1'])){
+  //   $package_for_pay_array = [];
+  //   foreach($_POST as $key => $value){
+  //     if(str_starts_with($key, "paycheck#")){
+  //       array_push($package_for_pay_array, explode("#", $key)[1]);
+  //     }
+  //   }
+  //   $ids = join(",",$package_for_pay_array);
+
+  //   header("Location: paketi.php?idsForSearch=$ids");
+  // }
+
   if(isset($_POST['pay'])){
     $package_for_pay_array = [];
     foreach($_POST as $key => $value){
@@ -24,7 +36,9 @@
     $ids = join(",",$package_for_pay_array);
     $sql = "UPDATE `package` SET `pay` = 1 WHERE package.id in ($ids);";
     $result = mysqli_query($db, $sql);
-    header("Location: printPackagesKlient.php?idsForSearch=$ids");
+    header("Location: paketi.php?idsForSearch=$ids");
+
+    #header("Location: printPackagesKlient.php?idsForSearch=$ids");
   }
 
   if(isset($_POST['print_mesecni'])){
