@@ -14,17 +14,17 @@
 
   }
 
-  // if(isset($_POST['print_excel_1'])){
-  //   $package_for_pay_array = [];
-  //   foreach($_POST as $key => $value){
-  //     if(str_starts_with($key, "paycheck#")){
-  //       array_push($package_for_pay_array, explode("#", $key)[1]);
-  //     }
-  //   }
-  //   $ids = join(",",$package_for_pay_array);
+  if(isset($_POST['print_excel_1'])){
+    $package_for_pay_array = [];
+    foreach($_POST as $key => $value){
+      if(str_starts_with($key, "paycheck#")){
+        array_push($package_for_pay_array, explode("#", $key)[1]);
+      }
+    }
+    $ids = join(",",$package_for_pay_array);
 
-  //   header("Location: paketi.php?idsForSearch=$ids");
-  // }
+    header("Location: paketi.php?idsForSearch=$ids");
+  }
 
   if(isset($_POST['pay'])){
     $package_for_pay_array = [];
@@ -36,9 +36,9 @@
     $ids = join(",",$package_for_pay_array);
     $sql = "UPDATE `package` SET `pay` = 1 WHERE package.id in ($ids);";
     $result = mysqli_query($db, $sql);
-    header("Location: paketi.php?idsForSearch=$ids");
+    #header("Location: paketi.php?idsForSearch=$ids");
 
-    #header("Location: printPackagesKlient.php?idsForSearch=$ids");
+    header("Location: printPackagesKlient.php?idsForSearch=$ids");
   }
 
   if(isset($_POST['print_mesecni'])){
@@ -352,6 +352,9 @@
                 <div class="col d-flex justify-content-end mt-3">
                   <button name="pay" class="btn btn-success">ISPLATI</button>
                 </div>
+                <div class="col d-flex justify-content-end mt-3">
+                  <button name="print_excel_1" class="btn btn-success">EXCEL</button>
+                </div>
               </div>
               </form>
             </div>
@@ -417,6 +420,12 @@
                 class="col-12 table-wrapper-scroll-y my-custom-scrollbar adminPaketi"
               >
               <form action="" method="POST">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="toggle-all-isplaceni" value=""></input>
+                <label class="form-check-label" for="toggle-all-isplaceni">
+                  Obeleži sve
+                </label>
+              </div>
                 <table class="table mb-0">
                   <thead>
                     <tr>
@@ -530,6 +539,19 @@
             $('#otkup').html($suma -= otkup);
           }
         })
+    });
+
+    $('#toggle-all-isplaceni').click(function() {
+        $('.checkbox_print').prop('checked', $(this).is(':checked'));
+        
+        // $('.checkbox_print').each(function(i, obj) {
+        //   let otkup = parseFloat($(obj).data("ransom"));
+        //   if(obj.checked) {
+        //       $('#otkup').html($suma += otkup);
+        //   }else{
+        //     $('#otkup').html($suma -= otkup);
+        //   }
+        // })
     });
         
     </script>

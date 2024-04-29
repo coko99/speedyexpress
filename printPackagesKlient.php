@@ -48,11 +48,13 @@ $str = "
   <table class='table table-bordered table-striped mb-0'>
     <thead>
       <tr>
-        <th scope='col '>#ID</th>
-        <th scope='col'>QR</th>
-        <th scope='col'>Primalac</th>
+        <th scope='col '>#ID</th>".
+      //  " <th scope='col'>QR</th>".
+       "<th scope='col'>Primalac</th>
         <th scope='col'>Pošiljalac</th>
+        <th scope='col'>Detalji</th>
         <th scope='col'>Opis</th>
+        <th scope='col'>Datum slanja</th>
         <th scope='col'>Preuzeto</th>
         <th scope='col'>Dostavljeno</th>
         <th scope='col'>Poštarina</th>
@@ -117,9 +119,9 @@ $str = "
         <th scope='row'>$package_id
           <h6>$grupId</h6>
           <h6>$orderInGrupu/$numOfPackages</h6>  
-        </th>
-        <td><img class='qr-slika' src='".(new QRCode())->render($package_id.'-'.$token)."' alt='' /></td>
-        <td>
+        </th>".
+        // "<td><img class='qr-slika' src='".(new QRCode())->render($package_id.'-'.$token)."' alt='' /></td>".
+        "<td>
         
           <h6>$recipient</h6>
           <h6>$municipality_name $zip</h6>
@@ -136,9 +138,9 @@ $str = "
           <h6><strong>Otkup: </strong>$ransome rsd</h6>
           <h6><strong>Plaća: </strong>$paid_by</h6>
           <h6><strong>Napomena: </strong>$comment</h6>
-          <h6>Opis:</h6> $content <br/>
-          <h6>Datum slanja:</h6> $send_time <br/>
         </td>
+        <td> $content <br/></td>
+        <td>$send_time </td>
         <td><h6>$date_time</h6>
         <td> <h6>$date_time_1</h6></td>
         <td><h6>$ptt RSD</h6></td>
