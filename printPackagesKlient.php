@@ -116,10 +116,10 @@ $str = "
 
 
         $str.="<tr>
-        <th scope='row'>$package_id
+        <td><h6>$package_id</h6>
           <h6>$grupId</h6>
-          <h6>$orderInGrupu/$numOfPackages</h6>  
-        </th>".
+          <h6>$orderInGrupu/$numOfPackages </h6>
+        </td>".
         // "<td><img class='qr-slika' src='".(new QRCode())->render($package_id.'-'.$token)."' alt='' /></td>".
         "<td>
         
