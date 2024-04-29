@@ -43,8 +43,19 @@ $ids = join(",",$idsForUpdate);
 $sql = "UPDATE package set print=1 WHERE id in ($ids)";
 mysqli_query($db, $sql);
 
+$sum1 = 0.00;
+foreach($packages as $package){
+  $ransome1 = $package['shipping_fee'];
+  $sum1 += $ransome1;
+}
+
 $str = "
+
 <div class='col-12 table-wrapper-scroll-y my-custom-scrollbar'>
+<h4>
+    ".
+    "Paketa: " . sizeof($packages) . " - Datum: " . date("Y/m/d") . " - Suma: " . $sum1."
+  </h4>
   <table class='table table-bordered table-striped mb-0'>
     <thead>
       <tr>
