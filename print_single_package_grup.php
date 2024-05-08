@@ -82,7 +82,7 @@ require 'vendor/autoload.php';
                   </td>
                   <td rowspan='1' style='padding: 10px'>
                         <h6>Otkup:</h6> $ransome RSD <br/>";
-                        if($firm_id != 43 || $firm_id != 111){
+                        if($firm_id != 43 || $firm_id != 111  || $firm_id == 114){
                           $str.="<h6>PTT:</h6> $ptt RSD <br/>";
                         }
                         $str.="<h6>Plaća:</h6> $paid_by <br/>

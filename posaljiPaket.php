@@ -83,7 +83,7 @@ use chillerlan\QRCode\QRCode;
     logEvent('User '.$login_session.': '.$sql);
   }
 
-  if($firm_id == 43|| $firm_id == 35 || $firm_id == 111){
+  if($firm_id == 43|| $firm_id == 35 || $firm_id == 111  || $firm_id == 114){
     $sql = "SELECT package.*, 
   municipality.name AS municipality_name, 
   municipality.zip AS zip,
