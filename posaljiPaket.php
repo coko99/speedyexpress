@@ -32,6 +32,9 @@ use chillerlan\QRCode\QRCode;
     $result = mysqli_query($db, $sql);
     if (mysqli_num_rows($result) == 1) {
       return mysqli_fetch_array($result)['id'];
+    }
+    else if (mysqli_num_rows($result) > 1){
+      return mysqli_fetch_array($result)['id'];
     }else{
       return "GREŠKA! ULICA NIJE PRONAĐENA ILI JE PRONAĐENO VIŠE ULICA SA TIM NAZIVOM IZ TE OPŠTINE!";
     }
