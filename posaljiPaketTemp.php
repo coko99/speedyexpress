@@ -75,6 +75,13 @@ use chillerlan\QRCode\QRCode;
   while($row = mysqli_fetch_array($result)) {
     array_push($packages, $row);
   }
+
+  $sql = "SELECT * 
+  FROM `firm`
+  WHERE id = $firm_id";
+  $result = mysqli_query($db, $sql);
+  $row = mysqli_fetch_array($result);
+  $export_type = $row['mass_import_type'];
   
 
 ?><!DOCTYPE html>
@@ -276,7 +283,7 @@ use chillerlan\QRCode\QRCode;
             <div class="col-6 align-self-center">
               <div class="row">
                 <div class="col-4 text-center">
-                  <a href="mass_import_new.php" class="btn btn-primary">Excel</a>
+                  <a href="<?php echo $export_type; ?>" class="btn btn-primary">Excel</a>
                 </div>
               </div>
             </div>

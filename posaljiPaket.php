@@ -377,7 +377,7 @@ use chillerlan\QRCode\QRCode;
 
 
 <!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<!-- <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -395,7 +395,7 @@ use chillerlan\QRCode\QRCode;
       </form>
     </div>
   </div>
-</div>
+</div> -->
 
     <!-- <script src="index.js"></script> -->
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>

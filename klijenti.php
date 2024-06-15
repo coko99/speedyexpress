@@ -33,7 +33,7 @@
         <h2 class="mt-3 mb-3">Spisak Klijenata</h2>
         <div class="row">
           <div class="col-12 table-wrapper-scroll-y my-custom-scrollbar">
-            <table class="table table-bordered">
+            <table id="table1" class="table table-bordered">
               <thead>
                 <tr>
                   <th scope="col">#ID</th>
@@ -41,6 +41,7 @@
                   <th scope="col">PIB</th>
                   <th scope="col">Adresa</th>
                   <th scope="col">Broj telefona</th>
+                  <th scope="col">Broj kreiranih neposlati paketa</th>
                   <th scope="col">Akcija</th>
                 </tr>
               </thead>
@@ -48,6 +49,9 @@
               <?php 
                 $counter = 0;
                 foreach($firms as $firm){
+
+
+
                   $counter += 1;
                   $firm_id = $firm['id'];
                   $firm_name = $firm['name'];
@@ -57,6 +61,11 @@
                   $street_num = $firm['street_number'];
                   $municipality_name = $firm['municipality_name'];
                   $municipality_zip = $firm['zip'];
+
+                  $sql = "SELECT count(*) FROM `package` WHERE status_id = 1 AND firm_id = $firm_id;";
+                  $result = mysqli_query($db, $sql);
+                  $row = mysqli_fetch_array($result);
+                  $num_of_created_not_sent_packages = $row[0];
 
                   echo "
                   <tr>
@@ -72,6 +81,9 @@
                     </td>
                     <td>
                       <h4 class='m-0 p-0'>$firm_phone</h4>
+                    </td>
+                    <td>
+                      <h4 class='m-0 p-0'>$num_of_created_not_sent_packages</h4>
                     </td>
                     <td>
                       <a href='klijent.php?id=$firm_id'
@@ -91,10 +103,20 @@
     </div>
 
     <script src="index.js"></script>
+    <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
       crossorigin="anonymous"
     ></script>
+    <script>
+        var oTable = $('#table1').DataTable({
+          paging: false,
+          language: {
+                      "url": "//cdn.datatables.net/plug-ins/1.10.18/i18n/Serbian.json"
+                  }
+
+        });
+    </script>
   </body>
 </html>
