@@ -57,7 +57,12 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($courier) && isset($token)) {
 
     $sql = "SELECT status_id as c from package where id = $package_id";
     $result=mysqli_query($db, $sql);
-    $current_status =mysqli_fetch_assoc($result)['c'];
+    $tem_res = mysqli_fetch_assoc($result);
+    if(sizeof($tem_res) > 0){
+      $current_status =$tem_res['c'];
+    }else{
+      $current_status =0;
+    }
 
     if(isset($status_id) && ($current_status != 4 || in_array($courier_id, $admin_curier))){
       if($status_id == 11){
