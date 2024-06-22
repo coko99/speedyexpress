@@ -91,7 +91,7 @@ use chillerlan\QRCode\QRCode;
     municipality.name AS municipality_name, 
     municipality.zip AS zip,
     street.name AS street_name,
-    COALESCE(grup.number_of_packages, 1) AS number_of_packages
+    grup.number_of_packages AS number_of_packages
     FROM `package`
     LEFT JOIN street ON package.street_id = street.id
     LEFT JOIN municipality ON street.municipality_id = municipality.id
@@ -103,7 +103,7 @@ use chillerlan\QRCode\QRCode;
     municipality.name AS municipality_name, 
     municipality.zip AS zip,
     street.name AS street_name,
-    COALESCE(grup.number_of_packages, 1) AS number_of_packages
+    grup.number_of_packages AS number_of_packages
     FROM `package`
     LEFT JOIN street ON package.street_id = street.id
     LEFT JOIN municipality ON street.municipality_id = municipality.id
