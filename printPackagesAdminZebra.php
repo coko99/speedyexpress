@@ -14,6 +14,7 @@ $sql = "SELECT package.*,
   municipality.name AS municipality_name, 
   municipality.zip AS zip,
   street.name AS street_name,
+  firm.id AS firm_id,
   firm.name AS firm_name,
   firm.street_number AS firm_street_number,
   firm_street.name AS firm_street_name,
@@ -66,6 +67,7 @@ $str = "
         $firm_municipality_zip = $package['firm_municipality_zip'];
         $firm_street_number = $package['firm_street_number'];
         $firm_phone = $package['firm_phone'];
+        $firm_id = $package['firm_id'];
 
         $numOfPackages = $package['number_of_packages'];
         $orderInGrupu = $package['order_in_group'];
