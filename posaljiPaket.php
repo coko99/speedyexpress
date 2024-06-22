@@ -88,21 +88,22 @@ use chillerlan\QRCode\QRCode;
 
   if($firm_id == 43|| $firm_id == 35 || $firm_id == 111  || $firm_id == 114){
     $sql = "SELECT package.*, 
-  municipality.name AS municipality_name, 
-  municipality.zip AS zip,
-  street.name AS street_name,
-  COALESCE(grup.number_of_packages, 0) AS number_of_packages
-  FROM `package`
-  LEFT JOIN street ON package.street_id = street.id
-  LEFT JOIN municipality ON street.municipality_id = municipality.id
-  LEFT JOIN grup ON package.group_id = grup.id
-  WHERE firm_id = $firm_id AND status_id = 1
-  order by package.content";
+    municipality.name AS municipality_name, 
+    municipality.zip AS zip,
+    street.name AS street_name,
+    COALESCE(grup.number_of_packages, 1) AS number_of_packages
+    FROM `package`
+    LEFT JOIN street ON package.street_id = street.id
+    LEFT JOIN municipality ON street.municipality_id = municipality.id
+    LEFT JOIN grup ON package.group_id = grup.id
+    WHERE firm_id = $firm_id AND status_id = 1
+    order by package.content";
   }else{
     $sql = "SELECT package.*, 
     municipality.name AS municipality_name, 
     municipality.zip AS zip,
-    street.name AS street_name 
+    street.name AS street_name,
+    COALESCE(grup.number_of_packages, 1) AS number_of_packages
     FROM `package`
     LEFT JOIN street ON package.street_id = street.id
     LEFT JOIN municipality ON street.municipality_id = municipality.id
