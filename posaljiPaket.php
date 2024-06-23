@@ -102,7 +102,7 @@ use chillerlan\QRCode\QRCode;
     $sql = "SELECT package.*, 
     municipality.name AS municipality_name, 
     municipality.zip AS zip,
-    street.name AS street_name,
+    street.name AS street_name
     FROM `package`
     LEFT JOIN street ON package.street_id = street.id
     LEFT JOIN municipality ON street.municipality_id = municipality.id
