@@ -107,6 +107,7 @@ use chillerlan\QRCode\QRCode;
     FROM `package`
     LEFT JOIN street ON package.street_id = street.id
     LEFT JOIN municipality ON street.municipality_id = municipality.id
+    LEFT JOIN grup ON package.group_id = grup.id
     WHERE firm_id = $firm_id AND status_id = 1";
   }
   // $sql = "SELECT package.*, 
